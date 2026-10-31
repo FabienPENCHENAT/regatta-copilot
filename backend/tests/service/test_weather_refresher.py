@@ -135,3 +135,19 @@ def test_thread_runs_a_cycle_at_once_then_stops():
     assert ran.wait(5)
     refresher.stop(timeout_s=5)
     assert not refresher._thread.is_alive()
+
+
+def test_waits_against_the_wall_clock_in_short_slices(monkeypatch):
+    clock = {"now": NOW}
+    refresher = WeatherRefresher(FakeGfs(GFS_12, GFS_12), FakeEnsemble(None), lambda now: None, lambda c: False,
+                                 now=lambda: clock["now"])
+    slices = []
+
+    def late_wait(timeout):
+        slices.append(timeout)
+        clock["now"] += timedelta(seconds=timeout + 200)  # the timer fired late, or the laptop slept
+        return False
+
+    monkeypatch.setattr(refresher._stop, "wait", late_wait)
+    refresher._wait_until(NOW + timedelta(minutes=10))
+    assert slices == [30.0, 30.0, 30.0]  # 3 × 230 s > 10 min: no more waiting once the deadline has passed
