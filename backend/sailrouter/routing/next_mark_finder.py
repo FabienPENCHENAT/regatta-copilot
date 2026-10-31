@@ -15,8 +15,8 @@ class NextMarkFinder:
     marks already rounded.
 
     A gate or line counts as passed when the position lies beyond it, in its crossing direction, by more than
-    `PASSED_MARGIN_NM`. A point or island mark cannot be judged from a position alone and always counts as ahead
-    (the player can still name the next mark explicitly).
+    `PASSED_MARGIN_NM`. A rounding mark (`leave_to`, e.g. around Guadeloupe) or a point mark cannot be judged
+    from a position alone and always counts as ahead: the player names the next mark explicitly.
     """
 
     def first_ahead(self, race: Race, position: GeoPoint) -> str:
@@ -27,7 +27,7 @@ class NextMarkFinder:
 
     @staticmethod
     def _passed(mark: Mark, position: GeoPoint) -> bool:
-        if not mark.is_line or mark.cross not in AXIS_BY_CROSSING:
+        if not mark.is_line or mark.is_rounding or mark.cross not in AXIS_BY_CROSSING:
             return False
         axis, sign = AXIS_BY_CROSSING[mark.cross]
         if axis == "lat":

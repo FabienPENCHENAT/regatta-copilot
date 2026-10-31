@@ -20,6 +20,7 @@ from sailrouter.routing.mark_progress import MarkProgress
 from sailrouter.routing.route import Route
 from sailrouter.routing.route_tracer import RouteTracer
 from sailrouter.routing.time_schedule import TimeSchedule
+from sailrouter.service.boat_polar_locator import BoatPolarLocator
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.router_builder import RouterBuilder
 from sailrouter.weather.forecast_store import ForecastStore
@@ -52,7 +53,8 @@ def initialize(spec: MemberRoutingSpec) -> None:
     paths = ProjectPaths(spec.root)
     builder = RouterBuilder(paths)
     race = RaceCatalog(paths.races_dir).load(spec.race_id)
-    speed_model, penalty = builder.boat_models(race.boat(spec.boat_id).polar_path, spec.options, spec.maneuvers)
+    polar_file = BoatPolarLocator(paths).polar_file(race.id, race.boat(spec.boat_id))
+    speed_model, penalty = builder.boat_models(polar_file, spec.options, spec.maneuvers)
     _state.update(
         spec=spec, builder=builder, speed_model=speed_model, penalty=penalty, obstacles=builder.obstacles(race),
         progress=MarkProgress.from_race(race, spec.position, first_mark_id=spec.next_mark),

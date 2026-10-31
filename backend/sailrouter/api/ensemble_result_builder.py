@@ -32,6 +32,7 @@ class EnsembleResultBuilder:
                 "member_count": synthesis.member_total,
             },
             "ensemble": ensemble_status_json(ensemble),
+            "next_mark": {"id": game.next_mark_id, "auto": game.next_mark_auto},
             "recommended_option": synthesis.recommended.id,
             "advice": synthesis.advice,
             "options": [self._option(option) for option in synthesis.options],

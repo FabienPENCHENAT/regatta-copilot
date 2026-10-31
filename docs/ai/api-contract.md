@@ -12,9 +12,24 @@ Display names come from i18n keys `race.<id>` and `boat.<id>`.
 
 ## `GET /api/races/<id>`
 The content of `races/<id>.json` (see [route-du-rhum-2026.json](../../races/route-du-rhum-2026.json)): `boats[]`
-with `start_line` and `polar`, ordered `marks[]` (`gate` with `points` + `cross`, or `point`/`island` with
-`position` + `leave_to`), `finish`, `exclusion_zones[]` and `vigilance_zones[]` (`shape`: `polygon` | `line`,
-`points` as `[lat, lon]`). Mark names are i18n keys `mark.<id>`.
+with `start_line` and `polar`, ordered `marks[]`, `finish`, `exclusion_zones[]` and `vigilance_zones[]` (`shape`:
+`polygon` | `line`, `points` as `[lat, lon]`). Mark names are i18n keys `mark.<id>`.
+
+Marks (decision D39):
+```jsonc
+// a gate or line to cross (Fréhel): no leave_to, no position → draw the line and its two ends
+{ "id": "frehel_gate", "type": "gate", "points": [[48.696667, -2.308333], [48.713333, -2.308333]],
+  "cross": "westward", "status": "official", "note": "..." }
+// a mark rounded to one side (Guadeloupe): a directed half-line from the physical mark
+{ "id": "tete_anglais", "type": "gate", "points": [[16.380833, -61.764167], [16.380833, -62.3]],
+  "cross": "southward",            // southward | northward | eastward | westward
+  "leave_to": "port",              // port | starboard
+  "position": [16.380833, -61.764167],  // the physical mark: show THIS (buoy / islet / archipelago), not the line
+  "status": "derived", "note": "..." }
+```
+Every Route du Rhum mark after Fréhel has `leave_to` and `position`: `tete_anglais`, `basse_terre_buoy`,
+`les_saintes`, `pointe_a_pitre_buoy` (the `point`/`island` types are no longer used; `point` remains valid with
+`position` only). The finish stays `finish.line` + `cross`.
 
 ## `GET /api/wind?start=<ISO UTC>[&hours=11,13]`
 `hours` (optional, TODO backend after the step-4 merge): only these hours after `start`; default 0,4,8,12,16,24,48.
@@ -28,14 +43,24 @@ m/s, rows north to south):
 
 ## `POST /api/route`
 Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "options": { "sails": ["Code0", ...] },
-"maneuvers": { "tack": { "light_min", "strong_min", "speed_percent" }, "gybe": {...}, "sailChange": {...} } }`
+"maneuvers": { "tack": { "light_min", "strong_min", "speed_percent" }, "gybe": {...}, "sailChange": {...} },
+"next_mark": "<mark id>" | null }`.
+`next_mark` (optional, default null = automatic): the next mark to sail to, any id of `marks[]` or `"finish"`;
+the marks before it are considered passed. Unknown id → **400** `{"detail": "unknown mark 'x' (known: ...)"}`.
+Automatic: gates/lines without `leave_to` are skipped once the position is > 2 nm beyond them in their crossing
+direction; a mark with `leave_to` is never skipped automatically (around Guadeloupe the automatic answer stays
+`tete_anglais`: the player must choose).
 (optional sails among LightJib, LightGnk, Staysail, HeavyGnk, Code0; Jib and Spi are always allowed; foils, hull
 and pro winch are never applied; missing maneuvers use the polar's standard-winch values).
 One synchronous call. The route window is [max(race start, now), +120 h].
-- **GEFS run on disk** → ensemble result (31 member routes + the GFS route, ≈ 53 s on the dev Mac, see D31).
-- **Otherwise** → GFS-only result (~5 s, ~2 min the first time a GFS run is downloaded), and the GEFS download
-  starts in the background (≈ 15 min, `ensemble.state = "downloading"`). Poll `GET /api/ensemble/status` and
-  recompute when it says `ready`.
+- Same inputs (incl. `next_mark` and the polar in use) on the same weather runs as an earlier request, or as the
+  background pre-computation of the last request (D40) → the stored result at once.
+- **GEFS run on disk** → ensemble result (31 member routes + the GFS route, ≈ 16–25 s on the dev Mac).
+- **Otherwise** → GFS-only result (~5 s), and the GEFS download starts in the background (≈ 15 min,
+  `ensemble.state = "downloading"`). Poll `GET /api/ensemble/status` and recompute when it says `ready`.
+- The GFS run is the newest one **on disk** (the background refresher downloads new runs): no request waits for
+  a GFS download, except when no run at all is on disk (first start, ~2 min). A result made on an older run than
+  the expected one expires after 30 min.
 
 Each option has `legs`: `[{ start_hour, end_hour, heading_deg, sail, twa_deg, tws_min_kn, tws_max_kn, speed_kn,
 lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe or heading change ≥ 10°).
@@ -65,7 +90,8 @@ lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe
 - `weather`: `{ "model": "GEFS 0.5°", "run", "game_model": "GFS 0.25°", "game_run", "next_run_expected",
   "member_count": 31 }`.
 
-**Both results** carry `"ensemble": { "state": "ready" | "downloading" | "unavailable", "run": ISO | null,
+**Both results** carry `"next_mark": { "id": "<mark id used>", "auto": true | false }` (`auto` = found from the
+position, false = the request's `next_mark`) and `"ensemble": { "state": "ready" | "downloading" | "unavailable", "run": ISO | null,
 "done": int, "total": int, "member_count": 31 }` (same object as `GET /api/ensemble/status`). While a newer run
 downloads, an older run on disk may still serve the ensemble result: `weather.run` is the run used,
 `ensemble.run` the run being downloaded.
@@ -76,6 +102,7 @@ Response (ensemble):
   "race_id": "route-du-rhum-2026", "boat_id": "class40",
   "position": { "lat": 48.73, "lon": -1.9 },
   "computed_at": "2026-11-01T12:02:00Z",
+  "next_mark": { "id": "frehel_gate", "auto": true },
   "weather": { "model": "GEFS 0.5°", "run": "2026-10-31T06:00:00Z", "game_model": "GFS 0.25°",
                "game_run": "2026-10-31T06:00:00Z", "next_run_expected": "2026-10-31T17:00:00Z", "member_count": 31 },
   "ensemble": { "state": "ready", "run": "2026-10-31T06:00:00Z", "done": 1302, "total": 1302, "member_count": 31 },
@@ -113,4 +140,27 @@ horizons are 4, 8, 12, 16, 24, 48 h.
 `unavailable` (no run on disk and no download running, e.g. NOMADS unreachable: retried after 10 min).
 
 ## `GET /api/races/{id}/boats/{boat}/polar`
-The raw VR polar of the boat (the frontend reads its `winch` block to show manoeuvre times).
+The raw VR polar the boat sails with (the frontend reads its `winch` block to show manoeuvre times), plus two
+top-level fields:
+```jsonc
+{ "label": "mono/class40-2021", "tws": [...], "twa": [...], "sail": [...], "winch": {...}, ...,
+  "_source": "player",                       // "player" (imported by the player) | "community" (data/polars/)
+  "_imported_at": "2026-10-31T17:40:12.123456Z" }  // null for the community polar
+```
+404 for an unknown race or boat.
+
+## `POST /api/races/{id}/boats/{boat}/polar`
+Body: the JSON copied from the game's network tab, as is: the raw polar object, or any wrapper (e.g. a
+`LogEventResponse`) holding it at any depth, even as a JSON string. The polar is the first object with `sail`,
+`tws` and `twa`. Checked: 7 sails with ids 1–7, speed tables matching the TWS/TWA axes, `winch` and `foil`
+blocks. Only the polar object is stored (`var/polars/<race>-<boat>.vr.json`), never the wrapper.
+- 200 → same body as `GET` (`_source: "player"`). From now on every route of this race/boat uses it (GFS and the
+  31 members), and stored results are not reused (the polar is part of the cache key).
+- 400 → `{"detail": "invalid polar: <reason>"}`, e.g. `no VR polar found: expected an object with 'sail', 'tws'
+  and 'twa'`, `the polar must have 7 sails`, `the polar has no 'winch' block (manoeuvre times)`,
+  `the polar misses the field 'foil'`, `the polar tables are not consistent: ...`.
+- 404 → unknown race or boat.
+
+## `DELETE /api/races/{id}/boats/{boat}/polar`
+Removes the player's polar (no error if there is none) and returns the polar now in use, same body as `GET`
+(`_source: "community"`).

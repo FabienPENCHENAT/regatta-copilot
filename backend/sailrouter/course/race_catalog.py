@@ -55,12 +55,14 @@ class RaceCatalog:
     @staticmethod
     def _build_mark(data: dict[str, Any]) -> Mark:
         raw_points = data["points"] if "points" in data else [data["position"]]
+        position = data.get("position") if "points" in data else None
         return Mark(
             id=data["id"],
             kind=data["type"],
             points=tuple(GeoPoint.from_lat_lon(point) for point in raw_points),
             cross=data.get("cross"),
             leave_to=data.get("leave_to"),
+            position=GeoPoint.from_lat_lon(position) if position else None,
         )
 
     @staticmethod

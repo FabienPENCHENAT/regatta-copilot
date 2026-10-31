@@ -10,4 +10,5 @@ manipulations côté jeu. La documentation technique, pour l'IA et les développ
 | [etape-3-poc.md](etape-3-poc.md) | Résultat de l'étape 3 : premier calcul de route en ligne de commande, et ses limites |
 | [etape-4-scenarios.md](etape-4-scenarios.md) | Les 31 prévisions : plusieurs routes, leurs probabilités, le premier téléchargement |
 | [etape-5-site-branche.md](etape-5-site-branche.md) | Le site calcule pour de vrai, avec tes voiles |
+| [etape-6-marques-et-mises-a-jour.md](etape-6-marques-et-mises-a-jour.md) | Tour de la Guadeloupe et choix de la prochaine marque, mises à jour automatiques, import de ta polaire |
 | [extraire-polaire-vr.md](extraire-polaire-vr.md) | Récupérer toi-même la polaire du jeu, pas à pas |

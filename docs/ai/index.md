@@ -35,6 +35,7 @@ First race: Route du Rhum 2026, Class40 (VR race 844, start 2026-11-01 12:02 UTC
 | 3. Routing POC, one member, CLI | done: deterministic GFS, Class40, Route du Rhum, `python -m sailrouter route` (see [../founder/etape-3-poc.md](../founder/etape-3-poc.md), decisions D14–D19) |
 | 4. Ensemble + robust synthesis | done (backend): 31 GEFS members routed in parallel + GFS, options with probabilities, background download, `GET /api/ensemble/status`, `python -m sailrouter ensemble-download` (see [../founder/etape-4-scenarios.md](../founder/etape-4-scenarios.md), decisions D30–D33). |
 | 5. Wire UI, tests, README FR/EN | in progress: site runs the real engine on the game's GFS (`./run.sh`), decision D28 |
+| 6. Guadeloupe marks, background refresh, player polar | backend done (D39–D41): directed gates for rounding marks + `next_mark`, `WeatherRefresher`, polar import API (see [../founder/etape-6-marques-et-mises-a-jour.md](../founder/etape-6-marques-et-mises-a-jour.md)); UI in progress |
 
 ## Non-negotiable rules
 

@@ -30,6 +30,7 @@ class RouteResultBuilder:
                 "member_count": 1,
             },
             "ensemble": ensemble_status_json(ensemble),
+            "next_mark": {"id": report.next_mark_id, "auto": report.next_mark_auto},
             "recommended_option": GAME_OPTION_ID,
             "advice": {"key": "advice.follow_game_route", "params": {"hours": 48}},
             "options": [{

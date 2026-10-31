@@ -25,9 +25,10 @@ class EnsembleRoutePlanner:
     """Routes every GEFS member of a run already on disk in parallel worker processes, the deterministic GFS
     (the game's route) in this process meanwhile, then turns the member routes into options."""
 
-    def __init__(self, paths: ProjectPaths, workers: int | None = None) -> None:
+    def __init__(self, paths: ProjectPaths, workers: int | None = None, prefer_cached: bool = False) -> None:
         self._paths = paths
         self._workers = workers or max(1, (os.cpu_count() or 2) - 1)
+        self._prefer_cached = prefer_cached  # GFS run: see RoutePlanner
 
     def plan(
         self, race_id: str, boat_id: str | None, position: GeoPoint, hours: float, gefs_run: ModelRun,
@@ -47,7 +48,8 @@ class EnsembleRoutePlanner:
         with ProcessPoolExecutor(min(self._workers, len(GEFS_MEMBERS)), mp_context=context,
                                  initializer=member_routing_worker.initialize, initargs=(spec,)) as pool:
             pending = pool.map(member_routing_worker.route_member, GEFS_MEMBERS)
-            game = RoutePlanner(self._paths).plan(race_id, boat_id, position, hours, start, next_mark, options, maneuvers)
+            game = RoutePlanner(self._paths, prefer_cached=self._prefer_cached).plan(
+                race_id, boat_id, position, hours, start, next_mark, options, maneuvers)
             member_routes = {member: route for member, route in pending if route is not None}
         routed = perf_counter()
         synthesis = EnsembleSynthesizer().synthesize(member_routes, game.route, game.progress)

@@ -29,6 +29,15 @@ class ProjectPaths:
         return self.root / "var" / "results"
 
     @property
+    def polars_dir(self) -> Path:
+        """Polars imported by the player (runtime data, git-ignored)."""
+        return self.root / "var" / "polars"
+
+    @property
+    def last_request_file(self) -> Path:
+        return self.root / "var" / "last_request.json"
+
+    @property
     def routes_dir(self) -> Path:
         return self.root / "var" / "routes"
 

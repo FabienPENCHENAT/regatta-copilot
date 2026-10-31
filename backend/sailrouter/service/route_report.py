@@ -24,3 +24,9 @@ class RouteReport:
     route: Route
     step_count: int
     timings_s: dict[str, float] = field(default_factory=dict)
+    next_mark_auto: bool = True  # the first mark was found from the position (not named by the player)
+
+    @property
+    def next_mark_id(self) -> str:
+        """The first mark the route sails to."""
+        return self.progress.legs[0].mark_id

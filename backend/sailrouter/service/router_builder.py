@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from sailrouter.domain.race import Race
 from sailrouter.geography.coastline_loader import CoastlineLoader
 from sailrouter.geography.land_mask import LandMask
@@ -31,9 +33,9 @@ class RouterBuilder:
         self._paths = paths
 
     def boat_models(
-        self, polar_path: str, options: BoatOptions, maneuvers: dict[str, ManeuverTiming],
+        self, polar_file: Path, options: BoatOptions, maneuvers: dict[str, ManeuverTiming],
     ) -> tuple[SpeedModel, ManeuverPenalty]:
-        vr_polar = VrPolarParser().load(self._paths.resolve(polar_path))
+        vr_polar = VrPolarParser().load(polar_file)
         winch = vr_polar.winch.with_overrides("pro" if options.pro_winch else "std", maneuvers)
         return SpeedModel(vr_polar, options), ManeuverPenalty(winch, pro_winch=options.pro_winch)
 

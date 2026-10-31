@@ -13,7 +13,7 @@ from sailrouter.service.ensemble_status import EnsembleStatus
 
 @pytest.fixture(scope="module")
 def client():
-    return TestClient(create_app())
+    return TestClient(create_app(refresh_in_background=False))
 
 
 def test_lists_races_with_their_boats(client):
@@ -50,10 +50,12 @@ def test_result_has_an_hourly_path_and_the_plan_hours_the_route_covers():
     report = type("Report", (), {})()
     report.__dict__.update(race_id="r", boat_id="b", position=type("P", (), {"lat_deg": 48.7, "lon_deg": -2.0})(),
                            weather_run=type("Run", (), {"cycle": start})(), next_run_expected=start,
-                           route=Route(points, distance_to_go_nm=3000.0, finished=False))
+                           route=Route(points, distance_to_go_nm=3000.0, finished=False),
+                           next_mark_id="tete_anglais", next_mark_auto=True)
     result = RouteResultBuilder().build(report, EnsembleStatus("downloading", None, 12, 1426, 31))
     assert result["ensemble"] == {"state": "downloading", "run": None, "done": 12, "total": 1426, "member_count": 31}
     assert result["weather"]["member_count"] == 1 and result["members"] == []
+    assert result["next_mark"] == {"id": "tete_anglais", "auto": True}
     option = result["options"][0]
     assert len(option["path"]) == 11  # one point per hour, 0 to 10 h
     assert option["path"][5] == [round(48.7 - 0.1 * 5, 4), round(-2.0 - 0.2 * 5, 4)]  # interpolated between 4 h and 7 h

@@ -45,6 +45,7 @@ def test_ensemble_result_has_options_with_probabilities_members_and_the_game_rou
     assert member["member"] == "p05" and member["option"] == second["id"] and len(member["path"]) == 61
     assert all(len(str(value).split(".")[-1]) <= 3 for value in member["path"][7])
     assert result["ideal_route"]["to_go_nm"] == 2500 and not result["ideal_route"]["finished"]
+    assert result["next_mark"] == {"id": course().legs[0].mark_id, "auto": True}
 
 
 class FakeJob:
@@ -53,6 +54,6 @@ class FakeJob:
 
 
 def test_status_endpoint_reports_the_download_progress():
-    client = TestClient(create_app(ensemble_job=FakeJob()))
+    client = TestClient(create_app(ensemble_job=FakeJob(), refresh_in_background=False))
     assert client.get("/api/ensemble/status").json() == {
         "state": "downloading", "run": "2026-10-31T06:00:00Z", "done": 400, "total": 1426, "member_count": 31}
