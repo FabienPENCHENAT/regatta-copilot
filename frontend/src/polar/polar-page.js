@@ -6,6 +6,7 @@ import { PolarChart } from "./polar-chart.js";
 import { OptionToggles } from "./option-toggles.js";
 import { RouteImpact } from "./route-impact.js";
 import { PositionParser } from "../form/position-parser.js";
+import { BoatPicker } from "../form/boat-picker.js";
 
 const DEFAULT_TWS = 12;
 const COMPARED_TWA = [40, 160]; // the angles actually sailed: averages leave out dead upwind and dead downwind
@@ -16,6 +17,7 @@ export class PolarPage {
   #tws = DEFAULT_TWS;
   #markerTwa = 90;
   #loads = 0;
+  #race = null;
 
   constructor(dom, { api, translator, preferences }) {
     Object.assign(this, { dom, api, translator, preferences });
@@ -26,22 +28,24 @@ export class PolarPage {
     this.toggles = new OptionToggles(dom.toggles, { translator, owned: saved.boatOptions, onChange: () => this.#optionsChanged() });
     this.impact = new RouteImpact(dom.impact, { api, translator });
     this.impact.bind(() => this.#impactContext());
+    this.boats = new BoatPicker(dom.boats, translator, (boatId) => this.#boatChanged(boatId));
     this.#bindControls();
   }
 
+  // The race and boat chosen on the map page; another boat of the race can be picked here.
   async start() {
-    if (!this.boat.raceId || !this.boat.boatId) {
-      const races = await this.api.listRaces();
-      const race = races.find((r) => r.id === this.boat.raceId) ?? races[0];
-      this.boat = { raceId: race.id, boatId: race.boats.includes(this.boat.boatId) ? this.boat.boatId : race.default_boat };
-    }
+    const races = await this.api.listRaces();
+    this.#race = races.find((r) => r.id === this.boat.raceId) ?? races[0];
+    const boatId = this.#race.boats.includes(this.boat.boatId) ? this.boat.boatId : this.#race.default_boat;
+    this.boat = { raceId: this.#race.id, boatId };
     this.render();
     await this.#loadCurves();
   }
 
   render() {
     const t = (key, params) => this.translator.t(key, params);
-    this.dom.boat.textContent = t("polar.boat_line", { boat: t(`boat.${this.boat.boatId}`), race: t(`race.${this.boat.raceId}`) });
+    this.dom.boat.textContent = t(`race.${this.boat.raceId}`);
+    if (this.#race) this.boats.render(this.#race.boats, this.boat.boatId);
     this.dom.twsValue.textContent = t("polar.tws_value", { tws: this.#tws });
     this.dom.twaValue.textContent = t("polar.twa_value", { twa: this.#markerTwa });
     this.toggles.render();
@@ -68,6 +72,13 @@ export class PolarPage {
     this.dom.twa.value = String(this.#markerTwa);
     this.dom.twaValue.textContent = this.translator.t("polar.twa_value", { twa: this.#markerTwa });
     this.#renderCurves();
+  }
+
+  #boatChanged(boatId) {
+    this.boat = { ...this.boat, boatId };
+    this.impact.clear();
+    this.impact.render();
+    this.#loadCurves();
   }
 
   #optionsChanged() {

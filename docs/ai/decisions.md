@@ -2,6 +2,13 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D49 — Option line drawn through every route point; boat picker on the polar page (user, 2026-10-31)
+- Leg markers did not sit on the selected option's line near the start: the map drew the HOURLY `path`
+  (straight cuts between hours) while legs change every 15 min. Options now carry `line` (every route point),
+  which the map draws; `path` stays hourly for placing the boat at an hour. Checked: all leg starts lie on it.
+- Polar page: the boat came silently from the saved preferences; it now shows the race's boats as pills
+  (preselected on the map's boat), and switching reloads the curves.
+
 ## D48 — "Polar and options" page (user, 2026-10-31)
 - `frontend/polar.html` (rail link): polar diagram (SVG, `polar/PolarChart`) at a chosen TWS, the player's
   options dashed, the tried options coloured by best sail (`--sail-<id>` tokens), TWA read-out (pointer or

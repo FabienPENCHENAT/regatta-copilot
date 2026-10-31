@@ -64,7 +64,8 @@ One synchronous call. The route window is [max(race start, now), +120 h].
   a GFS download, except when no run at all is on disk (first start, ~2 min). A result made on an older run than
   the expected one expires after 30 min.
 
-Each option has `legs`: `[{ start_hour, end_hour, heading_deg, sail, twa_deg, tws_min_kn, tws_max_kn, speed_kn,
+Each option has `path` (one [lat, lon] per hour, for placing the boat at an hour), `line` (every route point,
+quarter-hours at first: what the map draws, so leg starts lie on it) and `legs`: `[{ start_hour, end_hour, heading_deg, sail, twa_deg, tws_min_kn, tws_max_kn, speed_kn,
 lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe or heading change ≥ 10°).
 
 **GFS-only result** (ensemble not ready): `weather.model = "GFS 0.25°"`, `weather.member_count = 1`, one option

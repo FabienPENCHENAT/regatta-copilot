@@ -290,7 +290,6 @@
   "polar.link": "Polar and options",
   "polar.title": "Polar and options",
   "polar.lead": "Tick or untick a game option to see what it changes on the boat's speed, then measure its effect on your route. Your settings are not changed unless you decide so.",
-  "polar.boat_line": "{boat} · {race}",
   "polar.chart_label": "Polar: boat speed by true wind angle",
   "polar.unit": "kn",
   "polar.legend.current": "Your settings",

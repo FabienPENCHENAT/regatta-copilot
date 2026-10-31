@@ -290,7 +290,6 @@
   "polar.link": "Polaire et options",
   "polar.title": "Polaire et options",
   "polar.lead": "Coche ou décoche une option du jeu pour voir ce qu'elle change sur la vitesse du bateau, puis mesure son effet sur ta route. Rien n'est modifié dans tes réglages tant que tu ne le décides pas.",
-  "polar.boat_line": "{boat} · {race}",
   "polar.chart_label": "Polaire : vitesse du bateau selon l'angle au vent",
   "polar.unit": "nd",
   "polar.legend.current": "Tes réglages",

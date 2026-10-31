@@ -15,12 +15,13 @@ class RouteJsonWriter:
     hourly path, full track. Shared by the GFS-only and the ensemble result builders."""
 
     def option_body(self, route: Route, confidence_by_hour: dict[int, float] | None = None) -> dict:
-        """`now`, `steps`, `path`, `legs`; step confidence is null when not given."""
+        """`now`, `steps`, `path` (hourly), `line` (every route point), `legs`; step confidence null when not given."""
         confidence_by_hour = confidence_by_hour or {}
         return {
             "now": self.settings(route.points[0]),
             "steps": [self.step(route, hour, confidence_by_hour.get(hour)) for hour in PLAN_HOURS if route.covers(hour)],
             "path": self.hourly_path(route),
+            "line": [[round(p.lat_deg, 4), round(p.lon_deg, 4)] for p in route.points],  # drawn: legs lie on it
             "legs": [self.leg(route, leg) for leg in RouteLegSplitter().split(route)],
         }
 

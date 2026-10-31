@@ -13,7 +13,7 @@ if (saved.theme) document.documentElement.dataset.theme = saved.theme;
 
 const translator = new Translator();
 const page = new PolarPage({
-  boat: byId("polar-boat"), chart: byId("polar-chart"), tws: byId("polar-tws"), twsValue: byId("polar-tws-value"),
+  boat: byId("polar-boat"), boats: byId("polar-boats"), chart: byId("polar-chart"), tws: byId("polar-tws"), twsValue: byId("polar-tws-value"),
   twa: byId("polar-twa"), twaValue: byId("polar-twa-value"), readout: byId("polar-readout"), legend: byId("polar-legend"),
   toggles: byId("polar-toggles"), summary: byId("polar-summary"), reset: byId("polar-reset"), keep: byId("polar-keep"),
   kept: byId("polar-kept"), impact: byId("polar-impact"),

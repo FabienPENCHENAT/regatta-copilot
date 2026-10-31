@@ -28,7 +28,8 @@ export class RouteLayer {
         color: this.color(`--route-${routeIndex.get(member.option)}`), weight: 1.4, opacity: 0.4, interactive: false,
       }).addTo(this.#routes);
     }
-    L.polyline(option.path, { color: this.color(`--route-${routeIndex.get(option.id)}`), weight: 5, opacity: 0.95 })
+    // Every route point (quarter-hours at first), so the leg markers sit on the line; older results: hourly.
+    L.polyline(option.line ?? option.path, { color: this.color(`--route-${routeIndex.get(option.id)}`), weight: 5, opacity: 0.95 })
       .addTo(this.#routes);
     this.#legMarkers(option, hour);
   }
