@@ -14,7 +14,7 @@ class RouteOptionClusterer:
     Deterministic: ties go to the lowest indices. Groups are returned largest first (ties: lowest member).
     """
 
-    def __init__(self, threshold_nm: float = 70.0, min_members: int = 2, max_options: int = 4) -> None:
+    def __init__(self, threshold_nm: float = 70.0, min_members: int = 2, max_options: int = 3) -> None:
         self._threshold_nm = threshold_nm
         self._min_members = min_members
         self._max_options = max_options

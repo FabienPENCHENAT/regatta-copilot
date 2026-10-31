@@ -2,6 +2,16 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D36 — At most 3 options (user, 2026-10-31)
+A 4th option around 16–19 % was noise for the user. `RouteOptionClusterer(max_options=3)`: the smallest group
+joins its nearest group, so its scenarios still count (probabilities still sum to 100 %). Stored results were
+cleared (the cache key does not include synthesis settings: clear `var/results/` after changing them).
+
+Measured effect of equipment, same GFS 06z run, Class40 start, 120 h (nm still to go; lower is better):
+Jib+Spi only 2139 · +foils 2131 · +pro winch 2138 · +hull 2138 · +one optional sail 2136–2139 · +all five sails
+2133 · full pack 2110 (≈ 29 nm, ≈ 2.4 h, ≈ 1.4 % over 5 days, mostly downwind under spinnaker). Gains are not
+additive. The site keeps routing on owned sails and polar only (D29).
+
 ## D35 — Faster coast check: clearance map + length-grouped sampling (2026-10-31)
 The land test sampled every candidate segment, all at the sample count of the longest one. Now `LandMask` keeps
 a clearance map (distance to the nearest coarse land cell or raster edge, Chebyshev, in degrees, conservative):
