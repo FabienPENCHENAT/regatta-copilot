@@ -1,6 +1,6 @@
 {
   "app.title": "Routeur Voile",
-  "app.tagline": "Your route options, tested against 31 weather scenarios",
+  "app.tagline": "Your offshore route, tested against 31 weather scenarios",
   "lang.label": "Language",
   "mock.banner": "Mock-up: the wind is real (today's GFS), but the routes and probabilities are an example.",
   "form.title": "My race",
@@ -123,5 +123,10 @@
   "sea.atlantic": "North Atlantic Ocean",
   "sea.sargasso": "Sargasso Sea",
   "sea.caribbean": "Caribbean Sea",
-  "map.legend_course": "Course and forbidden zones"
+  "map.legend_course": "Course and forbidden zones",
+  "view.label": "Map view",
+  "view.near": "48 h",
+  "view.race": "Whole race",
+  "map.ideal_route": "Ideal track to the finish (≈ {distance} nautical miles)",
+  "map.legend_ideal": "Ideal track to the finish"
 }

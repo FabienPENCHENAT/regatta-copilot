@@ -7,7 +7,7 @@ import { PreferencesStore } from "./storage/preferences-store.js";
 import { PositionParser } from "./form/position-parser.js";
 import { RouteForm } from "./form/route-form.js";
 import { RouteMap } from "./map/route-map.js";
-import { WindControls } from "./map/wind-controls.js";
+import { MapControls } from "./map/map-controls.js";
 import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
 import { TimelineTable } from "./results/timeline-table.js";
@@ -20,7 +20,7 @@ class App {
   #race = null;
   #wind = null;
   #result = null;
-  #state = { optionId: null, hour: 0, windMode: "particles" };
+  #state = { optionId: null, hour: 0, windMode: "particles", view: "near" };
 
   constructor() {
     this.api = new MockApi();
@@ -28,7 +28,8 @@ class App {
     this.translator = new Translator();
     this.languagePicker = new LanguagePicker(byId("lang-picker"), (lang) => this.changeLanguage(lang));
     this.map = new RouteMap(byId("map"), this.translator);
-    this.windControls = new WindControls(byId("wind-controls"), this.translator, {
+    this.mapControls = new MapControls(byId("map-controls"), this.translator, {
+      onSelectView: (view) => this.update({ view }),
       onSelectHour: (hour) => this.update({ hour }),
       onSelectMode: (windMode) => this.update({ windMode }),
     });
@@ -63,9 +64,9 @@ class App {
   }
 
   update(changes) {
-    const optionChanged = "optionId" in changes && changes.optionId !== this.#state.optionId;
+    const viewChanged = "view" in changes;
     this.#state = { ...this.#state, ...changes };
-    this.#render({ fitMap: optionChanged });
+    this.#render({ fitMap: viewChanged });
   }
 
   async compute(request) {
@@ -99,32 +100,33 @@ class App {
 
   #showResult(result) {
     this.#result = result;
-    this.#state = { ...this.#state, optionId: result.recommended_option, hour: 0 };
+    this.#state = { ...this.#state, optionId: result.recommended_option, hour: 0, view: "near" };
     this.#render({ fitMap: true });
   }
 
   #render({ fitMap }) {
     const result = this.#result;
-    const { optionId, hour, windMode } = this.#state;
+    const { optionId, hour, windMode, view } = this.#state;
     const option = result.options.find((o) => o.id === optionId);
     const step = option.steps.find((s) => s.hour === hour);
     this.nowPanel.render(result);
     this.optionList.render(result, option.id);
     this.timeline.render(result, option, hour);
-    this.map.showResult(result, option, { fit: fitMap });
+    this.map.showResult(result, option);
+    if (fitMap) this.map.fitView(result, view);
     this.map.showBoat(option, hour, (step ?? option.now).heading_deg);
-    this.#renderWind(hour, windMode);
+    this.#renderWind(hour, windMode, view);
     byId("weather-status").textContent = this.translator.t("weather.status", {
       run: formatUtcHour(result.weather.run),
       next: formatUtcHour(result.weather.next_run_expected),
     });
   }
 
-  #renderWind(hour, windMode) {
+  #renderWind(hour, windMode, view) {
     const hours = this.#wind.times.map((time) => time.hour);
     const time = this.#wind.times.find((t) => t.hour === hour) ?? this.#wind.times[0];
     this.map.showWind(time.grid, windMode);
-    this.windControls.render(hours, time.hour, windMode);
+    this.mapControls.render({ view, hours, hour: time.hour, windMode });
     byId("wind-source").textContent = this.translator.t("wind.source", { run: formatUtcHour(this.#wind.run) });
   }
 

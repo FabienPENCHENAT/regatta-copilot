@@ -20,6 +20,7 @@ export class RouteLayer {
 
   render(result, option) {
     this.#routes.clearLayers();
+    this.#idealRoute(result.ideal_route);
     const routeIndex = new Map(result.options.map((o, i) => [o.id, i + 1]));
     for (const member of result.members) {
       L.polyline(member.path, {
@@ -43,6 +44,17 @@ export class RouteLayer {
     L.marker(point, { icon, keyboard: false })
       .bindTooltip(hour === 0 ? this.translator.t("map.you") : this.translator.t("map.boat_at", { h: hour }))
       .addTo(this.#boat);
+  }
+
+  // Whole track to the finish, for the eye only: a highlighter stroke under a dashed ink line.
+  #idealRoute(ideal) {
+    if (!ideal) return;
+    const label = this.translator.t("map.ideal_route", { distance: Math.round(ideal.distance_nm).toLocaleString(this.translator.lang) });
+    L.polyline(ideal.path, { color: this.color("--highlighter"), weight: 9, opacity: 0.7, interactive: false })
+      .addTo(this.#routes);
+    L.polyline(ideal.path, { color: this.color("--ink"), weight: 2, dashArray: "8 6" })
+      .bindTooltip(label, { sticky: true })
+      .addTo(this.#routes);
   }
 
   #zone(step) {

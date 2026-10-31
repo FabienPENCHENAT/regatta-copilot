@@ -40,9 +40,14 @@ export class RouteMap {
     this.course.render(race, boatId);
   }
 
-  showResult(result, option, { fit }) {
+  showResult(result, option) {
     this.routes.render(result, option);
-    if (fit) this.#map.fitBounds(L.latLngBounds(result.members.flatMap((m) => m.path)), { padding: [20, 20] });
+  }
+
+  // "near": the next 48 h (all scenario routes); "race": the whole ideal track to the finish.
+  fitView(result, view) {
+    const points = view === "race" ? result.ideal_route.path : result.members.flatMap((m) => m.path);
+    this.#map.fitBounds(L.latLngBounds(points), { padding: [20, 20] });
   }
 
   showBoat(option, hour, heading) {

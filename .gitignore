@@ -15,3 +15,6 @@ var/
 .DS_Store
 .idea/
 .vscode/
+
+# Claude Code agent worktrees
+.claude/worktrees/

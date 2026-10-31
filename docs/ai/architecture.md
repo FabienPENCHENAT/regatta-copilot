@@ -116,10 +116,10 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/chart-basemap.js` | Nautical-chart background from `map-data/` (depth bands, land, coastline). No tile server. |
 | `map/graticule-layer.js`, `map/sea-labels.js` | Degree grid with edge labels; italic sea names (i18n). |
 | `map/course-layer.js` | Race course: start line of the chosen boat, gates, marks (IALA colours), finish, forbidden and vigilance zones. |
-| `map/route-layer.js` | Member routes, selected option, target zones, boat at the selected hour. |
+| `map/route-layer.js` | Ideal track to the finish (visual only), member routes, selected option, target zones, boat at the selected hour. |
 | `map/wind-grid.js` | Bilinear wind lookup on a leaflet-velocity grid. |
 | `map/wind-particles-layer.js`, `map/wind-barbs-layer.js` | Wind as animated particles (leaflet-velocity) or as meteorological barbs (canvas). |
-| `map/wind-controls.js`, `map/map-style.js` | Hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
+| `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
 | `results/now-panel.js` | "Set this now": heading, sail, TWA, TWS, speed + advice sentence. |
 | `results/option-list.js` | Option cards with probability. |
 | `results/timeline-table.js` | Route plan table (cards on phones). |

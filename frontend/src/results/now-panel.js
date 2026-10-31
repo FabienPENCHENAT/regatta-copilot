@@ -20,7 +20,7 @@ export class NowPanel {
     const subtitle = element("p", "now-subtitle", t("now.for_option", { option: t(`option.name.${option.id}`) }));
     const figures = element("dl", "now-figures");
     figures.append(
-      figure(labelWithTip(this.translator, "label.heading", "tip.heading"), formatHeading(first.heading_deg), "big"),
+      figure(labelWithTip(this.translator, "label.heading", "tip.heading"), formatHeading(first.heading_deg), "heading"),
       figure(t("label.sail"), t(`sail.${first.sail}`), "big"),
       figure(labelWithTip(this.translator, "label.twa", "tip.twa"), `${twa.angle} ${t(twa.tackKey)}`),
       figure(labelWithTip(this.translator, "label.tws", "tip.tws"), formatKnots(first.tws_kn, this.translator)),

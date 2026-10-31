@@ -1,6 +1,6 @@
 {
   "app.title": "Routeur Voile",
-  "app.tagline": "Tes options de route, testées sur 31 scénarios météo",
+  "app.tagline": "Ta route au large, testée sur 31 scénarios météo",
   "lang.label": "Langue",
   "mock.banner": "Maquette : le vent est réel (GFS du jour), mais les routes et les probabilités sont un exemple.",
   "form.title": "Ma course",
@@ -123,5 +123,10 @@
   "sea.atlantic": "Océan Atlantique Nord",
   "sea.sargasso": "Mer des Sargasses",
   "sea.caribbean": "Mer des Caraïbes",
-  "map.legend_course": "Parcours et zones interdites"
+  "map.legend_course": "Parcours et zones interdites",
+  "view.label": "Vue de la carte",
+  "view.near": "48 h",
+  "view.race": "Course entière",
+  "map.ideal_route": "Tracé idéal jusqu'à l'arrivée (≈ {distance} milles)",
+  "map.legend_ideal": "Tracé idéal jusqu'à l'arrivée"
 }

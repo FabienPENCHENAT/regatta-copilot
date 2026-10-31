@@ -1,34 +1,38 @@
-// Controls under the chart: which hour to show (start, +4 h ... +48 h), particles or barbs,
-// and the wind colour legend in knots.
+// Controls under the chart: map view (next 48 h or whole race), hour shown (start, +4 h ... +48 h),
+// wind as particles or barbs, and the wind colour legend in knots.
 
 import { WIND_MODES } from "./route-map.js";
 import { WIND_COLOR_TOKENS } from "./map-style.js";
 import { createTermTip } from "../results/term-tip.js";
 import { element } from "../dom.js";
 
+export const MAP_VIEWS = ["near", "race"];
 const LEGEND_KNOTS = [0, 5, 10, 15, 20, 25, "30+"];
 
-export class WindControls {
-  constructor(container, translator, { onSelectHour, onSelectMode }) {
+export class MapControls {
+  constructor(container, translator, { onSelectView, onSelectHour, onSelectMode }) {
     this.container = container;
     this.translator = translator;
+    this.onSelectView = onSelectView;
     this.onSelectHour = onSelectHour;
     this.onSelectMode = onSelectMode;
   }
 
-  render(hours, selectedHour, mode) {
+  render({ view, hours, hour, windMode }) {
     const t = (key, params) => this.translator.t(key, params);
-    const timeGroup = this.#group("wind-times", t("wind.time_label"),
-      hours.map((h) => this.#toggle(h === 0 ? t("wind.time_start") : t("wind.time_plus", { h }), h === selectedHour,
+    const viewGroup = this.#group(t("view.label"),
+      MAP_VIEWS.map((v) => this.#toggle(t(`view.${v}`), v === view, () => this.onSelectView(v))));
+    const timeGroup = this.#group(t("wind.time_label"),
+      hours.map((h) => this.#toggle(h === 0 ? t("wind.time_start") : t("wind.time_plus", { h }), h === hour,
         () => this.onSelectHour(h))));
-    const modeGroup = this.#group("wind-modes", t("wind.mode_label"),
-      WIND_MODES.map((m) => this.#toggle(t(`wind.mode_${m}`), m === mode, () => this.onSelectMode(m))));
+    const modeGroup = this.#group(t("wind.mode_label"),
+      WIND_MODES.map((m) => this.#toggle(t(`wind.mode_${m}`), m === windMode, () => this.onSelectMode(m))));
     modeGroup.append(createTermTip(this.translator, "tip.barbs"));
-    this.container.replaceChildren(timeGroup, modeGroup, this.#legend());
+    this.container.replaceChildren(viewGroup, timeGroup, modeGroup, this.#legend());
   }
 
-  #group(className, label, buttons) {
-    const group = element("div", `chip-group ${className}`);
+  #group(label, buttons) {
+    const group = element("div", "chip-group");
     group.setAttribute("role", "group");
     group.setAttribute("aria-label", label);
     group.append(...buttons);

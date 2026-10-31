@@ -66,6 +66,18 @@ marine avec le vent, un style plus marin, et un point de départ au bon endroit.
 - **Style marin** : bandeau bleu marine avec une rose des vents, titres soulignés de laiton, sous-titres en
   italique « carte marine ».
 
+## Version 3 : identité « océan » et tracé complet (31/10)
+
+- **Tracé idéal jusqu'à l'arrivée** : surligné en jaune avec un pointillé, de Saint-Malo jusqu'à la ligne d'arrivée,
+  tour de la Guadeloupe compris. Il est purement visuel et n'influence aucun calcul. Le bouton « Course entière »
+  sous la carte affiche tout le parcours, « 48 h » revient sur les deux prochains jours.
+- **Identité visuelle** : bandeau « océan » avec des vagues à crêtes enroulées et des embruns qui dérivent
+  doucement, et une touche manga légère (contours à l'encre, ombres franches comme des cases de BD, lignes de
+  vitesse et bulle de conseil dans « À régler maintenant », étiquettes « autocollant »). Le fond de page est une
+  carte marine ancienne : lignes de rhumb, roses des vents, isobathes en pointillés, sondes en italique. Couleurs :
+  bleu océan, lagon turquoise, corail, soleil, sable. La nuit, c'est l'océan profond.
+- Le tracé recommandé est désormais corail, comme le bouton principal et le bateau.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?
