@@ -17,7 +17,7 @@ export class MapControls {
     this.onSelectView = onSelectView;
     this.onSelectMode = onSelectMode;
     this.timeBar = new TimeBar(translator, onSelectHour);
-    this.viewSlot = element("div");
+    this.viewSlot = element("div", "controls-block");
     this.modeSlot = element("div");
     this.legendSlot = element("div");
     container.replaceChildren(this.viewSlot, this.timeBar.element, this.modeSlot, this.legendSlot);
@@ -26,7 +26,7 @@ export class MapControls {
   // timeline: { maxHour, marks, startIso } of the selected option.
   render({ view, hour, windMode, timeline }) {
     const t = (key, params) => this.translator.t(key, params);
-    this.viewSlot.replaceChildren(this.#group(t("view.label"),
+    this.viewSlot.replaceChildren(element("span", "controls-title", t("view.label")), this.#group(t("view.label"),
       MAP_VIEWS.map((v) => this.#toggle(t(`view.${v}`), v === view, () => this.onSelectView(v)))));
     this.timeBar.update({ hour, ...timeline });
     const modeGroup = this.#group(t("wind.mode_label"),

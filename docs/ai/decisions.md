@@ -8,6 +8,9 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   the previous / next change, value "+12 h · sun. 01:02". Built once and updated in place (`MapControls` keeps
   it across renders) so a drag is not interrupted; the wind of an hour is fetched once the slider rests
   200 ms (`WIND_SETTLE_MS`), the nearest loaded hour is shown meanwhile.
+- Stops (user): every hour until +24 h, then every 3 h (the GFS steps, and the route points beyond +48 h); no
+  finer step. The slider moves stop by stop (`timeStops`), the first day taking 24 of the 57 stops; order
+  marks are snapped to the stop at or before them. The view chips get a visible title "Cadrer sur" / "Frame on".
 - New map view "5 j" (120 h). The boat heading at any hour comes from the leg sailed then (`legAt`).
 
 ## D49 — Option line drawn through every route point; boat picker on the polar page (user, 2026-10-31)

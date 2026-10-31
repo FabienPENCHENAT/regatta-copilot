@@ -1,15 +1,27 @@
-// Time bar of the chart: a slider over the whole route (hour by hour), a mark for each change of orders of the
-// selected option, and two buttons jumping to the previous / next change. Built once and updated in place, so
-// a drag is never interrupted by a redraw.
+// Time bar of the chart: a slider over the whole route with stops every hour for the first day, then every 3 h
+// (the GFS steps, and the route points beyond +48 h); a mark for each change of orders of the selected option,
+// snapped to a stop; two buttons jumping to the previous / next change. The slider moves stop by stop, the
+// first day taking as much room as its 24 stops. Built once and updated in place, so a drag is never cut.
 
 import { element } from "../dom.js";
 import { formatLocalTime } from "../results/display-format.js";
 
 const DAY_H = 24;
+const HOURLY_UNTIL_H = 24;
+const COARSE_STEP_H = 3;
+
+// Hours the slider can show: 0, 1 … 24, 27, 30 … up to `maxHour`.
+export function timeStops(maxHour) {
+  const stops = [];
+  for (let hour = 0; hour <= Math.min(maxHour, HOURLY_UNTIL_H); hour += 1) stops.push(hour);
+  for (let hour = HOURLY_UNTIL_H + COARSE_STEP_H; hour <= maxHour; hour += COARSE_STEP_H) stops.push(hour);
+  return stops;
+}
 
 export class TimeBar {
   #hour = 0;
   #marks = [];
+  #stops = [0];
   #startIso = null;
 
   constructor(translator, onSelectHour) {
@@ -23,12 +35,15 @@ export class TimeBar {
   update({ hour, maxHour, marks, startIso }) {
     this.#hour = hour;
     this.#startIso = startIso;
-    if (Number(this.slider.max) !== maxHour || String(marks) !== String(this.#marks)) {
-      this.slider.max = String(maxHour);
-      this.#marks = marks;
-      this.#drawScale(maxHour);
+    const snapped = [...new Set(marks.map((mark) => this.#stopAtOrBefore(mark, timeStops(maxHour))))].filter((h) => h > 0);
+    if (this.#stops.at(-1) !== maxHour || String(snapped) !== String(this.#marks)) {
+      this.#stops = timeStops(maxHour);
+      this.slider.max = String(this.#stops.length - 1);
+      this.#marks = snapped;
+      this.#drawScale();
     }
-    if (Number(this.slider.value) !== hour) this.slider.value = String(hour);
+    const index = String(this.#stops.indexOf(this.#stopAtOrBefore(hour, this.#stops)));
+    if (this.slider.value !== index) this.slider.value = index;
     this.#renderLabels();
   }
 
@@ -37,7 +52,7 @@ export class TimeBar {
     this.previous.setAttribute("aria-label", this.translator.t("timebar.previous"));
     this.next.setAttribute("aria-label", this.translator.t("timebar.next"));
     this.slider.setAttribute("aria-label", this.translator.t("wind.time_label"));
-    this.#drawScale(Number(this.slider.max));
+    this.#drawScale();
     this.#renderLabels();
   }
 
@@ -50,7 +65,7 @@ export class TimeBar {
     this.next = this.#arrow("M9 6l6 6-6 6", () => this.#jump(1));
     this.slider = element("input", "time-bar-slider");
     Object.assign(this.slider, { type: "range", min: "0", max: "120", step: "1", value: "0" });
-    this.slider.addEventListener("input", () => this.onSelectHour(Number(this.slider.value)));
+    this.slider.addEventListener("input", () => this.onSelectHour(this.#stops[Number(this.slider.value)]));
     this.track = element("div", "time-bar-track");
     this.track.append(this.slider);
     this.scale = element("div", "time-bar-scale");
@@ -70,9 +85,10 @@ export class TimeBar {
   }
 
   // Order marks above the line, day labels below it.
-  #drawScale(maxHour) {
+  #drawScale() {
+    const maxHour = this.#stops.at(-1);
     if (!maxHour) return;
-    const at = (hour) => `${(hour / maxHour) * 100}%`;
+    const at = (hour) => `${(this.#stops.indexOf(hour) / (this.#stops.length - 1)) * 100}%`;
     const marks = this.#marks.map((hour) => {
       const mark = element("span", "time-bar-mark");
       mark.style.left = at(hour);
@@ -94,14 +110,18 @@ export class TimeBar {
     this.value.textContent = this.#startIso
       ? `${offset} · ${formatLocalTime(this.#startIso, this.#hour, this.translator.lang)}` : offset;
     this.previous.disabled = this.#hour <= 0;
-    this.next.disabled = this.#hour >= Number(this.slider.max);
+    this.next.disabled = this.#hour >= this.#stops.at(-1);
   }
 
   #jump(direction) {
-    const max = Number(this.slider.max);
+    const max = this.#stops.at(-1);
     const target = direction > 0
       ? this.#marks.find((hour) => hour > this.#hour) ?? max
       : this.#marks.findLast((hour) => hour < this.#hour) ?? 0;
     this.onSelectHour(target);
+  }
+
+  #stopAtOrBefore(hour, stops) {
+    return stops.findLast((stop) => stop <= hour) ?? 0;
   }
 }

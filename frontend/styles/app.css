@@ -371,8 +371,9 @@ select, input[type="text"], input[type="number"] {
 .chip-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 /* Time bar: hour slider over the whole route, order-change marks above, day labels below */
 .time-bar { display: grid; gap: 6px; }
+.controls-block { display: grid; gap: 6px; }
 .time-bar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.time-bar-title { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.controls-title, .time-bar-title { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .time-bar-value { font-weight: 700; font-size: 0.9375rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .time-bar-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; gap: 8px; align-items: start; }
 .time-bar-arrow {
