@@ -11,7 +11,7 @@ import { MapControls } from "./map/map-controls.js";
 import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
-import { PanelRail } from "./layout/panel-rail.js";
+import { SettingsDialog } from "./layout/settings-dialog.js";
 import { ThemeToggle } from "./layout/theme-toggle.js";
 import { measureMapInsets } from "./layout/map-insets.js";
 import { formatUtcHour } from "./results/display-format.js";
@@ -39,11 +39,7 @@ class App {
     this.nowPanel = new NowPanel(byId("now-panel"), this.translator);
     this.optionList = new OptionList(byId("options"), this.translator, (optionId) => this.update({ optionId }));
     this.routePlan = new RoutePlanList(byId("plan"), this.translator, (hour) => this.update({ hour }));
-    this.rail = new PanelRail(document.querySelector(".rail"), {
-      settingsButton: byId("settings-open"),
-      settingsDialog: byId("settings"),
-      onLayoutChange: () => this.#fitMap(),
-    });
+    this.settings = new SettingsDialog(byId("settings-open"), byId("settings"));
     this.themeToggle = new ThemeToggle(byId("theme-toggle"), {
       translator: this.translator,
       preferences: this.preferences,

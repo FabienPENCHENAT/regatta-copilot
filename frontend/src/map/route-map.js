@@ -12,6 +12,7 @@ import { WindParticlesLayer } from "./wind-particles-layer.js";
 import { color, createPanes } from "./map-style.js";
 
 export const WIND_MODES = ["particles", "barbs"];
+const VIEW_HOURS = { day: 24, near: 48 }; // member paths hold one point per hour
 
 export class RouteMap {
   #map;
@@ -44,10 +45,10 @@ export class RouteMap {
     this.routes.render(result, option);
   }
 
-  // "near": the next 48 h (all scenario routes); "race": the whole ideal track to the finish.
+  // "day" / "near": all scenario routes over the next 24 h / 48 h; "race": the whole ideal track to the finish.
   // insets = screen space covered by floating panels, in pixels, so the routes stay in the free area.
   fitView(result, view, insets) {
-    const points = view === "race" ? result.ideal_route.path : result.members.flatMap((m) => m.path);
+    const points = view === "race" ? result.ideal_route.path : result.members.flatMap((m) => m.path.slice(0, VIEW_HOURS[view] + 1));
     this.#map.fitBounds(L.latLngBounds(points), {
       paddingTopLeft: [insets.left + 24, insets.top + 24],
       paddingBottomRight: [insets.right + 24, insets.bottom + 24],

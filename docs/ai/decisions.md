@@ -2,6 +2,13 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D24 — "Set this now" as instruments; panel toggles removed (user feedback, 2026-10-31)
+The rail buttons that hid panels confused the user ("the screen moves but nothing happens"): removed; the rail
+keeps theme, settings, "how it works" and language. Map views: 24 h, 48 h, whole race. The "now" panel became
+instruments: a compass with the boat on its heading and the wind arrow (TWA visible), the 7-sail wardrobe with
+the sail to hoist highlighted, a true-wind bar in the map's wind colours with the Beaufort force, and a speed
+dial (0–20 kn). Option cards stack in a column next to it on desktop; the route plan column spans full height.
+
 ## D23 — Harmonised look, "How it works" page (user feedback, 2026-10-31)
 - Palette built on the "set this now" tiles the user loves: options blue / mint / violet (no red-yellow-green);
   confidence is the intensity of one blue (bars) and of white (glowing map zones), not a traffic light.

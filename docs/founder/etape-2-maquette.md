@@ -120,6 +120,19 @@ Inspirée de ta capture « tableau de bord » :
 - **Nouvelle page « Comment ça marche »** (icône « i ») : d'où viennent les données, quand la météo se met à jour,
   comment une route est calculée, comment naissent les options et leurs probabilités, et les limites de l'outil.
 
+## Version 7 : instruments de bord (31/10, soir)
+
+- La barre de gauche ne garde que l'essentiel : thème, réglages, « Comment ça marche », langue. Les boutons qui
+  masquaient les panneaux ont disparu.
+- Carte : vues « 24 h », « 48 h » et « Course entière ».
+- « À régler maintenant » devient un tableau d'instruments :
+  - **compas** : le bateau pointe vers son cap, la flèche verte montre d'où vient le vent ;
+  - **voiles** : les 7 voiles du Class40 avec leur silhouette, celle à envoyer en grand ;
+  - **vent réel** : une jauge aux couleurs du vent de la carte, avec la force Beaufort (« Force 3 · petite brise ») ;
+  - **vitesse** : un cadran de 0 à 20 nœuds.
+- Sur ordinateur, les options s'empilent à droite du tableau d'instruments et la feuille de route prend toute
+  la hauteur à droite.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

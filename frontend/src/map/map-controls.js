@@ -1,4 +1,4 @@
-// Controls under the chart: map view (next 48 h or whole race), hour shown (start, +4 h ... +48 h),
+// Controls of the chart: map view (next 24 h, 48 h or whole race), hour shown (start, +4 h ... +48 h),
 // wind as particles or barbs, and the wind colour legend in knots.
 
 import { WIND_MODES } from "./route-map.js";
@@ -6,7 +6,7 @@ import { WIND_COLOR_TOKENS } from "./map-style.js";
 import { createTermTip } from "../results/term-tip.js";
 import { element } from "../dom.js";
 
-export const MAP_VIEWS = ["near", "race"];
+export const MAP_VIEWS = ["day", "near", "race"];
 const LEGEND_KNOTS = [0, 5, 10, 15, 20, 25, "30+"];
 
 export class MapControls {
