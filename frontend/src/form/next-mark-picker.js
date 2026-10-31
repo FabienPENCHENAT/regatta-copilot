@@ -24,6 +24,10 @@ export class NextMarkPicker {
 
   render(race, selected = this.preferences.read().nextMark ?? null) {
     this.#marks = [...race.marks.map((mark) => mark.id), "finish"];
+    if (selected && !this.#marks.includes(selected)) {
+      selected = null; // a mark the course no longer has (e.g. removed from the race file): back to automatic
+      this.preferences.update({ nextMark: null });
+    }
     this.#fill(selected);
   }
 

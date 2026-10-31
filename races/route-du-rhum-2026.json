@@ -20,12 +20,12 @@
    "polar": "data/polars/class40-2021.vr.json",
    "start_line": [
     [
-     48.725,
-     -1.9
+     48.718,
+     -2.144
     ],
     [
-     48.735,
-     -1.9
+     48.693,
+     -2.144
     ]
    ]
   },
@@ -36,12 +36,12 @@
    "polar": "data/polars/imoca-60-foils.vr.json",
    "start_line": [
     [
-     48.735,
-     -1.9
+     48.718,
+     -2.144
     ],
     [
-     48.75,
-     -1.9
+     48.693,
+     -2.144
     ]
    ]
   },
@@ -52,12 +52,12 @@
    "polar": "data/polars/multi-50.vr.json",
    "start_line": [
     [
-     48.758333,
-     -1.9
+     48.718,
+     -2.144
     ],
     [
-     48.775,
-     -1.9
+     48.693,
+     -2.144
     ]
    ]
   },
@@ -68,12 +68,12 @@
    "polar": "data/polars/ultim-bp-xi.vr.json",
    "start_line": [
     [
-     48.758333,
-     -1.9
+     48.718,
+     -2.144
     ],
     [
-     48.775,
-     -1.9
+     48.693,
+     -2.144
     ]
    ]
   },
@@ -84,35 +84,18 @@
    "polar": "data/polars/happy.vr.json",
    "start_line": [
     [
-     48.75,
-     -1.9
+     48.718,
+     -2.144
     ],
     [
-     48.758333,
-     -1.9
+     48.693,
+     -2.144
     ]
    ]
   }
  ],
- "start_note": "Line along 001°54.000'W crossed westward; positions are 'approximate' in the SI (§9.3). The in-game VR line is not public.",
+ "start_note": "Virtual Regatta line, measured on the game screen (2026-10-31, ±0.2 nm): about 1.5 nm north–south along 002°08.6'W, west of Saint-Malo; the boat starts at its north end. Assumed the same for every class. The real race starts along 001°54'W (SI §9.3).",
  "marks": [
-  {
-   "id": "frehel_gate",
-   "type": "gate",
-   "points": [
-    [
-     48.696667,
-     -2.308333
-    ],
-    [
-     48.713333,
-     -2.308333
-    ]
-   ],
-   "cross": "westward",
-   "status": "official",
-   "note": "The north buoy may move on start day, same longitude."
-  },
   {
    "id": "tete_anglais",
    "type": "gate",
@@ -202,7 +185,7 @@
    "note": "Landfall buoy position official (SI), rounded to port: line from the buoy eastward, crossed northward (the buoy stays on the boat's port side)."
   }
  ],
- "course_note": "Guadeloupe is rounded leaving it to port (SI annex 3).",
+ "course_note": "No Cap Fréhel gate in the game (none on the VR chart, unlike the real race SI): straight to Guadeloupe, rounded leaving it to port (SI annex 3).",
  "finish": {
   "line": [
    [

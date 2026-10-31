@@ -2,6 +2,15 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D52 — The game's course: no Cap Fréhel gate, start line west of Saint-Malo (user, 2026-10-31)
+- Game screenshot (IMOCA, start): the boat sits at ≈ 48°43.1'N 002°08.6'W, the north end of a ≈ 1.5 nm
+  north–south start line (grey bar to a green buoy); Cap Fréhel is on screen with NO gate or buoy. The real
+  race SI impose a Fréhel gate and a line along 001°54'W; the tool follows the game.
+- `races/route-du-rhum-2026.json`: `frehel_gate` removed (Guadeloupe marks first), every boat's start line set
+  to [48.718, -2.144]–[48.693, -2.144] (measured ±0.2 nm, assumed the same for all classes), notes updated.
+  Default position on the map page = the game's start. A saved next mark the course no longer has goes back
+  to automatic. Gate logic tests now use a synthetic gate at the same place.
+
 ## D51 — The order being sailed is shown everywhere at its exact time (user, 2026-10-31)
 - Selecting order n (route plan, map marker, ◀ ▶) keeps its EXACT start hour (+0 h 30, +1 h 15…): before, it
   was floored, so orders 2 and 3 (+30 / +45 min) could never be selected. The dragged slider keeps its stops.

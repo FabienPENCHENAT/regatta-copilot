@@ -38,7 +38,7 @@ def _advance(progress, mark_id, lat0, lon0, lat1, lon1) -> list[bool]:
 
 def test_legs_follow_the_whole_course(progress):
     ids = [leg.mark_id for leg in progress.legs]
-    assert ids == ["frehel_gate", *GUADELOUPE_MARKS, "finish"]
+    assert ids == [*GUADELOUPE_MARKS, "finish"]
     assert progress.legs[1].anchor == progress.legs[0].target
 
 
@@ -49,9 +49,11 @@ def test_rounding_marks_are_aimed_at_the_physical_mark(progress, race):
     assert race.mark("les_saintes").target == GeoPoint(15.861, -61.61)
 
 
-def test_gate_must_be_crossed_westward(progress):
+def test_gate_must_be_crossed_westward():
+    gate = (GeoPoint(48.696667, -2.308333), GeoPoint(48.713333, -2.308333))  # a 1 nm gate off a cape
+    progress = MarkProgress([CourseLeg("gate", GeoPoint(48.72, -2.14), gate[0], gate, "westward")])
     # westward through the gate, eastward through it, westward north of the gate
-    assert _advance(progress, "frehel_gate", [48.705, 48.705, 48.75], [-2.25, -2.35, -2.25],
+    assert _advance(progress, "gate", [48.705, 48.705, 48.75], [-2.25, -2.35, -2.25],
                     [48.705, 48.705, 48.75], [-2.35, -2.25, -2.35]) == [True, False, False]
 
 
@@ -88,9 +90,9 @@ def test_waypoint_reached_within_radius():
 
 
 def test_distance_to_go_adds_the_remaining_legs(progress):
-    at_gate = progress.legs[0].target
-    to_go = progress.distance_to_go_nm(np.array([0]), np.array([at_gate.lat_deg]), np.array([at_gate.lon_deg]))
-    assert 3400 < to_go[0] < 3600  # Fréhel → Guadeloupe, great circle, then around the island
+    start = GeoPoint(48.718, -2.144)
+    to_go = progress.distance_to_go_nm(np.array([0]), np.array([start.lat_deg]), np.array([start.lon_deg]))
+    assert 3400 < to_go[0] < 3600  # Saint-Malo → Guadeloupe, great circle, then around the island
 
 
 def test_a_finishing_segment_stops_on_the_finish_line(progress):

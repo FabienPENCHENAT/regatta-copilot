@@ -13,10 +13,10 @@ def test_loads_the_route_du_rhum():
     assert race.start_time.isoformat() == "2026-11-01T12:02:00+00:00"
     class40 = race.boat("class40")
     assert class40.polar_path == "data/polars/class40-2021.vr.json"
-    assert class40.start_centre.lat_deg == pytest.approx(48.73)
-    gate = race.marks[0]
-    assert (gate.id, gate.kind, gate.cross) == ("frehel_gate", "gate", "westward")
-    assert gate.points[0].lat_deg == pytest.approx(48.696667)  # [lat, lon] order
+    assert class40.start_centre.lat_deg == pytest.approx(48.7055)  # the game's line, west of Saint-Malo
+    gate = race.marks[0]  # no Cap Fréhel gate in the game: Guadeloupe comes first
+    assert (gate.id, gate.kind, gate.leave_to) == ("tete_anglais", "gate", "port")
+    assert gate.points[0].lat_deg == pytest.approx(16.380833)  # [lat, lon] order
     assert race.finish.kind == "line" and race.finish.cross == "northward"
     shapes = {zone.shape for zone in race.exclusion_zones}
     assert shapes == {"polygon", "line"}

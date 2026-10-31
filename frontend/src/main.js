@@ -26,7 +26,7 @@ import { RouteComputation } from "./api/route-computation.js";
 
 const WIND_SETTLE_MS = 200; // time bar: wait for the slider to rest before fetching the wind of that hour
 const SETTINGS_SETTLE_MS = 1200; // settings changed in a row (several sails ticked) make a single computation
-const DEFAULT_POSITION_TEXT = `48°43'48"N 001°54'00"W`; // Class40 start line, Saint-Malo
+const DEFAULT_POSITION_TEXT = `48°43'05"N 002°08'38"W`; // the game's start (north end of its line)
 
 class App {
   #race = null;
