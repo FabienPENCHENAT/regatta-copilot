@@ -14,6 +14,9 @@ class RouteJsonWriter:
     """One `Route` → the JSON pieces of an option (docs/ai/api-contract.md): settings now, plan steps, legs,
     hourly path, full track. Shared by the GFS-only and the ensemble result builders."""
 
+    def __init__(self, splitter: RouteLegSplitter | None = None) -> None:
+        self._splitter = splitter or RouteLegSplitter()
+
     def option_body(self, route: Route, confidence_by_hour: dict[int, float] | None = None) -> dict:
         """`now`, `steps`, `path` (hourly), `line` (every route point), `legs`; step confidence null when not given."""
         confidence_by_hour = confidence_by_hour or {}
@@ -22,7 +25,7 @@ class RouteJsonWriter:
             "steps": [self.step(route, hour, confidence_by_hour.get(hour)) for hour in PLAN_HOURS if route.covers(hour)],
             "path": self.hourly_path(route),
             "line": [[round(p.lat_deg, 4), round(p.lon_deg, 4)] for p in route.points],  # drawn: legs lie on it
-            "legs": [self.leg(route, leg) for leg in RouteLegSplitter().split(route)],
+            "legs": [self.leg(route, leg) for leg in self._splitter.split(route)],
         }
 
     @staticmethod

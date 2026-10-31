@@ -2,6 +2,17 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D54 — An order is a straight line the game can hold (user, 2026-10-31)
+- Game screenshot: holding the plan's "284° · Spi" for 11 h 30 heads straight into the coast, while our line
+  curved. Cause: a new order only started when the heading drifted ≥ 10° from the order's FIRST heading, and the
+  order showed that first heading; a slow turn stayed one order.
+- `RouteLegSplitter` now cuts orders as the game sails them, at a constant heading (rhumb line): an order is
+  extended while the straight line from its start to the next point stays within 1.5 nm of every route point,
+  same sail and tack, and (`blocked`, built in `CachedRouteComputer._splitter` from the race obstacles) does not
+  enter land, a zone or their 1 nm margins. Heading = that line's rhumb bearing; TWA shifted accordingly.
+- Real IMOCA route from the start: 20 orders in 48 h (28 with 0.5 nm and no obstacle check, 17 with 1.5 nm but
+  two orders touching the real coast/zones without the check); 0 order line enters a hazard or margin.
+
 ## D53 — 1 nm margin around exclusion zones; scenario lines drawn through every point (user, 2026-10-31)
 - User: zones must keep the same 1 nm safety margin as the coast. `geography/ZoneMargin` buffers every zone
   (local flat projection, shapely, 4 segments per quarter circle): polygons grow, a forbidden line becomes a

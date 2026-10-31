@@ -15,18 +15,20 @@ from sailrouter.api.schemas import RouteRequest
 from sailrouter.course.race_catalog import RaceCatalog
 from sailrouter.domain.geo_point import GeoPoint
 from sailrouter.domain.race import Race
+from sailrouter.routing.route_leg_splitter import RouteLegSplitter
 from sailrouter.service.boat_polar_locator import BoatPolarLocator
 from sailrouter.service.computation_superseded import ComputationSuperseded
 from sailrouter.service.ensemble_download_job import EnsembleDownloadJob
 from sailrouter.service.ensemble_route_planner import EnsembleRoutePlanner
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.route_planner import RoutePlanner
+from sailrouter.service.router_builder import RouterBuilder
 from sailrouter.weather.gfs_run_clock import GfsRunClock
 from sailrouter.weather.model_run import ModelRun
 
 ROUTE_HOURS = 120.0
 FALLBACK_RESULT_LIFETIME = timedelta(minutes=30)  # result made on an older run than expected: retry soon
-ENGINE_VERSION = 8  # bump when the routing, the result format or a race file changes, so stored results are recomputed (8: member lines)
+ENGINE_VERSION = 9  # bump when the routing, the result format or a race file changes, so stored results are recomputed (9: orders as straight lines)
 log = logging.getLogger(__name__)
 _COMPUTING = threading.Lock()  # shared by requests and the background pre-computation
 _REQUESTS = RouteRequestLedger()
@@ -94,9 +96,14 @@ class CachedRouteComputer:
         if gefs_run is not None:
             ensemble = self._ensemble_or_none(gefs_run, arguments, superseded)
             if ensemble is not None:
-                return EnsembleResultBuilder().build(ensemble, self._job.status())
+                return EnsembleResultBuilder(self._splitter(request.race_id)).build(ensemble, self._job.status())
         report = RoutePlanner(self._paths, prefer_cached=True).plan(**arguments)
-        return RouteResultBuilder().build(report, self._job.status())
+        return RouteResultBuilder(self._splitter(request.race_id)).build(report, self._job.status())
+
+    def _splitter(self, race_id: str) -> RouteLegSplitter:
+        """Orders whose straight lines never enter land, a zone or their margins (checked like the routes)."""
+        obstacles = RouterBuilder(self._paths).obstacles(RaceCatalog(self._paths.races_dir).load(race_id))
+        return RouteLegSplitter(blocked=lambda *segment: bool(obstacles.blocked(*([value] for value in segment))[0]))
 
     def _ensemble_or_none(self, gefs_run: ModelRun, arguments: dict, superseded: Callable[[], bool]):
         """The ensemble report, or None (logged) when the members cannot be routed, so the game's route is still

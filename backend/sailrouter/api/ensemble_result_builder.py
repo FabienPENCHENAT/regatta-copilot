@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sailrouter.api.ensemble_status_json import ensemble_status_json
 from sailrouter.api.route_json_writer import RouteJsonWriter, iso
+from sailrouter.routing.route_leg_splitter import RouteLegSplitter
 from sailrouter.ensemble.route_option import RouteOption
 from sailrouter.service.ensemble_report import EnsembleReport
 from sailrouter.service.ensemble_status import EnsembleStatus
@@ -13,8 +14,8 @@ class EnsembleResultBuilder:
     """`EnsembleReport` → the route result JSON with route options and probabilities
     (docs/ai/api-contract.md). `ideal_route` stays the game's route (deterministic GFS)."""
 
-    def __init__(self) -> None:
-        self._writer = RouteJsonWriter()
+    def __init__(self, splitter: RouteLegSplitter | None = None) -> None:
+        self._writer = RouteJsonWriter(splitter)
 
     def build(self, report: EnsembleReport, ensemble: EnsembleStatus) -> dict:
         game, synthesis = report.game, report.synthesis

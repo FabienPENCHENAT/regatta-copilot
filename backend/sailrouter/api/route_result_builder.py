@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sailrouter.api.ensemble_status_json import ensemble_status_json
 from sailrouter.api.route_json_writer import RouteJsonWriter, iso
+from sailrouter.routing.route_leg_splitter import RouteLegSplitter
 from sailrouter.service.ensemble_status import EnsembleStatus
 from sailrouter.service.route_report import RouteReport
 
@@ -13,8 +14,8 @@ class RouteResultBuilder:
     (docs/ai/api-contract.md): one option, the route on the game's weather, with no scenario members,
     no probability and no confidence (null values the frontend shows as "not available yet")."""
 
-    def __init__(self) -> None:
-        self._writer = RouteJsonWriter()
+    def __init__(self, splitter: RouteLegSplitter | None = None) -> None:
+        self._writer = RouteJsonWriter(splitter)
 
     def build(self, report: RouteReport, ensemble: EnsembleStatus) -> dict:
         route = report.route
