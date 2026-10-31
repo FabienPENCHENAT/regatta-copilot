@@ -1,12 +1,13 @@
-// Controls of the chart: map view (next 24 h, 48 h or whole race), hour shown (start, +4 h ... +48 h),
-// wind as particles or barbs, and the wind colour legend in knots.
+// Controls of the chart: map view (next 24 h, 48 h, 5 days or whole race), the time bar (hour shown), wind as
+// particles or barbs, and the wind colour legend in knots. The time bar is kept across renders (see TimeBar).
 
 import { WIND_MODES } from "./route-map.js";
 import { WIND_COLOR_TOKENS } from "./map-style.js";
+import { TimeBar } from "./time-bar.js";
 import { createTermTip } from "../results/term-tip.js";
 import { element } from "../dom.js";
 
-export const MAP_VIEWS = ["day", "near", "race"];
+export const MAP_VIEWS = ["day", "near", "five", "race"];
 const LEGEND_KNOTS = [0, 5, 10, 15, 20, 25, "30+"];
 
 export class MapControls {
@@ -14,21 +15,29 @@ export class MapControls {
     this.container = container;
     this.translator = translator;
     this.onSelectView = onSelectView;
-    this.onSelectHour = onSelectHour;
     this.onSelectMode = onSelectMode;
+    this.timeBar = new TimeBar(translator, onSelectHour);
+    this.viewSlot = element("div");
+    this.modeSlot = element("div");
+    this.legendSlot = element("div");
+    container.replaceChildren(this.viewSlot, this.timeBar.element, this.modeSlot, this.legendSlot);
   }
 
-  render({ view, hours, hour, windMode }) {
+  // timeline: { maxHour, marks, startIso } of the selected option.
+  render({ view, hour, windMode, timeline }) {
     const t = (key, params) => this.translator.t(key, params);
-    const viewGroup = this.#group(t("view.label"),
-      MAP_VIEWS.map((v) => this.#toggle(t(`view.${v}`), v === view, () => this.onSelectView(v))));
-    const timeGroup = this.#group(t("wind.time_label"),
-      hours.map((h) => this.#toggle(h === 0 ? t("wind.time_start") : t("wind.time_plus", { h }), h === hour,
-        () => this.onSelectHour(h))));
+    this.viewSlot.replaceChildren(this.#group(t("view.label"),
+      MAP_VIEWS.map((v) => this.#toggle(t(`view.${v}`), v === view, () => this.onSelectView(v)))));
+    this.timeBar.update({ hour, ...timeline });
     const modeGroup = this.#group(t("wind.mode_label"),
       WIND_MODES.map((m) => this.#toggle(t(`wind.mode_${m}`), m === windMode, () => this.onSelectMode(m))));
     modeGroup.append(createTermTip(this.translator, "tip.barbs"));
-    this.container.replaceChildren(viewGroup, timeGroup, modeGroup, this.#legend());
+    this.modeSlot.replaceChildren(modeGroup);
+    this.legendSlot.replaceChildren(this.#legend());
+  }
+
+  retranslate() {
+    this.timeBar.retranslate();
   }
 
   #group(label, buttons) {

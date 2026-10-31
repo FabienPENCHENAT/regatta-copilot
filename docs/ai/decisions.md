@@ -2,6 +2,14 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D50 — Time bar instead of hour chips; 5-day view (user, 2026-10-31)
+- The hour chips (start, +4 … +48 h) become `map/TimeBar`: a slider over the whole route (0–120 h, hourly),
+  a mark at each change of orders of the selected option (floored leg start hours), ◀ ▶ buttons jumping to
+  the previous / next change, value "+12 h · sun. 01:02". Built once and updated in place (`MapControls` keeps
+  it across renders) so a drag is not interrupted; the wind of an hour is fetched once the slider rests
+  200 ms (`WIND_SETTLE_MS`), the nearest loaded hour is shown meanwhile.
+- New map view "5 j" (120 h). The boat heading at any hour comes from the leg sailed then (`legAt`).
+
 ## D49 — Option line drawn through every route point; boat picker on the polar page (user, 2026-10-31)
 - Leg markers did not sit on the selected option's line near the start: the map drew the HOURLY `path`
   (straight cuts between hours) while legs change every 15 min. Options now carry `line` (every route point),

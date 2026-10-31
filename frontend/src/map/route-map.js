@@ -12,7 +12,7 @@ import { WindParticlesLayer } from "./wind-particles-layer.js";
 import { color, createPanes } from "./map-style.js";
 
 export const WIND_MODES = ["particles", "barbs"];
-const VIEW_HOURS = { day: 24, near: 48 }; // member paths hold one point per hour
+const VIEW_HOURS = { day: 24, near: 48, five: 120 }; // member paths hold one point per hour
 
 export class RouteMap {
   #map;

@@ -369,6 +369,32 @@ select, input[type="text"], input[type="number"] {
 .refresh-line { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; font-weight: 600; }
 .refresh-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tile-sail); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tile-sail) 25%, transparent); flex-shrink: 0; }
 .chip-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+/* Time bar: hour slider over the whole route, order-change marks above, day labels below */
+.time-bar { display: grid; gap: 6px; }
+.time-bar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.time-bar-title { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.time-bar-value { font-weight: 700; font-size: 0.9375rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.time-bar-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; gap: 8px; align-items: start; }
+.time-bar-arrow {
+  width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--line); background: var(--field); color: var(--ink);
+}
+.time-bar-arrow svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.time-bar-arrow:disabled { opacity: 0.35; cursor: default; }
+.time-bar-arrow:focus-visible, .time-bar-slider:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.time-bar-track { position: relative; padding-bottom: 18px; }
+.time-bar-slider { width: 100%; height: 32px; margin: 0; accent-color: var(--accent); cursor: pointer; position: relative; z-index: 1; }
+.time-bar-scale { position: absolute; left: 8px; right: 8px; top: 0; bottom: 0; pointer-events: none; }
+.time-bar-mark {
+  position: absolute; top: 4px; width: 2px; height: 6px; margin-left: -1px; border-radius: 1px;
+  background: var(--route-1);
+}
+.time-bar-day {
+  position: absolute; bottom: 0; transform: translateX(-50%); font-size: 0.6875rem; color: var(--muted);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.time-bar-day.first { transform: none; }
+.time-bar-day.last { transform: translateX(-100%); }
 .chip {
   min-height: 32px; padding: 4px 10px; border-radius: 999px; cursor: pointer;
   border: 1px solid var(--line); background: var(--field); font-size: 0.8125rem; font-weight: 600;

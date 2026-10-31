@@ -316,5 +316,9 @@
   "polar.impact.miles": "{value} nm",
   "polar.impact.at": "at +{hours} h",
   "polar.impact.from": "From {position}, on the game's weather.",
-  "polar.impact.error": "Cannot compute: {reason}"
+  "polar.impact.error": "Cannot compute: {reason}",
+  "timebar.previous": "Previous change of orders",
+  "timebar.next": "Next change of orders",
+  "timebar.day": "+{d} d",
+  "view.five": "5 d"
 }

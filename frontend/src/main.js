@@ -4,6 +4,7 @@
 import { Translator } from "./i18n/translator.js";
 import { LanguagePicker } from "./i18n/language-picker.js";
 import { PreferencesStore } from "./storage/preferences-store.js";
+import { legAt } from "./results/plan-legs.js";
 import { PositionParser } from "./form/position-parser.js";
 import { RouteForm } from "./form/route-form.js";
 import { RaceHeader } from "./form/race-header.js";
@@ -23,6 +24,7 @@ import { measureMapInsets } from "./layout/map-insets.js";
 import { ApiClient } from "./api/api-client.js";
 import { RouteComputation } from "./api/route-computation.js";
 
+const WIND_SETTLE_MS = 200; // time bar: wait for the slider to rest before fetching the wind of that hour
 const SETTINGS_SETTLE_MS = 1200; // settings changed in a row (several sails ticked) make a single computation
 const DEFAULT_POSITION_TEXT = `48°43'48"N 001°54'00"W`; // Class40 start line, Saint-Malo
 
@@ -31,6 +33,7 @@ class App {
   #result = null;
   #latestRequest = 0; // only the answer to the latest request is shown
   #settleTimer = null;
+  #windTimer = null;
   #state = { optionId: null, hour: 0, windMode: "particles", view: "near" };
 
   constructor() {
@@ -194,14 +197,14 @@ class App {
     const result = this.#result;
     const { optionId, hour, windMode, view } = this.#state;
     const option = result.options.find((o) => o.id === optionId);
-    const step = option.steps.find((s) => s.hour === hour);
+    const leg = legAt(option.legs, hour);
     this.nowPanel.render(result, option, this.settings.ownedSails());
     this.optionList.render(result, option.id);
     this.routePlan.render(result, option, hour);
     this.map.showResult(result, option, hour);
     if (fitMap) this.map.fitView(result, view, measureMapInsets());
-    this.map.showBoat(option, hour, (step ?? option.now).heading_deg);
-    this.#renderWind(hour, windMode, view);
+    this.map.showBoat(option, Math.min(hour, option.path.length - 1), (leg ?? option.now).heading_deg);
+    this.#renderWind(hour, windMode, view, option);
     byId("refresh-text").textContent = describeNextRefresh(this.translator, result.weather.run);
   }
 
@@ -212,20 +215,27 @@ class App {
   }
 
   // Shows the closest loaded wind at once, then the exact hour as soon as it arrives.
-  #renderWind(hour, windMode, view) {
+  // While the time bar is dragged, only the hour the slider rests on is fetched (WIND_SETTLE_MS).
+  #renderWind(hour, windMode, view, option) {
     const shown = this.wind.nearest(hour);
     this.map.showWind(shown.grid, windMode);
-    this.mapControls.render({ view, hours: this.wind.chipHours, hour, windMode });
-    if (shown.exact) return;
-    this.wind.load(hour).then((loaded) => {
-      if (loaded && this.#state.hour === hour) this.map.showWind(this.wind.nearest(hour).grid, this.#state.windMode);
+    const marks = [...new Set(option.legs.map((leg) => Math.floor(leg.start_hour)))].filter((h) => h > 0);
+    this.mapControls.render({
+      view, hour, windMode,
+      timeline: { maxHour: option.path.length - 1, marks, startIso: this.#result.computed_at },
     });
+    clearTimeout(this.#windTimer);
+    if (shown.exact) return;
+    this.#windTimer = setTimeout(() => this.wind.load(hour).then((loaded) => {
+      if (loaded && this.#state.hour === hour) this.map.showWind(this.wind.nearest(hour).grid, this.#state.windMode);
+    }), WIND_SETTLE_MS);
   }
 
   #translateStaticText() {
     this.translator.applyTo(document.body);
     this.languagePicker.render(this.translator.lang);
     this.themeToggle.render();
+    this.mapControls.retranslate();
     [this.formPanel, this.dockPanel, this.toolsPanel].forEach((panel) => panel?.render());
     this.form.showIdle();
     document.title = this.translator.t("app.title");

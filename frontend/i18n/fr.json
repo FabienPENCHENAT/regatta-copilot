@@ -316,5 +316,9 @@
   "polar.impact.miles": "{value} milles",
   "polar.impact.at": "à +{hours} h",
   "polar.impact.from": "Depuis {position}, sur la météo du jeu.",
-  "polar.impact.error": "Calcul impossible : {reason}"
+  "polar.impact.error": "Calcul impossible : {reason}",
+  "timebar.previous": "Changement d'ordre précédent",
+  "timebar.next": "Changement d'ordre suivant",
+  "timebar.day": "+{d} j",
+  "view.five": "5 j"
 }
