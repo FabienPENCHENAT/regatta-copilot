@@ -233,7 +233,7 @@
   "how.data.polar.text": "La vitesse du bateau selon la force et l'angle du vent, pour chacune des 7 voiles, avec les bonus foils, coque et winchs.",
   "how.data.course.tag": "Instructions de course",
   "how.data.course.title": "Le parcours",
-  "how.data.course.text": "Départ, porte de Fréhel, marques de la Guadeloupe, arrivée et 22 zones interdites (instructions 2026, avenants 1 et 2).",
+  "how.data.course.text": "Pour chaque course : ligne de départ, portes et marques à contourner, ligne d'arrivée et zones interdites, tirés des instructions de course officielles.",
   "how.data.geo.title": "Côtes et fonds",
   "how.data.geo.text": "Trait de côte et profondeurs du domaine public, pour éviter la terre et dessiner la carte.",
   "how.fresh.title": "Mises à jour météo",
@@ -249,7 +249,7 @@
   "how.route.2.title": "Avancer pas à pas",
   "how.route.2.text": "Pas de 15 min jusqu'à +6 h, 30 min jusqu'à +24 h, 1 h jusqu'à +48 h, puis 3 h. Virements, empannages et changements de voile coûtent le temps réglé.",
   "how.route.3.title": "Éviter la terre et les zones",
-  "how.route.3.text": "Toute trajectoire qui coupe la côte ou une zone interdite est éliminée. Les marques de la Guadeloupe sont laissées du bon côté.",
+  "how.route.3.text": "Toute trajectoire qui coupe la côte ou une zone interdite est éliminée. Les marques à contourner sont laissées du côté imposé.",
   "how.route.4.title": "Garder les meilleurs",
   "how.route.4.text": "Dans chaque direction, on garde le point le plus avancé vers la marque. On recommence jusqu'à 5 jours, puis on remonte le chemin.",
   "how.options.title": "Options et probabilités",
@@ -266,11 +266,11 @@
   "how.settings.sails": "Voiles et options du jeu (foils, coque, winch pro) : coche ce que tu possèdes, la route n'utilise que ça.",
   "how.settings.maneuvers": "Temps de manœuvre préremplis avec les valeurs du jeu, modifiables à la main.",
   "how.settings.polar": "Tu peux importer la polaire de ton bateau depuis le jeu ; sinon, la polaire communautaire est utilisée.",
-  "how.settings.marks": "La prochaine marque est trouvée seule ; autour de la Guadeloupe, choisis-la toi-même.",
+  "how.settings.marks": "La prochaine marque est trouvée seule ; pour une marque à contourner, comme une île, choisis-la toi-même.",
   "how.limits.title": "Ce que l'outil ne fait pas",
   "how.limits.advice": "Il ne joue pas à ta place : c'est toi qui saisis tes ordres dans le jeu.",
   "how.limits.horizon": "Pas d'heure d'arrivée : au-delà de 2 à 3 jours, la météo devient incertaine. Recalcule à chaque nouvelle prévision.",
   "how.limits.game": "Le jeu peut différer un peu : trait de côte, pénalités exactes et énergie du skipper ne sont pas publiés.",
   "how.limits.polar": "La polaire communautaire peut différer légèrement de celle du jeu.",
-  "how.sources": "Sources : NOAA NOMADS (GFS, GEFS) · instructions de course Route du Rhum 2026 · polaires Virtual Regatta · Natural Earth · Leaflet · leaflet-velocity"
+  "how.sources": "Sources : NOAA NOMADS (GFS, GEFS) · instructions de course officielles · polaires Virtual Regatta · Natural Earth · Leaflet · leaflet-velocity"
 }

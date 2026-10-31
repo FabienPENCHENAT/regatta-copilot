@@ -233,7 +233,7 @@
   "how.data.polar.text": "The boat's speed for each wind strength and angle, for each of the 7 sails, with the foil, hull and winch bonuses.",
   "how.data.course.tag": "Sailing instructions",
   "how.data.course.title": "The course",
-  "how.data.course.text": "Start, Fréhel gate, Guadeloupe marks, finish and 22 exclusion zones (2026 instructions, amendments 1 and 2).",
+  "how.data.course.text": "For each race: start line, gates and marks to round, finish line and exclusion zones, taken from the official sailing instructions.",
   "how.data.geo.title": "Coasts and depths",
   "how.data.geo.text": "Public-domain coastline and depths, to avoid land and draw the chart.",
   "how.fresh.title": "Weather updates",
@@ -249,7 +249,7 @@
   "how.route.2.title": "Move step by step",
   "how.route.2.text": "15 min steps until +6 h, 30 min until +24 h, 1 h until +48 h, then 3 h. Tacks, gybes and sail changes cost the time you set.",
   "how.route.3.title": "Avoid land and zones",
-  "how.route.3.text": "Any track crossing the coast or an exclusion zone is dropped. The Guadeloupe marks are left on the correct side.",
+  "how.route.3.text": "Any track crossing the coast or an exclusion zone is dropped. Marks to round are left on the required side.",
   "how.route.4.title": "Keep the best",
   "how.route.4.text": "In each direction, the point furthest towards the mark is kept. Repeat up to 5 days, then trace the path back.",
   "how.options.title": "Options and probabilities",
@@ -266,11 +266,11 @@
   "how.settings.sails": "Game sails and options (foils, hull, pro winch): tick what you own, the route only uses that.",
   "how.settings.maneuvers": "Maneuver times pre-filled with the game's values, editable by hand.",
   "how.settings.polar": "You can import your boat's polar from the game; otherwise the community polar is used.",
-  "how.settings.marks": "The next mark is found automatically; around Guadeloupe, pick it yourself.",
+  "how.settings.marks": "The next mark is found automatically; for a mark to round, such as an island, pick it yourself.",
   "how.limits.title": "What the tool does not do",
   "how.limits.advice": "It does not play for you: you enter your orders in the game.",
   "how.limits.horizon": "No arrival time: beyond 2 to 3 days the weather becomes uncertain. Recompute with each new forecast.",
   "how.limits.game": "The game may differ slightly: its coastline, exact penalties and skipper energy are not published.",
   "how.limits.polar": "The community polar may differ slightly from the game's.",
-  "how.sources": "Sources: NOAA NOMADS (GFS, GEFS) · Route du Rhum 2026 sailing instructions · Virtual Regatta polars · Natural Earth · Leaflet · leaflet-velocity"
+  "how.sources": "Sources: NOAA NOMADS (GFS, GEFS) · official sailing instructions · Virtual Regatta polars · Natural Earth · Leaflet · leaflet-velocity"
 }
