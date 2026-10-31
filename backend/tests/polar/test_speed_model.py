@@ -42,7 +42,7 @@ def test_best_sail_without_bonus(vr_polar):
 
 
 def test_options_restrict_sails_and_add_bonuses(vr_polar):
-    no_reach = SpeedModel(vr_polar, BoatOptions(reach=False, foil=False, hull=False))
+    no_reach = SpeedModel(vr_polar, BoatOptions(sails=frozenset({"LightJib", "LightGnk", "Staysail", "HeavyGnk"}), foil=False, hull=False))
     sail, speed = no_reach.best(np.array([10.0]), np.array([90.0]))
     assert no_reach.sail_names[sail[0]] == "Jib" and speed[0] == pytest.approx(9.71)
     full = SpeedModel(vr_polar, BoatOptions())

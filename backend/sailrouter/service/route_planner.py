@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import sys
+from collections.abc import Callable
 from datetime import UTC, datetime
 from time import perf_counter
 
-from sailrouter.cli.project_paths import ProjectPaths
-from sailrouter.cli.route_report import RouteReport
+from sailrouter.service.project_paths import ProjectPaths
+from sailrouter.service.route_report import RouteReport
 from sailrouter.course.race_catalog import RaceCatalog
 from sailrouter.domain.geo_point import GeoPoint
 from sailrouter.domain.race import Race
@@ -41,15 +41,20 @@ WEATHER_AREA = WeatherArea(south_deg=0.0, north_deg=60.0, west_deg=-80.0, east_d
 LAND_RESOLUTION_DEG = 0.005  # ≈ 550 m × 370 m at 48°N: keeps the 1 nm wide Fréhel gate open
 
 
-class RouteCommand:
+class RoutePlanner:
     """Routes one boat on the deterministic GFS: builds every object (the only place that knows all layers),
-    runs the router and returns a `RouteReport`."""
+    runs the router and returns a `RouteReport`. Used by the command line and by the web API."""
 
-    def __init__(self, paths: ProjectPaths) -> None:
+    def __init__(self, paths: ProjectPaths, on_download: Callable[[int, int], None] | None = None) -> None:
         self._paths = paths
+        self._on_download = on_download
         self._timings: dict[str, float] = {}
 
-    def execute(
+    def wind_forecast(self, start: datetime, hours: float) -> tuple[WindField, ModelRun]:
+        """The GFS wind over [start, start + hours], downloaded once per run (for the map)."""
+        return self._wind_field(GfsRunClock(), TimeSchedule(start, hours), datetime.now(UTC))
+
+    def plan(
         self, race_id: str, boat_id: str | None, position: GeoPoint, hours: float,
         start: datetime | None = None, next_mark: str | None = None, options: BoatOptions | None = None,
     ) -> RouteReport:
@@ -84,7 +89,7 @@ class RouteCommand:
         store = ForecastStore(self._paths.weather_dir)
         downloader = GfsRunDownloader(NomadsClient(), GfsQueryBuilder(WEATHER_AREA), store)
         source = GfsWindSource(clock, LeadTimePlan(), downloader, store, GribDecoder())
-        return source.wind_field(schedule.start, schedule.end, now, _print_download_progress)
+        return source.wind_field(schedule.start, schedule.end, now, self._on_download or _silent)
 
     def _boat_models(self, polar_path: str, options: BoatOptions) -> tuple[SpeedModel, ManeuverPenalty]:
         vr_polar = VrPolarParser().load(self._paths.resolve(polar_path))
@@ -98,5 +103,5 @@ class RouteCommand:
         return ObstacleChecker(land, ZoneCrossingDetector(race.exclusion_zones))
 
 
-def _print_download_progress(done: int, total: int) -> None:
-    print(f"\rDownloading GFS: {done}/{total} files", end="" if done < total else "\n", file=sys.stderr, flush=True)
+def _silent(done: int, total: int) -> None:
+    pass

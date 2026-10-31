@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from sailrouter.cli.route_report import RouteReport
+from sailrouter.service.route_report import RouteReport
 from sailrouter.cli.route_summary_printer import HORIZONS_H
 from sailrouter.routing.route_point import RoutePoint
 

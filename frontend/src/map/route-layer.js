@@ -46,10 +46,13 @@ export class RouteLayer {
       .addTo(this.#boat);
   }
 
-  // Whole track to the finish, for the eye only: a soft halo under a dashed line.
+  // Whole computed track, for the eye only: a soft halo under a dashed line.
   #idealRoute(ideal) {
     if (!ideal) return;
-    const label = this.translator.t("map.ideal_route", { distance: Math.round(ideal.distance_nm).toLocaleString(this.translator.lang) });
+    const label = this.translator.t("map.ideal_route", {
+      distance: Math.round(ideal.distance_nm).toLocaleString(this.translator.lang),
+      to_go: Math.round(ideal.to_go_nm ?? 0).toLocaleString(this.translator.lang),
+    });
     L.polyline(ideal.path, { color: this.color("--ideal-halo"), weight: 8, opacity: 0.55, interactive: false })
       .addTo(this.#routes);
     L.polyline(ideal.path, { color: this.color("--ideal-line"), weight: 2, dashArray: "8 6" })
@@ -59,8 +62,10 @@ export class RouteLayer {
 
   // Target area: a faint circle of the zone size plus a glowing dot coloured by confidence.
   #zone(step) {
-    const level = confidenceLevel(step.confidence);
-    const label = this.translator.t("map.zone", { h: step.hour, confidence: this.translator.t(`confidence.${level}`) });
+    const level = confidenceLevel(step.confidence) ?? "high";
+    const label = step.confidence === null
+      ? this.translator.t("map.zone_simple", { h: step.hour })
+      : this.translator.t("map.zone", { h: step.hour, confidence: this.translator.t(`confidence.${level}`) });
     L.circle([step.lat, step.lon], {
       radius: step.zone_radius_nm * NM_IN_METERS, color: this.color(`--zone-${level}`), weight: 1, opacity: 0.7,
       fillColor: this.color(`--zone-${level}`), fillOpacity: 0.1, interactive: false,

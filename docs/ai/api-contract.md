@@ -1,7 +1,7 @@
-# API contract (draft)
+# API contract
 
-The frontend mock-up reads [frontend/mock/sample-result.json](../../frontend/mock/sample-result.json), which
-has exactly the shape the backend must return. Keep the two in sync.
+Served by `backend/sailrouter/api/` (FastAPI). Interactive docs at `/api/docs` when the server runs.
+
 
 ## `GET /api/races`
 ```json
@@ -16,7 +16,7 @@ with `start_line` and `polar`, ordered `marks[]` (`gate` with `points` + `cross`
 `position` + `leave_to`), `finish`, `exclusion_zones[]` and `vigilance_zones[]` (`shape`: `polygon` | `line`,
 `points` as `[lat, lon]`). Mark names are i18n keys `mark.<id>`.
 
-## `GET /api/wind?hours=0,4,8,12,16,24,48`
+## `GET /api/wind?start=<ISO UTC>`
 Deterministic GFS wind (the game's weather) for the map, in leaflet-velocity format (U record then V record,
 m/s, rows north to south):
 ```jsonc
@@ -26,8 +26,15 @@ m/s, rows north to south):
 ```
 
 ## `POST /api/route`
-Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "settings": { ...options, penalties } }`.
-Progress is reported separately (polling or SSE, decided in step 5).
+Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "options": { "sails": ["Code0", ...], "foil", "hull", "pro_winch" } }`
+(optional sails among LightJib, LightGnk, Staysail, HeavyGnk, Code0; Jib and Spi are always allowed).
+One synchronous call (~5 s, ~2 min the first time a GFS run is downloaded).
+
+Until the ensemble exists: one option `{ "id": "gfs", "kind": "game" }`, `"probability": null`, step
+`"confidence": null`, `"members": []`, and `ideal_route` = the computed 120 h track with `distance_nm`, `to_go_nm`, `finished`.
+
+## `GET /api/races/{id}/boats/{boat}/polar`
+The raw VR polar of the boat (the frontend reads its `winch` block to show manoeuvre times).
 
 Response:
 ```jsonc

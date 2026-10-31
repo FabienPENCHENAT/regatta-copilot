@@ -4,8 +4,8 @@ Assistant de routage pour **Virtual Regatta Offshore**, robuste face à l'incert
 (31 scénarios de l'ensemble NOAA GEFS). Routing advisor for Virtual Regatta Offshore, built on the 31 NOAA
 GEFS ensemble members.
 
-Status: UI mock-up done (real GFS wind, example routes); routing engine for one weather member works from the
-command line (step 3). Next: 31-member ensemble (step 4), then wiring the UI to the engine (step 5).
+Status: the site runs the real routing engine on the game's GFS forecast, with the player's own sails.
+Next: the 31-member GEFS ensemble (options and probabilities).
 
 ## Compute a route (command line)
 
@@ -20,7 +20,8 @@ python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt -e ba
 ```sh
 ./run.sh
 ```
-Then open http://localhost:8000 (the script also prints the address to open on a phone on the same Wi-Fi).
+Then open http://localhost:8000 (the script installs the Python environment on first run and prints the address
+to open on a phone on the same Wi-Fi). API docs: http://localhost:8000/api/docs
 Puis ouvrir http://localhost:8000 (le script affiche aussi l'adresse à ouvrir sur le téléphone, même Wi-Fi).
 
 - Founder documentation (FR): [docs/founder/](docs/founder/)

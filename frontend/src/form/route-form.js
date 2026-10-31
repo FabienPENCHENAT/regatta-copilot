@@ -28,6 +28,15 @@ export class RouteForm {
     return this.boats.value;
   }
 
+  get positionText() {
+    return this.positionInput.value;
+  }
+
+  // Runs the same checks as the button (used to compute automatically when the page opens).
+  submit() {
+    this.form.requestSubmit();
+  }
+
   setRaces(races, { raceId, boatId } = {}) {
     this.#races = races;
     this.#fillRaceOptions(raceId);
@@ -45,9 +54,14 @@ export class RouteForm {
     this.#readPosition();
   }
 
-  showProgress(done, total) {
+  showBusy() {
     this.submitButton.disabled = true;
-    this.submitButton.querySelector(".submit-label").textContent = this.translator.t("form.computing", { done, total });
+    this.submitButton.querySelector(".submit-label").textContent = this.translator.t("form.computing");
+  }
+
+  showError(message) {
+    this.positionFeedback.dataset.state = "error";
+    this.positionFeedback.textContent = message;
   }
 
   showIdle() {

@@ -33,7 +33,9 @@ export function formatKnots(value, translator) {
   return translator.t("unit.knots", { value: formatNumber(value, translator.lang) });
 }
 
+// null while only one forecast is routed (no ensemble yet).
 export function confidenceLevel(share) {
+  if (share === null || share === undefined) return null;
   if (share >= 0.7) return "high";
   if (share >= 0.4) return "medium";
   return "low";

@@ -2,6 +2,20 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D28 — Site wired to the engine; options per sail; VR manoeuvre times (user feedback, 2026-10-31)
+- The user may own sails individually (not by pack): `BoatOptions(sails=frozenset, foil, hull, pro_winch)`;
+  packs remain as CLI shorthands. The settings dialog has one checkbox per optional sail plus equipment.
+- Manoeuvre times are no longer editable: they are read from the boat polar's `winch` block and displayed
+  (std or pro winch, light ≤ lws / strong ≥ hws wind); the engine uses the same data. Skipper energy: not yet.
+- "Compute my route" now runs the real engine: FastAPI app (`sailrouter/api/`) serving `/api/races`,
+  `/api/races/{id}`, `/api/races/{id}/boats/{boat}/polar`, `POST /api/route`, `GET /api/wind`, and the frontend
+  at `/`. `run.sh` starts uvicorn (installs `.venv` on first run). The mock API and mock data are removed.
+- The planner moved from `cli/` to a `service/` layer (`RoutePlanner`, `RouteReport`, `ProjectPaths`) shared by
+  the CLI and the API.
+- Until the ensemble exists, a result has one option (`gfs`, the game's weather) with `probability: null` and
+  step `confidence: null`; the UI shows "—" / "soon" instead of made-up figures. The page computes on load from
+  the last position, and recomputes when owned options change.
+
 ## D27 — Owned boat options drive the routing; sail names follow the game (user feedback, 2026-10-31)
 The user owns only the base sails (Jib, Spi) and the foils. Routing with the full pack advised sails they do not
 have (light gennaker). Now: `BoatOptions.from_owned("foil")` and `--options` on the CLI; the settings dialog

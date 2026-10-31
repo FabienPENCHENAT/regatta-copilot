@@ -5,8 +5,8 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from sailrouter.cli.project_paths import REPO_ROOT, ProjectPaths
-from sailrouter.cli.route_command import RouteCommand
+from sailrouter.service.project_paths import REPO_ROOT, ProjectPaths
+from sailrouter.service.route_planner import RoutePlanner
 from sailrouter.cli.route_file_writer import RouteFileWriter
 from sailrouter.cli.route_summary_printer import RouteSummaryPrinter
 from sailrouter.domain.position_parser import PositionParser
@@ -24,8 +24,9 @@ def build_parser() -> argparse.ArgumentParser:
     route.add_argument("--start", default=None, help="UTC start, ISO 8601 (default: race start, or now if later)")
     route.add_argument("--next-mark", default=None, help="id of the next mark, if earlier marks are passed")
     route.add_argument("--options", default="all",
-                       help='owned VR options: "all", "none" (Jib + Spi only) or a list among '
-                            'light,heavy,reach,foil,hull,pro_winch, e.g. "foil"')
+                       help='owned VR options: "all", "none" (Jib + Spi only) or a list of sails (LightJib, LightGnk, '
+                            'Staysail, HeavyGnk, Code0), packs (light, heavy, reach) and foil, hull, pro_winch; '
+                            'e.g. "foil" or "Code0,LightGnk,foil"')
     route.add_argument("--name", default=None, help="output file name in var/routes/ (no extension)")
     route.add_argument("--root", type=Path, default=REPO_ROOT, help=argparse.SUPPRESS)
     return parser
@@ -41,7 +42,8 @@ def main(argv: list[str] | None = None) -> int:
     paths = ProjectPaths(args.root)
     try:
         options = BoatOptions.from_owned(args.options)
-        report = RouteCommand(paths).execute(args.race, args.boat, position, args.hours, start, args.next_mark, options)
+        planner = RoutePlanner(paths, on_download=_print_download_progress)
+        report = planner.plan(args.race, args.boat, position, args.hours, start, args.next_mark, options)
     except (ValueError, KeyError, RuntimeError, ConnectionError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
@@ -50,6 +52,10 @@ def main(argv: list[str] | None = None) -> int:
     json_path, geojson_path = RouteFileWriter(paths.routes_dir).write(report, name)
     print(f"Wrote {json_path.relative_to(paths.root)} and {geojson_path.relative_to(paths.root)}")
     return 0
+
+
+def _print_download_progress(done: int, total: int) -> None:
+    print(f"\rDownloading GFS: {done}/{total} files", end="" if done < total else "\n", file=sys.stderr, flush=True)
 
 
 def _parse_start(text: str) -> datetime:

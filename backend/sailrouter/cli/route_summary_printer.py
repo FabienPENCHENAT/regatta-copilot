@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TextIO
 
 from sailrouter.cli.position_formatter import PositionFormatter
-from sailrouter.cli.route_report import RouteReport
+from sailrouter.service.route_report import RouteReport
 
 HORIZONS_H = (4, 8, 12, 16, 24, 48)
 

@@ -46,11 +46,15 @@ export class RoutePlanList {
     );
 
     const confidence = element("span", "plan-confidence");
-    confidence.dataset.level = level;
-    const bar = element("span", "confidence-bar");
-    bar.style.setProperty("--share", `${Math.round(step.confidence * 100)}%`);
-    confidence.append(bar, element("span", "confidence-value", `${Math.round(step.confidence * 100)} %`));
-    confidence.setAttribute("aria-label", `${t("label.confidence")} ${t(`confidence.${level}`)}`);
+    if (level === null) {
+      confidence.append(element("span", "confidence-value pending", t("confidence.pending")));
+    } else {
+      confidence.dataset.level = level;
+      const bar = element("span", "confidence-bar");
+      bar.style.setProperty("--share", `${Math.round(step.confidence * 100)}%`);
+      confidence.append(bar, element("span", "confidence-value", `${Math.round(step.confidence * 100)} %`));
+      confidence.setAttribute("aria-label", `${t("label.confidence")} ${t(`confidence.${level}`)}`);
+    }
 
     button.append(when, main, confidence);
     item.append(button);

@@ -38,11 +38,13 @@ export class OptionList {
     if (option.game_route) name.append(element("span", "badge badge-soft", t("option.game_badge")));
 
     const facts = element("span", "option-facts", `${t(`option.kind_short.${option.kind}`)} · ${this.#eta(option)}`);
-    button.title = `${t(`option.kind.${option.kind}`)} — ${t("option.members", { count: option.member_count, total: result.weather.member_count })}`;
+    button.title = option.probability === null
+      ? `${t(`option.kind.${option.kind}`)} — ${t("option.ring_pending")}`
+      : `${t(`option.kind.${option.kind}`)} — ${t("option.members", { count: option.member_count, total: result.weather.member_count })}`;
 
     const text = element("span", "option-text");
     text.append(name, facts);
-    button.append(this.#ring(Math.round(option.probability * 100)), text);
+    button.append(this.#ring(option.probability === null ? null : Math.round(option.probability * 100)), text);
     item.append(button);
     return item;
   }
@@ -53,14 +55,16 @@ export class OptionList {
     return this.translator.t("option.eta_short", { hours });
   }
 
+  // percent null: no probability yet (single forecast): an empty ring with a dash.
   #ring(percent) {
-    const ring = element("span", "ring");
+    const ring = element("span", percent === null ? "ring pending" : "ring");
     ring.innerHTML = `<svg viewBox="0 0 50 50" aria-hidden="true">
       <circle class="ring-track" cx="25" cy="25" r="${RING_RADIUS}"/>
       <circle class="ring-value" cx="25" cy="25" r="${RING_RADIUS}"
-        stroke-dasharray="${(RING_LENGTH * percent) / 100} ${RING_LENGTH}" transform="rotate(-90 25 25)"/></svg>`;
-    ring.append(element("span", "ring-percent", `${percent}%`));
-    ring.setAttribute("aria-label", this.translator.t("option.probability", { percent }));
+        stroke-dasharray="${(RING_LENGTH * (percent ?? 0)) / 100} ${RING_LENGTH}" transform="rotate(-90 25 25)"/></svg>`;
+    ring.append(element("span", "ring-percent", percent === null ? "—" : `${percent}%`));
+    ring.setAttribute("aria-label", percent === null
+      ? this.translator.t("option.ring_pending") : this.translator.t("option.probability", { percent }));
     return ring;
   }
 }

@@ -117,22 +117,27 @@
   </form>
   <div class="settings-body">
     <fieldset class="settings-section">
-      <legend data-i18n="settings.boat_options"></legend>
+      <legend data-i18n="settings.sails"></legend>
       <p class="fine-print" data-i18n="settings.base_sails"></p>
       <div id="boat-options" class="check-grid">
-        <label class="check"><input type="checkbox" data-option="foil"><span data-i18n="settings.foils"></span></label>
-        <label class="check"><input type="checkbox" data-option="light"><span data-i18n="settings.light"></span></label>
-        <label class="check"><input type="checkbox" data-option="heavy"><span data-i18n="settings.heavy"></span></label>
-        <label class="check"><input type="checkbox" data-option="reach"><span data-i18n="settings.reach"></span></label>
-        <label class="check"><input type="checkbox" data-option="pro_winch"><span data-i18n="settings.winch"></span></label>
-        <label class="check"><input type="checkbox" data-option="hull"><span data-i18n="settings.hull"></span></label>
+        <label class="check"><input type="checkbox" data-sail="LightJib"><span data-i18n="sail.LightJib"></span></label>
+        <label class="check"><input type="checkbox" data-sail="LightGnk"><span data-i18n="sail.LightGnk"></span></label>
+        <label class="check"><input type="checkbox" data-sail="Staysail"><span data-i18n="sail.Staysail"></span></label>
+        <label class="check"><input type="checkbox" data-sail="HeavyGnk"><span data-i18n="sail.HeavyGnk"></span></label>
+        <label class="check"><input type="checkbox" data-sail="Code0"><span data-i18n="sail.Code0"></span></label>
+      </div>
+    </fieldset>
+    <fieldset class="settings-section">
+      <legend data-i18n="settings.equipment"></legend>
+      <div id="boat-equipment" class="check-grid">
+        <label class="check"><input type="checkbox" data-equipment="foil"><span data-i18n="settings.foils"></span></label>
+        <label class="check"><input type="checkbox" data-equipment="hull"><span data-i18n="settings.hull"></span></label>
+        <label class="check"><input type="checkbox" data-equipment="pro_winch"><span data-i18n="settings.winch"></span></label>
       </div>
     </fieldset>
     <fieldset class="settings-section">
       <legend data-i18n="settings.penalties"></legend>
-      <label class="penalty-row"><span data-i18n="settings.tack"></span><span class="penalty-input"><input id="pen-tack" type="number" min="0" step="0.5" value="3"><span data-i18n="settings.minutes"></span></span></label>
-      <label class="penalty-row"><span data-i18n="settings.gybe"></span><span class="penalty-input"><input id="pen-gybe" type="number" min="0" step="0.5" value="3"><span data-i18n="settings.minutes"></span></span></label>
-      <label class="penalty-row"><span data-i18n="settings.sail_change"></span><span class="penalty-input"><input id="pen-sail" type="number" min="0" step="0.5" value="4"><span data-i18n="settings.minutes"></span></span></label>
+      <div id="maneuver-times" class="maneuver-times"></div>
     </fieldset>
     <fieldset class="settings-section">
       <legend data-i18n="settings.polar"></legend>

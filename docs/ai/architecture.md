@@ -138,6 +138,22 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `ConsensusBuilder` | Circular median heading and majority sail of the option's members at a given time. |
 | `AdviceWriter` | Rule-based advice as **i18n key + parameters** (never text), e.g. `advice.head_direction {option, count, total, hours}`. |
 
+### `service` — application layer shared by the CLI and the API
+| Class | Responsibility |
+|---|---|
+| `RoutePlanner` | Builds every object for one routing run (the only place that knows all engine layers) and returns a `RouteReport`; also provides the GFS wind for the map. |
+| `RouteReport`, `ProjectPaths` | Result of one run; where data and caches live. |
+
+### `api` — FastAPI
+| Module | Responsibility |
+|---|---|
+| `app_factory.py` | Builds the app: routers under `/api`, frontend files at `/`. |
+| `routes_races.py` | Race list, race file, boat polar. |
+| `routes_routing.py` | `POST /api/route` (runs `RoutePlanner`), `GET /api/wind`. |
+| `schemas.py` | Request models; converts settings to `BoatOptions`. |
+| `route_result_builder.py` | `RouteReport` → result JSON (hourly path, plan steps, nulls while no ensemble). |
+| `wind_grid_exporter.py` | `WindField` → leaflet-velocity grids for the map. |
+
 ### `frontend` — no build step, native ES modules
 | Module | Responsibility |
 |---|---|
@@ -157,14 +173,13 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
 | `how.html`, `src/how-main.js`, `how/how-page.js` | "How it works" page: data, refresh times, method, options, limits; text in i18n. |
 | `layout/theme-toggle.js` | Light/dark switch; follows the system until the user picks, then remembers it. |
-| `settings/boat-options-form.js` | Owned VR options (sail packs, foils, hull, pro winch), saved in the browser, sent with each computation; lists the owned sails. |
+| `settings/settings-panel.js`, `settings/boat-options-form.js`, `settings/maneuver-times.js` | Settings dialog: owned sails one by one and equipment (saved in the browser, sent with each computation), manoeuvre times read from the VR polar. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
-| `layout/settings-dialog.js`, `layout/map-insets.js` | Opens the settings dialog from the rail; measures the screen area the panels cover so the map frames routes in the free space. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
 | `results/option-list.js` | Option cards with a probability ring. |
 | `results/route-plan-list.js` | Route plan as a compact list with confidence bars; a step selects the hour on the map. |
 | `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |
-| `api/mock-api.js` | Mock-up stand-in; replaced by an `ApiClient` with the same interface in step 5. |
+| `api/api-client.js`, `api/route-computation.js` | Calls the backend; one computation = route then map wind. |
 
 The response shape is documented in [api-contract.md](api-contract.md).
 

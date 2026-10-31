@@ -1,32 +1,33 @@
-// The "Boat options" part of the settings: which VR options the player owns. Saved in the browser and sent
-// with each computation. Jib and Spi are always on board; option packs add sails.
+// The "Boat options" part of the settings: which VR options the player owns, sail by sail, plus foils,
+// polished hull and pro winch. Saved in the browser and sent with each computation.
 
-export const OPTION_NAMES = ["light", "heavy", "reach", "foil", "hull", "pro_winch"];
-const DEFAULT_OPTIONS = { light: false, heavy: false, reach: false, foil: true, hull: false, pro_winch: false };
-const SAILS_BY_PACK = { light: ["LightJib", "LightGnk"], heavy: ["Staysail", "HeavyGnk"], reach: ["Code0"] };
 const BASE_SAILS = ["Jib", "Spi"];
+const OPTIONAL_SAILS = ["LightJib", "LightGnk", "Staysail", "HeavyGnk", "Code0"];
+const EQUIPMENT = ["foil", "hull", "pro_winch"];
+const DEFAULTS = { sails: [], foil: true, hull: false, pro_winch: false };
 
 export class BoatOptionsForm {
   constructor(container, { preferences, onChange }) {
     this.preferences = preferences;
     this.onChange = onChange;
-    this.checkboxes = Object.fromEntries(
-      OPTION_NAMES.map((name) => [name, container.querySelector(`[data-option="${name}"]`)]),
-    );
-    const saved = { ...DEFAULT_OPTIONS, ...preferences.read().boatOptions };
-    for (const [name, box] of Object.entries(this.checkboxes)) {
-      box.checked = Boolean(saved[name]);
+    this.sailBoxes = Object.fromEntries(OPTIONAL_SAILS.map((s) => [s, container.querySelector(`[data-sail="${s}"]`)]));
+    this.equipmentBoxes = Object.fromEntries(EQUIPMENT.map((e) => [e, container.querySelector(`[data-equipment="${e}"]`)]));
+    const saved = { ...DEFAULTS, ...preferences.read().boatOptions };
+    for (const [sail, box] of Object.entries(this.sailBoxes)) box.checked = (saved.sails ?? []).includes(sail);
+    for (const [item, box] of Object.entries(this.equipmentBoxes)) box.checked = Boolean(saved[item]);
+    for (const box of [...Object.values(this.sailBoxes), ...Object.values(this.equipmentBoxes)]) {
       box.addEventListener("change", () => this.#save());
     }
   }
 
+  // The shape the API expects: { sails: [...], foil, hull, pro_winch }.
   get options() {
-    return Object.fromEntries(OPTION_NAMES.map((name) => [name, this.checkboxes[name].checked]));
+    const sails = OPTIONAL_SAILS.filter((sail) => this.sailBoxes[sail].checked);
+    return { sails, ...Object.fromEntries(EQUIPMENT.map((item) => [item, this.equipmentBoxes[item].checked])) };
   }
 
   ownedSails() {
-    const options = this.options;
-    return [...BASE_SAILS, ...Object.entries(SAILS_BY_PACK).filter(([pack]) => options[pack]).flatMap(([, sails]) => sails)];
+    return [...BASE_SAILS, ...this.options.sails];
   }
 
   #save() {

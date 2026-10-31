@@ -48,7 +48,8 @@ export class RouteMap {
   // "day" / "near": all scenario routes over the next 24 h / 48 h; "race": the whole ideal track to the finish.
   // insets = screen space covered by floating panels, in pixels, so the routes stay in the free area.
   fitView(result, view, insets) {
-    const points = view === "race" ? result.ideal_route.path : result.members.flatMap((m) => m.path.slice(0, VIEW_HOURS[view] + 1));
+    const tracks = result.members.length ? result.members : result.options; // no members with a single forecast
+    const points = view === "race" ? result.ideal_route.path : tracks.flatMap((t) => t.path.slice(0, VIEW_HOURS[view] + 1));
     this.#map.fitBounds(L.latLngBounds(points), {
       paddingTopLeft: [insets.left + 24, insets.top + 24],
       paddingBottomRight: [insets.right + 24, insets.bottom + 24],
