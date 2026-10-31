@@ -78,7 +78,7 @@
   "settings.sail_change": "Sail change",
   "settings.polar": "Boat polar",
   "settings.polar_current": "Game polar for this boat (community copy), not yet verified in the game.",
-  "settings.polar_import": "Import the polar exported from the game (JSON file)",
+  "settings.polar_import": "Import my polar (JSON file from the game)",
   "unit.knots": "{value} kn",
   "unit.hours": "{value} h",
   "timeline.show_on_map": "Show this hour on the map",
@@ -234,5 +234,14 @@
   "settings.equipment": "Equipment",
   "settings.foils": "Foils",
   "settings.hull": "Polished hull",
-  "settings.winch": "Pro winch"
+  "settings.winch": "Pro winch",
+  "form.next_mark": "Next mark",
+  "form.next_mark_auto": "Automatic",
+  "mark.finish": "Finish line",
+  "settings.polar_reset": "Back to the community polar",
+  "settings.polar_player": "Your polar, imported on {date}.",
+  "settings.polar_import_done": "Polar imported: the route is recomputed with it.",
+  "settings.polar_reset_done": "Back to the community polar.",
+  "settings.polar_not_json": "This file is not JSON. Copy the whole response of the game's request.",
+  "settings.polar_refused": "Polar refused: {reason}"
 }

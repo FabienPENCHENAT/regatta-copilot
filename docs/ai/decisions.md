@@ -2,6 +2,11 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D-NEXT — Backlog choices (user, 2026-10-31)
+Not to do: routing all the way to the finish / ETA ("do not estimate something improbable"); online hosting
+(single user, local is fine). Keep in mind for later: skipper energy (longer manoeuvres when tired). In progress:
+Guadeloupe mark sides + next-mark choice, background GFS refresh + pre-computation, player polar import.
+
 ## D38 — Passed marks detected from the position (bug found 2026-10-31)
 Routing from mid-Atlantic (45°N 12°W) sailed back towards the Fréhel gate (3 800 nm to go): the next mark was
 only skipped with an explicit `--next-mark`. `routing/NextMarkFinder` now finds the first mark ahead: a gate or

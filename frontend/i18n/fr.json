@@ -78,7 +78,7 @@
   "settings.sail_change": "Changement de voile",
   "settings.polar": "Polaire du bateau",
   "settings.polar_current": "Polaire du jeu pour ce bateau (copie communautaire), pas encore vérifiée dans le jeu.",
-  "settings.polar_import": "Importer la polaire exportée du jeu (fichier JSON)",
+  "settings.polar_import": "Importer ma polaire (fichier JSON du jeu)",
   "unit.knots": "{value} nd",
   "unit.hours": "{value} h",
   "timeline.show_on_map": "Voir cette heure sur la carte",
@@ -234,5 +234,14 @@
   "settings.equipment": "Équipement",
   "settings.foils": "Foils",
   "settings.hull": "Coque polie",
-  "settings.winch": "Winch pro"
+  "settings.winch": "Winch pro",
+  "form.next_mark": "Prochaine marque",
+  "form.next_mark_auto": "Automatique",
+  "mark.finish": "Ligne d'arrivée",
+  "settings.polar_reset": "Revenir à la polaire communautaire",
+  "settings.polar_player": "Ta polaire, importée le {date}.",
+  "settings.polar_import_done": "Polaire importée : la route est recalculée avec.",
+  "settings.polar_reset_done": "Retour à la polaire communautaire.",
+  "settings.polar_not_json": "Ce fichier n'est pas du JSON. Copie la réponse complète de la requête du jeu (voir « Comment ça marche »).",
+  "settings.polar_refused": "Polaire refusée : {reason}"
 }

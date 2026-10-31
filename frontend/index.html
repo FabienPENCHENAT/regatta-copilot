@@ -70,6 +70,10 @@
         </span>
       </label>
       <p id="position-feedback" class="position-feedback" aria-live="polite"></p>
+      <label class="field">
+        <span class="field-label" data-i18n="form.next_mark"></span>
+        <select id="next-mark"></select>
+      </label>
       <button id="submit" class="submit" type="submit">
         <span class="submit-label"></span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -144,11 +148,7 @@
     </fieldset>
     <fieldset class="settings-section">
       <legend data-i18n="settings.polar"></legend>
-      <p class="fine-print" data-i18n="settings.polar_current"></p>
-      <label class="file-button">
-        <input id="polar-file" type="file" accept="application/json,.json">
-        <span data-i18n="settings.polar_import"></span>
-      </label>
+      <div id="polar-import" class="polar-import"></div>
     </fieldset>
   </div>
 </dialog>

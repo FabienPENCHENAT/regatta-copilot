@@ -11,12 +11,25 @@ export class ApiClient {
   }
 
   async getPolar(raceId, boatId) {
-    return this.#get(`/api/races/${encodeURIComponent(raceId)}/boats/${encodeURIComponent(boatId)}/polar`);
+    return this.#get(this.#polarUrl(raceId, boatId));
   }
 
-  // request: { raceId, boatId, position: { lat, lon }, options: { sails }, maneuvers: { tack: {...}, ... } }
-  async computeRoute({ raceId, boatId, position, options, maneuvers }) {
-    return this.#send("/api/route", { race_id: raceId, boat_id: boatId, position, options, maneuvers });
+  // request: { raceId, boatId, position: { lat, lon }, options, maneuvers, nextMark (null = automatic) }
+  async computeRoute({ raceId, boatId, position, options, maneuvers, nextMark = null }) {
+    return this.#send("/api/route", { race_id: raceId, boat_id: boatId, position, options, maneuvers, next_mark: nextMark });
+  }
+
+  // The player's polar exported from the game replaces the community copy for this race and boat.
+  async importPolar({ raceId, boatId }, polar) {
+    return this.#send(this.#polarUrl(raceId, boatId), polar);
+  }
+
+  async resetPolar({ raceId, boatId }) {
+    return this.#parse(await fetch(this.#polarUrl(raceId, boatId), { method: "DELETE" }));
+  }
+
+  #polarUrl(raceId, boatId) {
+    return `/api/races/${encodeURIComponent(raceId)}/boats/${encodeURIComponent(boatId)}/polar`;
   }
 
   // Where the 31 GEFS scenarios stand: { state: "ready" | "downloading" | "unavailable", done, total, ... }.

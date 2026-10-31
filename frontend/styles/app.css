@@ -513,6 +513,11 @@ select, input[type="text"], input[type="number"] {
 .maneuver-input { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.8125rem; }
 .maneuver-input input { min-height: 36px; padding: 4px 8px; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 520px) { .maneuver-row { grid-template-columns: 100px repeat(3, minmax(0, 1fr)); gap: 6px; } }
+.polar-import { display: grid; gap: 8px; }
+.polar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.polar-message { margin: 0; font-size: 0.8125rem; font-weight: 600; }
+.polar-message.ok { color: var(--conf-high-ink); }
+.polar-message.error { color: #c2410c; }
 .file-button {
   justify-self: start; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; cursor: pointer;
   border-radius: 12px; background: var(--ink); color: var(--glass-strong); font-size: 0.875rem; font-weight: 600;

@@ -7,6 +7,7 @@ import { PreferencesStore } from "./storage/preferences-store.js";
 import { PositionParser } from "./form/position-parser.js";
 import { RouteForm } from "./form/route-form.js";
 import { RaceHeader } from "./form/race-header.js";
+import { NextMarkPicker } from "./form/next-mark-picker.js";
 import { RouteMap } from "./map/route-map.js";
 import { MapControls } from "./map/map-controls.js";
 import { WindForecastCache } from "./map/wind-forecast-cache.js";
@@ -46,9 +47,14 @@ class App {
     this.optionList = new OptionList(byId("options"), this.translator, (optionId) => this.update({ optionId }));
     this.routePlan = new RoutePlanList(byId("plan"), this.translator, (hour) => this.update({ hour }));
     this.settings = new SettingsPanel(byId("settings"), byId("settings-open"), {
+      api: this.api,
       translator: this.translator,
       preferences: this.preferences,
       onChange: () => this.#result && this.form.submit(), // sails and manoeuvre times change the best route
+      onPolarChange: () => this.#loadBoat(this.form.boatId).then(() => this.form.submit()),
+    });
+    this.nextMark = new NextMarkPicker(byId("next-mark"), {
+      translator: this.translator, preferences: this.preferences, onChange: () => this.#result && this.form.submit(),
     });
     this.formPanel = new PanelCollapser(byId("route-form"), { toggle: byId("form-edit"), translator: this.translator, labelToggle: false });
     this.dockPanel = new PanelCollapser(byId("dock"), { toggle: byId("dock-toggle"), translator: this.translator, expandOnPanelClick: true });
@@ -76,6 +82,7 @@ class App {
     ]);
     this.#race = race;
     this.raceHeader.render(race);
+    this.nextMark.render(race);
     await this.#loadBoat(this.form.boatId);
     this.form.submit();
   }
@@ -87,6 +94,7 @@ class App {
     this.form.retranslate();
     this.map.retranslate();
     this.settings.retranslate();
+    this.nextMark.retranslate();
     if (this.#race) {
       this.map.showCourse(this.#race, this.form.boatId);
       this.raceHeader.render(this.#race);
@@ -103,7 +111,10 @@ class App {
   async compute(request) {
     this.form.showBusy();
     try {
-      const { result, wind } = await this.computation.run({ ...request, ...this.settings.request });
+      const { result, wind } = await this.computation.run({
+        ...request, ...this.settings.request, nextMark: this.nextMark.value,
+      });
+      if (result.next_mark) this.nextMark.showDetected(result.next_mark.id);
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
       this.formPanel.collapse();
@@ -140,7 +151,7 @@ class App {
   async #loadBoat(boatId) {
     if (this.#race) this.map.showCourse(this.#race, boatId);
     const polar = await this.api.getPolar(this.form.raceId, boatId).catch(() => null);
-    this.settings.showPolar(boatId, polar);
+    this.settings.showPolar(this.form.raceId, boatId, polar);
   }
 
   #showResult(result) {

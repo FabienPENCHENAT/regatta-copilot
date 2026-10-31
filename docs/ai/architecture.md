@@ -181,6 +181,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `i18n/translator.js`, `i18n/language-picker.js` | Loads `i18n/<lang>.json`, translates keys; FR/EN toggle. |
 | `storage/preferences-store.js` | Last race, boat, language in localStorage. |
 | `form/position-parser.js`, `form/route-form.js` | Parses pasted positions; race/boat/position inputs, submit, one-line summary when collapsed. |
+| `form/next-mark-picker.js` | "Next mark": automatic (server-detected) or picked by the player; shows the mark the automatic choice used. |
 | `form/race-header.js`, `form/boat-picker.js` | From–to line with distance and live race status; boat class pills. |
 | `results/data-refresh.js` | Time of the next data update (run every 6 h, usable ~4.5 h later). |
 | `map/route-map.js` | Builds the Leaflet chart and its layers; the only map API the app uses. |
@@ -195,6 +196,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `how.html`, `src/how-main.js`, `how/how-page.js` | "How it works" page: data, refresh times, method, options, limits; text in i18n. |
 | `layout/theme-toggle.js` | Light/dark switch; follows the system until the user picks, then remembers it. |
 | `settings/settings-panel.js`, `settings/boat-options-form.js`, `settings/maneuver-times.js` | Settings dialog: owned sails one by one, editable manoeuvre times pre-filled from the VR polar (saved per boat); any change recomputes. |
+| `settings/polar-import.js` | Which polar is used (community or the player's import), import a JSON copied from the game, go back. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
 | `results/option-list.js` | Option cards with a probability ring. |

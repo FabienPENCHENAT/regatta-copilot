@@ -38,6 +38,13 @@ export class CourseLayer {
 
   #mark(mark) {
     const name = this.translator.t(`mark.${mark.id}`);
+    if (mark.position && mark.points) { // a buoy or islet to leave on one side, with the line enforcing the side
+      L.polyline(mark.points, { pane: "course", color: this.color(`--buoy-${mark.leave_to}`), weight: 1.5, dashArray: "2 4" })
+        .addTo(this.#layer);
+      const side = this.translator.t(`course.leave_to_${mark.leave_to}`);
+      this.#buoy(mark.position, mark.leave_to === "port" ? "--buoy-port" : "--buoy-starboard", `${name} · ${side}`);
+      return;
+    }
     if (mark.type === "gate") {
       L.polyline(mark.points, { pane: "course", color: this.color("--buoy-gate"), weight: 2, dashArray: "4 3" }).addTo(this.#layer);
       mark.points.forEach((p) => this.#buoy(p, "--buoy-gate", name));
