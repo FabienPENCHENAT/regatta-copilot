@@ -37,3 +37,18 @@ def test_coarse_mask_is_conservative():
     land = mask.is_land(lat, lon)
     assert mask.may_be_near_land(lat[land], lon[land]).all()
     assert not mask.may_be_near_land(47.7, -3.8)
+
+
+def test_clearance_is_a_safe_lower_bound_of_the_distance_to_land():
+    # Property: every point within the clearance of a sea point (both coordinates) is at sea.
+    mask = island_mask()
+    rng = np.random.default_rng(7)
+    lat = rng.uniform(47.55, 48.45, 5_000)
+    lon = rng.uniform(-3.95, -2.05, 5_000)
+    clearance = mask.clearance_deg(lat, lon)
+    assert clearance.max() > 0  # far from the island the checker can skip work
+    for _ in range(20):
+        dlat = rng.uniform(-1, 1, lat.size) * clearance * 0.999
+        dlon = rng.uniform(-1, 1, lat.size) * clearance * 0.999
+        assert not mask.is_land(lat + dlat, lon + dlon)[clearance > 0].any()
+    assert (mask.clearance_deg(mask.grid.south_deg + 1e-6, -3.0) == 0).all()  # raster edge counts as land

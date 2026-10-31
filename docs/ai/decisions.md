@@ -2,6 +2,15 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D35 — Faster coast check: clearance map + length-grouped sampling (2026-10-31)
+The land test sampled every candidate segment, all at the sample count of the longest one. Now `LandMask` keeps
+a clearance map (distance to the nearest coarse land cell or raster edge, Chebyshev, in degrees, conservative):
+a segment shorter than the clearance at one of its ends is skipped; the others are sampled in power-of-two
+length groups. Measured from the Class40 start, 120 h, Jib + Spi: one route 4.4 s → 2.2 s (byte-identical
+route); full ensemble request (31 members + GFS) 53.7 s → 24.2 s. A property test checks that every point within
+the clearance of a sea point is at sea; it caught coarse cells sticking out of a fine raster whose size is not a
+multiple of 16 (not the case for the real 0–60°N / 80°W–10°E area), now counted as edge.
+
 ## D34 — Results kept until the weather changes; most probable option stays recommended (user, 2026-10-31)
 - The user pointed out that nothing changes between two forecast runs. Weather files were already cached per run;
   now computed results are too (`api/RouteResultCache`, `var/results/`), keyed by race, boat, position (4 dp),
