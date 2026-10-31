@@ -28,6 +28,19 @@ export class ApiClient {
     return this.#parse(await fetch(this.#polarUrl(raceId, boatId), { method: "DELETE" }));
   }
 
+  // Speed and best sail by TWA for some wind speeds and options: { twa: [...], curves: [{ tws, speed, sail }] }.
+  async getPolarCurves({ raceId, boatId }, twsList, { sails = [], foil = false, hull = false } = {}) {
+    const query = new URLSearchParams({ tws: twsList.join(","), sails: sails.join(","), foil, hull });
+    return this.#get(`${this.#polarUrl(raceId, boatId)}/curves?${query}`);
+  }
+
+  // Miles gained on the game's route by going from `current` to `changed` options: { gains: [{ hours, gain_nm }] }.
+  async compareOptions({ raceId, boatId, position, current, changed, maneuvers, nextMark = null }) {
+    return this.#send("/api/options-impact", {
+      race_id: raceId, boat_id: boatId, position, current, changed, maneuvers, next_mark: nextMark,
+    });
+  }
+
   #polarUrl(raceId, boatId) {
     return `/api/races/${encodeURIComponent(raceId)}/boats/${encodeURIComponent(boatId)}/polar`;
   }

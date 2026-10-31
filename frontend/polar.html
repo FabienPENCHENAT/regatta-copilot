@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routeur Voile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/app.css">
+<link rel="stylesheet" href="styles/how.css">
+<link rel="stylesheet" href="styles/polar.css">
+<script type="module" src="src/polar-main.js"></script>
+</head>
+<body class="how-body">
+<header class="how-bar">
+  <a class="how-back" href="index.html">
+    <svg class="rail-logo" viewBox="0 0 40 40" aria-hidden="true">
+      <path class="facet main-a" d="M19 3 L19 33 L26 21 Z"/>
+      <path class="facet main-b" d="M19 3 L26 21 L34 33 Z"/>
+      <path class="facet main-c" d="M19 33 L26 21 L34 33 Z"/>
+      <path class="facet jib-a" d="M16 9 L16 33 L11 25 Z"/>
+      <path class="facet jib-b" d="M16 9 L11 25 L5 33 Z"/>
+      <path class="facet jib-c" d="M16 33 L11 25 L5 33 Z"/>
+    </svg>
+    <span data-i18n="how.back"></span>
+  </a>
+  <div id="lang-picker" class="lang-picker how-lang" role="group" data-i18n-attr="aria-label:lang.label"></div>
+</header>
+
+<main class="polar-page">
+  <section class="how-hero">
+    <h1 class="how-title" data-i18n="polar.title"></h1>
+    <p class="how-lead" data-i18n="polar.lead"></p>
+    <p id="polar-boat" class="polar-boat"></p>
+  </section>
+
+  <div class="polar-layout">
+    <!-- The polar diagram and its two sliders -->
+    <section class="polar-card polar-chart-card">
+      <svg id="polar-chart" class="polar-chart" role="img" data-i18n-attr="aria-label:polar.chart_label"></svg>
+      <ul class="polar-lines" aria-hidden="true">
+        <li><span class="polar-line current"></span><span data-i18n="polar.legend.current"></span></li>
+        <li><span class="polar-line tried"></span><span data-i18n="polar.legend.tried"></span></li>
+      </ul>
+      <ul id="polar-legend" class="polar-legend"></ul>
+      <p id="polar-readout" class="polar-readout" aria-live="polite"></p>
+      <label class="polar-slider">
+        <span><span data-i18n="polar.tws"></span> <strong id="polar-tws-value"></strong></span>
+        <input id="polar-tws" type="range" min="2" max="40" step="1">
+      </label>
+      <label class="polar-slider">
+        <span><span data-i18n="polar.twa"></span> <strong id="polar-twa-value"></strong></span>
+        <input id="polar-twa" type="range" min="0" max="180" step="2">
+      </label>
+    </section>
+
+    <div class="polar-side">
+      <!-- Options to try -->
+      <section class="polar-card">
+        <h2 class="how-h2" data-i18n="polar.options.title"></h2>
+        <p class="polar-note" data-i18n="polar.options.lead"></p>
+        <div id="polar-toggles" class="polar-toggles"></div>
+        <p id="polar-summary" class="polar-summary" aria-live="polite"></p>
+        <div class="polar-actions">
+          <button id="polar-reset" type="button" class="polar-button ghost" data-i18n="polar.reset"></button>
+          <button id="polar-keep" type="button" class="polar-button" data-i18n="polar.keep"></button>
+        </div>
+        <p id="polar-kept" class="polar-note" aria-live="polite"></p>
+      </section>
+
+      <!-- Miles gained on the route -->
+      <section id="polar-impact" class="polar-card">
+        <h2 class="how-h2" data-i18n="polar.impact.title"></h2>
+        <p class="polar-note" data-i18n="polar.impact.lead"></p>
+        <button type="button" class="polar-button" data-impact-run></button>
+        <div data-impact-output aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+</main>
+</body>
+</html>

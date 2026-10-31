@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from sailrouter.api.cached_route_computer import CachedRouteComputer
 from sailrouter.api.last_route_precomputer import LastRoutePrecomputer
 from sailrouter.api.last_route_request_store import LastRouteRequestStore
+from sailrouter.api.routes_options import options_router
 from sailrouter.api.routes_polars import polars_router
 from sailrouter.api.routes_races import races_router
 from sailrouter.api.routes_routing import routing_router
@@ -45,6 +46,7 @@ def create_app(paths: ProjectPaths | None = None, ensemble_job: EnsembleDownload
     app = FastAPI(title="Routeur Voile", docs_url="/api/docs", openapi_url="/api/openapi.json", lifespan=lifespan)
     app.include_router(races_router(paths))
     app.include_router(polars_router(paths))
+    app.include_router(options_router(paths))
     app.include_router(routing_router(paths, ensemble_job, computer, last_requests))
     app.mount("/", StaticFiles(directory=paths.root / "frontend", html=True), name="frontend")
     return app

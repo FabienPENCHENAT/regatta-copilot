@@ -166,3 +166,12 @@ blocks. Only the polar object is stored (`var/polars/<race>-<boat>.vr.json`), ne
 ## `DELETE /api/races/{id}/boats/{boat}/polar`
 Removes the player's polar (no error if there is none) and returns the polar now in use, same body as `GET`
 (`_source: "community"`).
+
+
+## `GET /api/races/{race}/boats/{boat}/polar/curves`
+Query: `tws` (comma-separated, 1–12 values, 0–70 kn), `sails` (optional sails owned), `foil`, `hull` (bool).
+→ `{ "twa": [0, 2, … 180], "curves": [{ "tws", "speed": [kn…], "sail": [sail id…] }] }` (best allowed sail).
+
+## `POST /api/options-impact`
+`{ race_id, boat_id, position, current: <options>, changed: <options>, maneuvers, next_mark }` → `{ start, run,
+"gains": [{ "hours": 24|48|120, "gain_nm" }] }`; positive = `changed` is ahead. Two GFS routes, ≈ 10 s.

@@ -2,6 +2,17 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D48 — "Polar and options" page (user, 2026-10-31)
+- `frontend/polar.html` (rail link): polar diagram (SVG, `polar/PolarChart`) at a chosen TWS, the player's
+  options dashed, the tried options coloured by best sail (`--sail-<id>` tokens), TWA read-out (pointer or
+  slider), gain summary (max and mean % between TWA 40–160°). `polar/OptionToggles` starts from the settings
+  (`boatOptions`), marks owned ones ("à toi"); "Keep these options" writes the settings, nothing else does.
+- `GET /api/races/{race}/boats/{boat}/polar/curves?tws=&sails=&foil=&hull=` → `polar/PolarCurves` on the same
+  `SpeedModel` as the router (every 2°).
+- "On your route": `POST /api/options-impact` → `service/OptionsImpact`: two GFS routes (current vs tried
+  options) from the last saved position; gain = difference in distance to go at +24/+48/+120 h (≈ 10 s).
+  Own manoeuvre times are sent only when both sides use the same winch (else the game's values for each).
+
 ## D47 — Headings every 1° over 220° around the mark bearing (user, 2026-10-31)
 - `HeadingFan(1.0, 220.0)`: per front point, 221 headings centred on the bearing to its leg's target
   (`MarkProgress.bearing_to_target_deg`), like routers made for the game (eSail4VR: 220°, 1°). Was 72 headings

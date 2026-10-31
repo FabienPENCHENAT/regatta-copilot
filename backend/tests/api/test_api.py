@@ -73,3 +73,14 @@ def test_every_rhum_boat_has_a_polar(client, boat):
 def test_wind_hours_must_be_whole_numbers_in_the_route_window(client):
     assert client.get("/api/wind", params={"start": "2026-11-01T12:00:00Z", "hours": "abc"}).status_code == 400
     assert client.get("/api/wind", params={"start": "2026-11-01T12:00:00Z", "hours": "500"}).status_code == 400
+
+
+def test_polar_curves_follow_the_options(client):
+    url = "/api/races/route-du-rhum-2026/boats/class40/polar/curves"
+    bare = client.get(url, params={"tws": "12"}).json()
+    full = client.get(url, params={"tws": "12", "sails": "Code0,LightJib", "foil": "true", "hull": "true"}).json()
+    at_90 = bare["twa"].index(90.0)
+    assert bare["curves"][0]["sail"][at_90] in ("Jib", "Spi")
+    assert full["curves"][0]["sail"][at_90] == "Code0"
+    assert full["curves"][0]["speed"][at_90] > bare["curves"][0]["speed"][at_90]
+    assert client.get(url, params={"tws": "abc"}).status_code == 400

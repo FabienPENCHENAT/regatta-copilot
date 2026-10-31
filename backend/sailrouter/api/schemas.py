@@ -48,3 +48,18 @@ class RouteRequest(BaseModel):
 
     def maneuver_timings(self) -> dict[str, ManeuverTiming]:
         return {name: maneuver.to_timing() for name, maneuver in self.maneuvers.items()}
+
+
+class OptionsImpactRequest(BaseModel):
+    """Two sets of boat options to compare on the game's route from the same position."""
+
+    race_id: str
+    boat_id: str | None = None
+    position: PositionIn
+    current: BoatOptionsIn = BoatOptionsIn()
+    changed: BoatOptionsIn = BoatOptionsIn()
+    maneuvers: dict[str, ManeuverIn] = {}
+    next_mark: str | None = None
+
+    def maneuver_timings(self) -> dict[str, ManeuverTiming]:
+        return {name: maneuver.to_timing() for name, maneuver in self.maneuvers.items()}
