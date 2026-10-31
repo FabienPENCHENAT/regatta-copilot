@@ -65,3 +65,8 @@ def test_result_has_an_hourly_path_and_the_plan_hours_the_route_covers():
 def test_every_rhum_boat_has_a_polar(client, boat):
     polar = client.get(f"/api/races/route-du-rhum-2026/boats/{boat}/polar").json()
     assert len(polar["sail"]) == 7 and "winch" in polar
+
+
+def test_wind_hours_must_be_whole_numbers_in_the_route_window(client):
+    assert client.get("/api/wind", params={"start": "2026-11-01T12:00:00Z", "hours": "abc"}).status_code == 400
+    assert client.get("/api/wind", params={"start": "2026-11-01T12:00:00Z", "hours": "500"}).status_code == 400

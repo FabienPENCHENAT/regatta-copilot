@@ -19,6 +19,7 @@ from sailrouter.service.route_planner import RoutePlanner
 
 ROUTE_HOURS = 120.0
 MAP_WIND_HOURS = [0, 4, 8, 12, 16, 24, 48]
+MAX_ROUTE_HOURS = 120
 log = logging.getLogger(__name__)
 
 
@@ -55,16 +56,20 @@ def routing_router(paths: ProjectPaths, ensemble_job: EnsembleDownloadJob) -> AP
         return ensemble_status_json(ensemble_job.status())
 
     @router.get("/wind")
-    def wind(start: datetime = Query(..., description="route start, ISO 8601 UTC")) -> dict:
+    def wind(
+        start: datetime = Query(..., description="route start, ISO 8601 UTC"),
+        hours: str | None = Query(None, description="comma-separated hours after start, e.g. 11 or 11,13"),
+    ) -> dict:
+        wanted = _parse_hours(hours) if hours else MAP_WIND_HOURS
         try:
-            field, run = RoutePlanner(paths).wind_forecast(start, max(MAP_WIND_HOURS))
+            field, run = RoutePlanner(paths).wind_forecast(start, max(max(wanted), 1))
         except (RuntimeError, ConnectionError) as error:
             raise HTTPException(503, str(error)) from error
         return {
             "model": "GFS 0.25°",
             "run": run.cycle.isoformat().replace("+00:00", "Z"),
             "start": start.isoformat().replace("+00:00", "Z"),
-            "times": WindGridExporter().export(field, start, MAP_WIND_HOURS),
+            "times": WindGridExporter().export(field, start, wanted),
         }
 
     return router
@@ -80,3 +85,13 @@ def _ensemble_or_none(paths: ProjectPaths, gefs_run, arguments: dict):
     except Exception:  # noqa: BLE001 - any failure of the 31 routes must not hide the game's route
         log.exception("ensemble routing failed on %s; serving the GFS route only", gefs_run.key)
         return None
+
+
+def _parse_hours(text: str) -> list[int]:
+    try:
+        hours = sorted({int(part) for part in text.split(",") if part.strip()})
+    except ValueError as error:
+        raise HTTPException(400, f"hours must be whole numbers, e.g. 11 or 11,13 (got {text!r})") from error
+    if not hours or hours[0] < 0 or hours[-1] > MAX_ROUTE_HOURS:
+        raise HTTPException(400, f"hours must be between 0 and {MAX_ROUTE_HOURS}")
+    return hours
