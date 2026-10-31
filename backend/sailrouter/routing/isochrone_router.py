@@ -26,7 +26,8 @@ class IsochroneRouter:
 
     Each step, vectorised over front points × headings: wind at the parent (start of the step) → best sail
     and speed → maneuver penalty against the parent's TWA and sail → destination → mark progress (finishing
-    segments stop on the finish line) → drop segments that cross land or a forbidden zone → prune. Stops at the
+    segments stop on the finish line) → prune, dropping segments that cross land or a forbidden zone (only
+    those that could survive pruning are checked). Stops at the
     horizon or when a point finishes.
     """
 
@@ -75,18 +76,22 @@ class IsochroneRouter:
         lat1, lon1 = GreatCircle.destination(lat0, lon0, heading, distance_nm.ravel())
         leg = progress.advance(front.leg[parent], lat0, lon0, lat1, lon1)
         lat1, lon1 = progress.end_at_finish(front.leg[parent], leg, lat0, lon0, lat1, lon1)
-        moving = distance_nm.ravel() > 0
-        free = moving & ~self._obstacles.blocked(lat0, lon0, lat1, lon1)
+        moving = np.nonzero(distance_nm.ravel() > 0)[0]
+        lat0, lon0, lat1, lon1, parent = lat0[moving], lon0[moving], lat1[moving], lon1[moving], parent[moving]
         candidates = Isochrone(
             time=end,
-            lat_deg=lat1[free],
-            lon_deg=lon1[free],
-            parent=parent[free],
-            heading_deg=heading[free],
-            twa_deg=twa.ravel()[free],
-            tws_kn=tws_grid.ravel()[free],
-            sail=sail.ravel()[free],
-            speed_kn=speed.ravel()[free],
-            leg=leg[free],
+            lat_deg=lat1,
+            lon_deg=lon1,
+            parent=parent,
+            heading_deg=heading[moving],
+            twa_deg=twa.ravel()[moving],
+            tws_kn=tws_grid.ravel()[moving],
+            sail=sail.ravel()[moving],
+            speed_kn=speed.ravel()[moving],
+            leg=leg[moving],
         )
-        return self._pruner.prune(candidates, progress)
+
+        def blocked(indices):
+            return self._obstacles.blocked(lat0[indices], lon0[indices], lat1[indices], lon1[indices])
+
+        return self._pruner.prune(candidates, progress, blocked)

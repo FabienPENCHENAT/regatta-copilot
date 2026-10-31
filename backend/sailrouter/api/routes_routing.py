@@ -10,6 +10,7 @@ from sailrouter.api.ensemble_status_json import ensemble_status_json
 from sailrouter.api.last_route_request_store import LastRouteRequestStore
 from sailrouter.api.schemas import RouteRequest
 from sailrouter.api.wind_grid_exporter import WindGridExporter
+from sailrouter.service.computation_superseded import ComputationSuperseded
 from sailrouter.service.ensemble_download_job import EnsembleDownloadJob
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.route_planner import RoutePlanner
@@ -34,6 +35,8 @@ def routing_router(paths: ProjectPaths, ensemble_job: EnsembleDownloadJob, compu
         """Same inputs and same weather runs as an earlier request: the stored result, instantly."""
         try:
             result = computer.result(request)
+        except ComputationSuperseded as error:  # the page only shows the answer to its latest request anyway
+            raise HTTPException(409, str(error)) from error
         except (ValueError, KeyError) as error:
             raise HTTPException(400, str(error)) from error
         except (RuntimeError, ConnectionError) as error:

@@ -8,6 +8,7 @@ from time import perf_counter
 from sailrouter.api.cached_route_computer import CachedRouteComputer
 from sailrouter.api.last_route_request_store import LastRouteRequestStore
 from sailrouter.course.race_catalog import RaceCatalog
+from sailrouter.service.computation_superseded import ComputationSuperseded
 
 KEEP_WARM_FOR = timedelta(hours=6)  # recent request: also recompute when its 30-min start slot changes
 log = logging.getLogger(__name__)
@@ -44,7 +45,11 @@ class LastRoutePrecomputer:
         if not weather_changed and self._now() - received_at > KEEP_WARM_FOR:
             return False
         began = perf_counter()
-        self._computer.result(request)
+        try:
+            self._computer.result(request, from_player=False)
+        except ComputationSuperseded:
+            log.info("pre-computation dropped: the player sent a new route request")
+            return False
         log.info("pre-computed the last route request (%s/%s at %.4f, %.4f) in %.1f s", request.race_id,
                  request.boat_id, request.position.lat, request.position.lon, perf_counter() - began)
         return True

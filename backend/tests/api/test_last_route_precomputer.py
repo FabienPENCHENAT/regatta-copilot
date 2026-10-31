@@ -18,7 +18,7 @@ class FakeComputer:
     def __init__(self):
         self.requests = []
 
-    def result(self, request):
+    def result(self, request, from_player=True):
         self.requests.append(request)
         return {}
 

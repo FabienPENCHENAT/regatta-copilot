@@ -23,12 +23,14 @@ import { measureMapInsets } from "./layout/map-insets.js";
 import { ApiClient } from "./api/api-client.js";
 import { RouteComputation } from "./api/route-computation.js";
 
+const SETTINGS_SETTLE_MS = 1200; // settings changed in a row (several sails ticked) make a single computation
 const DEFAULT_POSITION_TEXT = `48°43'48"N 001°54'00"W`; // Class40 start line, Saint-Malo
 
 class App {
   #race = null;
   #result = null;
   #latestRequest = 0; // only the answer to the latest request is shown
+  #settleTimer = null;
   #state = { optionId: null, hour: 0, windMode: "particles", view: "near" };
 
   constructor() {
@@ -51,11 +53,11 @@ class App {
       api: this.api,
       translator: this.translator,
       preferences: this.preferences,
-      onChange: () => this.#result && this.form.submit(), // sails and manoeuvre times change the best route
+      onChange: () => this.#recomputeSoon(), // sails and manoeuvre times change the best route
       onPolarChange: () => this.#loadBoat(this.form.boatId).then(() => this.form.submit()),
     });
     this.nextMark = new NextMarkPicker(byId("next-mark"), {
-      translator: this.translator, preferences: this.preferences, onChange: () => this.#result && this.form.submit(),
+      translator: this.translator, preferences: this.preferences, onChange: () => this.#recomputeSoon(),
     });
     this.formPanel = new PanelCollapser(byId("route-form"), { toggle: byId("form-edit"), translator: this.translator, labelToggle: false });
     this.dockPanel = new PanelCollapser(byId("dock"), { toggle: byId("dock-toggle"), translator: this.translator, expandOnPanelClick: true });
@@ -109,7 +111,15 @@ class App {
     this.#render({ fitMap: "view" in changes });
   }
 
+  // Recomputes the shown result once the settings stop changing for a moment.
+  #recomputeSoon() {
+    if (!this.#result) return;
+    clearTimeout(this.#settleTimer);
+    this.#settleTimer = setTimeout(() => this.form.submit(), SETTINGS_SETTLE_MS);
+  }
+
   async compute(request) {
+    clearTimeout(this.#settleTimer);
     const requestNumber = ++this.#latestRequest;
     this.form.showBusy();
     this.#showComputing(true);

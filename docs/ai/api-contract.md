@@ -53,9 +53,11 @@ direction; a mark with `leave_to` is never skipped automatically (around Guadelo
 (optional sails among LightJib, LightGnk, Staysail, HeavyGnk, Code0; Jib and Spi are always allowed; foils, hull
 and pro winch are never applied; missing maneuvers use the polar's standard-winch values).
 One synchronous call. The route window is [max(race start, now), +120 h].
+- A newer `POST /api/route` arriving before this one is computed → **409** `{"detail": "a newer route request
+  replaced this one"}` (D43); the page ignores answers to superseded requests anyway.
 - Same inputs (incl. `next_mark` and the polar in use) on the same weather runs as an earlier request, or as the
   background pre-computation of the last request (D40) → the stored result at once.
-- **GEFS run on disk** → ensemble result (31 member routes + the GFS route, ≈ 16–25 s on the dev Mac).
+- **GEFS run on disk** → ensemble result (31 member routes + the GFS route, ≈ 25–40 s on the dev Mac).
 - **Otherwise** → GFS-only result (~5 s), and the GEFS download starts in the background (≈ 15 min,
   `ensemble.state = "downloading"`). Poll `GET /api/ensemble/status` and recompute when it says `ready`.
 - The GFS run is the newest one **on disk** (the background refresher downloads new runs): no request waits for

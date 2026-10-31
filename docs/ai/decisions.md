@@ -2,6 +2,21 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D43 — A newer request cancels the older one; land checked only for possible winners (user, 2026-10-31)
+- "Changing an option takes far more than 30 s": each settings change queued a full 31-member computation
+  (≈ 30–40 s each, one at a time since D42), so three ticks cost ≈ 1 min 45.
+- Page: settings and next-mark changes recompute 1.2 s after the last change (`SETTINGS_SETTLE_MS`), so a burst
+  of ticks makes one request.
+- Server: `api/RouteRequestLedger` numbers the player's requests. A request still waiting for the computation
+  lock, or whose ensemble is running, stops as soon as a newer one arrives (`ComputationSuperseded` → **409**;
+  running worker processes are terminated, pending members cancelled). The background pre-computation never
+  supersedes, it only yields. Measured: 3 changes 3 s apart → two 409 within 9 s, only the last one computed.
+- `IsochronePruner.prune(..., blocked)`: obstacles are checked only for candidates that can still win their
+  sector, farthest first (rounds of 1, 4, 16... per sector), instead of all ≈ 50 000 segments per step. Same
+  routes (checked identical on real members), ≈ 12–15 % faster per member.
+- Rejected: coarser sectors (1°) for members — not reliably faster and visibly different routes (option plans
+  come from member medoids). Remaining floor ≈ 25–30 s: 31 members on 4 performance + 6 efficiency cores.
+
 ## D42 — Finer time steps, one computation at a time, visible computing state (user, 2026-10-31)
 - Orders can change at any time in the game: `TimeSchedule` now uses phases — 15 min until +6 h, 30 min until
   +24 h, 1 h until +48 h, 3 h after (108 isochrones over 120 h instead of 56). Legs start and last to the quarter
