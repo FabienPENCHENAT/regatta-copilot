@@ -53,3 +53,22 @@ def test_falls_back_to_previous_run_and_caches(tmp_path):
     downloaded = len(client.requests)
     make_source(tmp_path, client).wind_field(start, start + timedelta(hours=3), NOW)
     assert len(client.requests) == downloaded + 1  # only the 12z probe again; 06z is cached
+
+
+def test_prefer_cached_routes_on_the_run_on_disk_without_asking_nomads(tmp_path):
+    start = datetime(2026, 11, 1, 12, 2, tzinfo=UTC)
+    end = start + timedelta(hours=3)
+    make_source(tmp_path, FakeNomads()).wind_field(start, end, NOW)  # puts 06z on disk
+    offline = FakeNomads()
+    source = make_source(tmp_path, offline)
+    assert source.cached_run(start, end, NOW).key == "gfs-2026103106"
+    _, run = source.wind_field(start, end, NOW, prefer_cached=True)
+    assert run.key == "gfs-2026103106" and offline.requests == []
+    assert source.cached_run(start, end + timedelta(hours=3), NOW) is None  # longer window: leads missing
+
+
+def test_download_latest_only_downloads(tmp_path):
+    start = datetime(2026, 11, 1, 12, 2, tzinfo=UTC)
+    client = FakeNomads()
+    run = make_source(tmp_path, client).download_latest(start, start + timedelta(hours=3), NOW)
+    assert run.key == "gfs-2026103106" and len(client.requests) == 1 + 5  # 12z probe, then 06z f030..f034
