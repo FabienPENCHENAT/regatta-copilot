@@ -9,8 +9,9 @@ when a class is added, renamed or split, update the table.
 routeur-voile/
 ├── backend/sailrouter/     Python package (FastAPI + routing engine)
 ├── backend/tests/          pytest, mirrors the package layout
-├── frontend/               Vite + vanilla JS + Leaflet
-│   └── i18n/               fr.json, en.json (all UI text)
+├── frontend/               vanilla JS ES modules + Leaflet, no build step
+│   ├── i18n/               fr.json, en.json (all UI text)
+│   └── mock/               sample result + coastline used by the mock-up
 ├── races/                  one JSON file per race (generic format, no code change to add a race)
 ├── data/polars/            VR polar JSON files (+ sources/ with provenance)
 ├── data/geo/               simplified coastline (Natural Earth)
@@ -89,14 +90,35 @@ receives them as constructor arguments.
 | `RouteTracer` | Walks parents back from the best final point → `Route`. |
 | `Route` | Ordered `RoutePoint`s (time, position, heading, TWA, TWS, sail, speed). |
 
-### `ensemble` — the robust route
+### `ensemble` — route options and their probabilities
+The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in place for the weather in
+2 days"), each with its **probability of being the best** and a **route plan at +4/8/12/16/24/48 h**.
 | Class | Responsibility |
 |---|---|
-| `EnsembleRouter` | Runs `IsochroneRouter` for each member (process pool), reports progress. |
-| `PositionClusterer` | Groups member positions at T+5/24/48 h; returns the majority cluster. |
-| `ConfidenceGrader` | Share of members in the majority cluster → green / orange / red. |
-| `ConsensusBuilder` | Circular median of first headings, majority sail. |
-| `AdviceWriter` | Rule-based advice as **i18n key + parameters** (never text), e.g. `advice.stay_south {n: 24, total: 31}`. |
+| `EnsembleRouter` | Runs `IsochroneRouter` for each of the 31 GEFS members + the deterministic GFS (process pool), reports progress. |
+| `RouteOptionClusterer` | Groups the member routes into options by where they are at +24 h and +48 h. |
+| `OptionLabeler` | Names each option: direction (`west`, `south`, `direct`) and kind (`shortest`, `positioning`, `coastal`). |
+| `OptionProbabilityEstimator` | Share of members whose best route belongs to the option; ETA gap to the best option. |
+| `OptionTimelineBuilder` | For one option: target position (zone centre + radius), heading, sail, TWA, TWS, speed at each horizon. |
+| `ConfidenceGrader` | Share of the option's members inside the target zone → `high` / `medium` / `low`. |
+| `ConsensusBuilder` | Circular median heading and majority sail of the option's members at a given time. |
+| `AdviceWriter` | Rule-based advice as **i18n key + parameters** (never text), e.g. `advice.head_direction {option, count, total, hours}`. |
+
+### `frontend` — no build step, native ES modules
+| Module | Responsibility |
+|---|---|
+| `src/main.js` (`App`) | Creates and connects the components; holds the current result and selected option. |
+| `i18n/translator.js`, `i18n/language-picker.js` | Loads `i18n/<lang>.json`, translates keys; FR/EN toggle. |
+| `storage/preferences-store.js` | Last race, boat, language in localStorage. |
+| `form/position-parser.js`, `form/route-form.js` | Parses pasted positions; race/boat/position inputs and submit. |
+| `map/route-map.js`, `map/basemap.js` | Leaflet map (position, member routes, selected option, zones); OSM tiles or coastline. |
+| `results/now-panel.js` | "Set this now": heading, sail, TWA, TWS, speed + advice sentence. |
+| `results/option-list.js` | Option cards with probability. |
+| `results/timeline-table.js` | Route plan table (cards on phones). |
+| `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |
+| `api/mock-api.js` | Mock-up stand-in; replaced by an `ApiClient` with the same interface in step 5. |
+
+The response shape is documented in [api-contract.md](api-contract.md).
 
 ### `api`
 | Module | Responsibility |
@@ -112,7 +134,8 @@ user: race + boat + position text
   → PositionParser → GeoPoint
   → RaceCatalog → Race (next mark from position)
   → ForecastStore → EnsembleForecast (downloaded once per GEFS run)
-  → EnsembleRouter → 31 Routes
-  → PositionClusterer + ConfidenceGrader + ConsensusBuilder + AdviceWriter
-  → JSON → frontend (map, 3 cards, advice sentence translated client-side)
+  → EnsembleRouter → 31 GEFS routes + 1 GFS route
+  → RouteOptionClusterer → OptionLabeler → OptionProbabilityEstimator
+  → OptionTimelineBuilder (+ ConfidenceGrader, ConsensusBuilder) → AdviceWriter
+  → JSON → frontend (now panel, option cards, route plan, map; text translated client-side)
 ```

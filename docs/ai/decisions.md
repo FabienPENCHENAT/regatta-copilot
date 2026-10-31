@@ -2,6 +2,20 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D10 — Results are route options with probabilities (user request, 2026-10-31)
+The user wants several scenarios ("the shortest", "get in place for the weather in 2 days"...), each with a
+probability of success, plus a sail/heading advice, at **+4, 8, 12, 16, 24 h** (and +48 h for positioning).
+Member routes are clustered into 2–4 options; probability = share of members whose best route is in the option.
+Replaces the single consensus route with three cards (5/24/48 h) from the original brief.
+
+## D9 — Frontend without a build step (2026-10-31)
+Native ES modules served as static files (by FastAPI later), Leaflet from cdnjs. Simpler than Vite, nothing to
+install, the same files are published as the mock-up artifact. Rejected: Vite (no benefit at this size).
+
+## D8 — Mock-up basemap: Natural Earth coastline (2026-10-31)
+Published artifacts cannot load OSM tiles (CSP). The mock-up draws `frontend/mock/atlantic-land-50m.geojson`
+(Natural Earth 1:50m, public domain, clipped to 0–62°N / 85°W–15°E). The real app uses OSM tiles (`basemap.js`).
+
 ## D7 — Advice text is produced client-side from i18n keys (2026-10-31)
 The backend returns `{key, params}`; the frontend translates. Keeps all text in `frontend/i18n/*.json`.
 
@@ -35,6 +49,7 @@ Chosen 0.5°: 4× less data and compute, ensemble spread dominates the resolutio
 ## D2 — Python backend (FastAPI) + vanilla JS frontend (2026-10-31)
 As proposed in the brief. numpy for the router, `eccodes` (pip wheel, no system install) for GRIB2.
 
-## D1 — Pending: add the deterministic GFS route as "the game's route"? **PENDING**
-VR uses the deterministic GFS 0.25°, not the GEFS members. Showing it as a 32nd, highlighted route would show
-what the game's weather "believes". Cost: ~130 extra small downloads per run.
+## D1 — Add the deterministic GFS route as "the game's route" (accepted by the user, 2026-10-31)
+VR uses the deterministic GFS 0.25°, not the GEFS members. It is routed as a 32nd member and the option it
+belongs to is flagged (`game_route: true`). It does not count in the probabilities (31 GEFS members only).
+Cost: ~130 extra small downloads per run.

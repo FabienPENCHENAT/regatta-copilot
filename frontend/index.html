@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routeur Voile</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="styles/app.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script type="module" src="src/main.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-name" data-i18n="app.title"></span>
+      <span class="brand-tagline" data-i18n="app.tagline"></span>
+    </div>
+    <div id="lang-picker" class="lang-picker" role="group" data-i18n-attr="aria-label:lang.label"></div>
+  </div>
+</header>
+
+<p class="mock-banner" data-i18n="mock.banner"></p>
+
+<main class="layout">
+  <form id="route-form" class="card form-card" novalidate>
+    <h1 class="form-title" data-i18n="form.title"></h1>
+    <div class="form-row">
+      <label class="field">
+        <span class="field-label" data-i18n="form.race"></span>
+        <select id="race"></select>
+      </label>
+      <label class="field">
+        <span class="field-label" data-i18n="form.boat"></span>
+        <select id="boat"></select>
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label" data-i18n="form.position"></span>
+      <input id="position" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+             aria-describedby="position-feedback" data-i18n-attr="placeholder:form.position_placeholder">
+    </label>
+    <p id="position-feedback" class="position-feedback" aria-live="polite"></p>
+    <button id="submit" class="submit" type="submit"></button>
+  </form>
+
+  <section id="now-panel" class="card now-panel" aria-live="polite"></section>
+
+  <section class="map-section" data-i18n-attr="aria-label:map.title">
+    <div id="map" class="map"></div>
+    <ul class="map-legend">
+      <li><span class="legend-line thick"></span><span data-i18n="map.legend_option"></span></li>
+      <li><span class="legend-line thin"></span><span data-i18n="map.legend_members"></span></li>
+      <li><span class="legend-zone"></span><span data-i18n="map.legend_zones"></span></li>
+    </ul>
+    <p id="weather-status" class="weather-status"></p>
+  </section>
+
+  <section id="options" class="options"></section>
+
+  <section id="timeline" class="timeline-section"></section>
+
+  <details class="card settings">
+    <summary data-i18n="settings.title"></summary>
+    <div class="settings-body">
+      <fieldset>
+        <legend data-i18n="settings.boat_options"></legend>
+        <label class="check"><input id="opt-foils" type="checkbox" checked><span data-i18n="settings.foils"></span></label>
+        <label class="check"><input id="opt-heavy" type="checkbox" checked><span data-i18n="settings.heavy"></span></label>
+        <label class="check"><input id="opt-light" type="checkbox" checked><span data-i18n="settings.light"></span></label>
+        <label class="check"><input id="opt-reach" type="checkbox" checked><span data-i18n="settings.reach"></span></label>
+        <label class="check"><input id="opt-winch" type="checkbox" checked><span data-i18n="settings.winch"></span></label>
+        <label class="check"><input id="opt-hull" type="checkbox" checked><span data-i18n="settings.hull"></span></label>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="settings.penalties"></legend>
+        <div class="penalties">
+          <label class="field"><span class="field-label" data-i18n="settings.tack"></span><input id="pen-tack" type="number" min="0" step="0.5" value="3"></label>
+          <label class="field"><span class="field-label" data-i18n="settings.gybe"></span><input id="pen-gybe" type="number" min="0" step="0.5" value="3"></label>
+          <label class="field"><span class="field-label" data-i18n="settings.sail_change"></span><input id="pen-sail" type="number" min="0" step="0.5" value="4"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="settings.polar"></legend>
+        <p class="polar-note" data-i18n="settings.polar_current"></p>
+        <label class="field">
+          <span class="field-label" data-i18n="settings.polar_import"></span>
+          <input id="polar-file" type="file" accept="application/json,.json">
+        </label>
+      </fieldset>
+    </div>
+  </details>
+</main>
+
+<footer class="footer">
+  <p data-i18n="disclaimer"></p>
+  <p data-i18n="credits"></p>
+</footer>
+</body>
+</html>
