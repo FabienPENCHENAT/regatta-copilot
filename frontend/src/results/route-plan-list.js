@@ -32,7 +32,7 @@ export class RoutePlanList {
     button.type = "button";
     button.setAttribute("aria-pressed", String(selected));
     button.title = t("timeline.show_on_map");
-    button.addEventListener("click", () => this.onSelectHour(Math.floor(leg.start_hour)));
+    button.addEventListener("click", () => this.onSelectHour(leg.start_hour));
 
     const when = element("span", "plan-when");
     when.append(

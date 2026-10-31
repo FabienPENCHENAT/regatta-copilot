@@ -2,6 +2,15 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D51 — The order being sailed is shown everywhere at its exact time (user, 2026-10-31)
+- Selecting order n (route plan, map marker, ◀ ▶) keeps its EXACT start hour (+0 h 30, +1 h 15…): before, it
+  was floored, so orders 2 and 3 (+30 / +45 min) could never be selected. The dragged slider keeps its stops.
+- Map: the current order's numbered point pulses (`leg-pulse`, off with reduced motion) and keeps its label
+  open ("4 · 302° · Jib"); the boat sits on that point. Between orders, the boat is interpolated on the
+  hourly path. The map wind is fetched for the whole hour.
+- Time bar: marks only for the numbered orders (route plan, 48 h), placed at their exact time between stops;
+  the current one is highlighted.
+
 ## D50 — Time bar instead of hour chips; 5-day view (user, 2026-10-31)
 - The hour chips (start, +4 … +48 h) become `map/TimeBar`: a slider over the whole route (0–120 h, hourly),
   a mark at each change of orders of the selected option (floored leg start hours), ◀ ▶ buttons jumping to

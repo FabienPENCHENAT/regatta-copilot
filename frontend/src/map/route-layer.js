@@ -1,7 +1,7 @@
 // Routes of a result: the computed track, the scenario routes (thin), the selected option (thick) with a
 // numbered point at each change of orders (same numbers as the route plan), and the boat at the selected hour.
 
-import { formatHeading } from "../results/display-format.js";
+import { formatHeading, formatHoursMinutes } from "../results/display-format.js";
 import { legAt, planLegs } from "../results/plan-legs.js";
 
 const BOAT_SVG = `<svg viewBox="-12 -12 24 24" width="28" height="28" aria-hidden="true">
@@ -42,24 +42,28 @@ export class RouteLayer {
         className: `leg-marker${leg === current ? " current" : ""}`, html: `<span>${index + 1}</span>`, iconSize: [24, 24],
       });
       const label = `${index + 1} · ${formatHeading(leg.heading_deg)} · ${this.translator.t(`sail.${leg.sail}`)}`;
+      // The order being sailed at the shown hour pulses and keeps its label open.
       L.marker([leg.lat, leg.lon], { icon, keyboard: false, zIndexOffset: leg === current ? 500 : 0 })
-        .bindTooltip(label)
-        .on("click", () => this.onSelectHour(Math.floor(leg.start_hour)))
+        .bindTooltip(label, leg === current
+          ? { permanent: true, direction: "top", offset: [0, -14], className: "leg-label current" }
+          : { direction: "top", offset: [0, -12], className: "leg-label" })
+        .on("click", () => this.onSelectHour(leg.start_hour))
         .addTo(this.#routes);
     });
   }
 
-  // The option path holds one point per hour from the start.
+  // At the start of an order the boat sits on its numbered point; otherwise between the hourly path points.
   showBoat(option, hour, heading) {
     this.#boat.clearLayers();
-    const point = option.path[Math.min(hour, option.path.length - 1)];
+    const leg = option.legs.find((l) => l.start_hour === hour);
+    const point = leg ? [leg.lat, leg.lon] : pathPointAt(option.path, hour);
     const icon = L.divIcon({
       className: "boat-icon",
       html: `<span style="transform: rotate(${heading}deg)">${BOAT_SVG}</span>`,
       iconSize: [28, 28],
     });
     L.marker(point, { icon, keyboard: false })
-      .bindTooltip(hour === 0 ? this.translator.t("map.you") : this.translator.t("map.boat_at", { h: hour }))
+      .bindTooltip(hour === 0 ? this.translator.t("map.you") : this.translator.t("map.boat_at", { h: formatHoursMinutes(hour) }))
       .addTo(this.#boat);
   }
 
@@ -77,4 +81,13 @@ export class RouteLayer {
       .addTo(this.#routes);
   }
 
+}
+
+// Position at a (possibly fractional) hour on a path holding one point per hour.
+function pathPointAt(path, hour) {
+  const last = path.length - 1;
+  const before = Math.min(Math.floor(hour), last);
+  const after = Math.min(before + 1, last);
+  const share = Math.min(Math.max(hour - before, 0), 1);
+  return [0, 1].map((k) => path[before][k] + (path[after][k] - path[before][k]) * share);
 }

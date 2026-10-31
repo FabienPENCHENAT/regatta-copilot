@@ -1,10 +1,11 @@
 // Time bar of the chart: a slider over the whole route with stops every hour for the first day, then every 3 h
-// (the GFS steps, and the route points beyond +48 h); a mark for each change of orders of the selected option,
-// snapped to a stop; two buttons jumping to the previous / next change. The slider moves stop by stop, the
-// first day taking as much room as its 24 stops. Built once and updated in place, so a drag is never cut.
+// (the GFS steps, and the route points beyond +48 h); a mark at the exact time of each numbered order of the
+// selected option (the current one highlighted); two buttons jumping to the previous / next order, at its exact
+// time. The slider moves stop by stop, the first day taking as much room as its 24 stops. Built once and
+// updated in place, so a drag is never cut.
 
 import { element } from "../dom.js";
-import { formatLocalTime } from "../results/display-format.js";
+import { formatHoursMinutes, formatLocalTime } from "../results/display-format.js";
 
 const DAY_H = 24;
 const HOURLY_UNTIL_H = 24;
@@ -28,6 +29,7 @@ export class TimeBar {
     this.translator = translator;
     this.onSelectHour = onSelectHour;
     this.element = element("div", "time-bar");
+    this.markElements = [];
     this.#build();
   }
 
@@ -35,13 +37,14 @@ export class TimeBar {
   update({ hour, maxHour, marks, startIso }) {
     this.#hour = hour;
     this.#startIso = startIso;
-    const snapped = [...new Set(marks.map((mark) => this.#stopAtOrBefore(mark, timeStops(maxHour))))].filter((h) => h > 0);
-    if (this.#stops.at(-1) !== maxHour || String(snapped) !== String(this.#marks)) {
+    if (this.#stops.at(-1) !== maxHour || String(marks) !== String(this.#marks)) {
       this.#stops = timeStops(maxHour);
       this.slider.max = String(this.#stops.length - 1);
-      this.#marks = snapped;
+      this.#marks = marks;
       this.#drawScale();
     }
+    const current = this.#marks.findLast((mark) => mark <= hour);
+    this.markElements.forEach((element, i) => element.classList.toggle("current", this.#marks[i] === current));
     const index = String(this.#stops.indexOf(this.#stopAtOrBefore(hour, this.#stops)));
     if (this.slider.value !== index) this.slider.value = index;
     this.#renderLabels();
@@ -88,7 +91,7 @@ export class TimeBar {
   #drawScale() {
     const maxHour = this.#stops.at(-1);
     if (!maxHour) return;
-    const at = (hour) => `${(this.#stops.indexOf(hour) / (this.#stops.length - 1)) * 100}%`;
+    const at = (hour) => `${(this.#position(hour) / (this.#stops.length - 1)) * 100}%`;
     const marks = this.#marks.map((hour) => {
       const mark = element("span", "time-bar-mark");
       mark.style.left = at(hour);
@@ -102,11 +105,12 @@ export class TimeBar {
       label.style.left = at(hour);
       days.push(label);
     }
+    this.markElements = marks;
     this.scale.replaceChildren(...marks, ...days);
   }
 
   #renderLabels() {
-    const offset = this.#hour === 0 ? this.translator.t("wind.time_start") : this.translator.t("wind.time_plus", { h: this.#hour });
+    const offset = this.#hour === 0 ? this.translator.t("wind.time_start") : `+${formatHoursMinutes(this.#hour)}`;
     this.value.textContent = this.#startIso
       ? `${offset} · ${formatLocalTime(this.#startIso, this.#hour, this.translator.lang)}` : offset;
     this.previous.disabled = this.#hour <= 0;
@@ -119,6 +123,14 @@ export class TimeBar {
       ? this.#marks.find((hour) => hour > this.#hour) ?? max
       : this.#marks.findLast((hour) => hour < this.#hour) ?? 0;
     this.onSelectHour(target);
+  }
+
+  // Index on the slider of any hour, fractional between two stops (an order at +0 h 30 sits mid-way).
+  #position(hour) {
+    const after = this.#stops.findIndex((stop) => stop >= hour);
+    if (after <= 0) return Math.max(after, 0);
+    const [low, high] = [this.#stops[after - 1], this.#stops[after]];
+    return after - 1 + (hour - low) / (high - low);
   }
 
   #stopAtOrBefore(hour, stops) {

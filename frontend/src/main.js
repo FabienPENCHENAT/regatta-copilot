@@ -4,7 +4,7 @@
 import { Translator } from "./i18n/translator.js";
 import { LanguagePicker } from "./i18n/language-picker.js";
 import { PreferencesStore } from "./storage/preferences-store.js";
-import { legAt } from "./results/plan-legs.js";
+import { legAt, planLegs } from "./results/plan-legs.js";
 import { PositionParser } from "./form/position-parser.js";
 import { RouteForm } from "./form/route-form.js";
 import { RaceHeader } from "./form/race-header.js";
@@ -217,17 +217,18 @@ class App {
   // Shows the closest loaded wind at once, then the exact hour as soon as it arrives.
   // While the time bar is dragged, only the hour the slider rests on is fetched (WIND_SETTLE_MS).
   #renderWind(hour, windMode, view, option) {
-    const shown = this.wind.nearest(hour);
+    const windHour = Math.floor(hour); // the map wind is fetched by whole hour
+    const shown = this.wind.nearest(windHour);
     this.map.showWind(shown.grid, windMode);
-    const marks = [...new Set(option.legs.map((leg) => Math.floor(leg.start_hour)))].filter((h) => h > 0);
+    const marks = planLegs(option).map((leg) => leg.start_hour).filter((h) => h > 0); // the numbered orders
     this.mapControls.render({
       view, hour, windMode,
       timeline: { maxHour: option.path.length - 1, marks, startIso: this.#result.computed_at },
     });
     clearTimeout(this.#windTimer);
     if (shown.exact) return;
-    this.#windTimer = setTimeout(() => this.wind.load(hour).then((loaded) => {
-      if (loaded && this.#state.hour === hour) this.map.showWind(this.wind.nearest(hour).grid, this.#state.windMode);
+    this.#windTimer = setTimeout(() => this.wind.load(windHour).then((loaded) => {
+      if (loaded && this.#state.hour === hour) this.map.showWind(this.wind.nearest(windHour).grid, this.#state.windMode);
     }), WIND_SETTLE_MS);
   }
 
