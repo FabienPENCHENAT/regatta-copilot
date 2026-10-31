@@ -33,9 +33,6 @@ One synchronous call (~5 s, ~2 min the first time a GFS run is downloaded).
 Until the ensemble exists: one option `{ "id": "gfs", "kind": "game" }`, `"probability": null`, step
 `"confidence": null`, `"members": []`, and `ideal_route` = the computed 120 h track with `distance_nm`, `to_go_nm`, `finished`.
 
-## `GET /api/races/{id}/boats/{boat}/polar`
-The raw VR polar of the boat (the frontend reads its `winch` block to show manoeuvre times).
-
 Response:
 ```jsonc
 {
@@ -67,3 +64,6 @@ Response:
 Conventions: `twa_deg` signed (positive = wind on starboard), sail ids are the VR polar names
 (`Jib`, `Spi`, `Staysail`, `LightJib`, `Code0`, `HeavyGnk`, `LightGnk` → i18n `sail.<id>`),
 horizons are 4, 8, 12, 16, 24, 48 h.
+
+## `GET /api/races/{id}/boats/{boat}/polar`
+The raw VR polar of the boat (the frontend reads its `winch` block to show manoeuvre times).
