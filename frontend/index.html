@@ -7,18 +7,28 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500&family=Libre+Caslon+Text:ital@1&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="styles/app.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.js"></script>
 <script type="module" src="src/main.js"></script>
 </head>
 <body>
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <span class="brand-name" data-i18n="app.title"></span>
-      <span class="brand-tagline" data-i18n="app.tagline"></span>
+      <svg class="brand-rose" viewBox="-50 -50 100 100" aria-hidden="true">
+        <circle r="46" class="rose-ring"/>
+        <circle r="38" class="rose-ring thin"/>
+        <path class="rose-point" d="M0 -46 L7 -7 L0 0 Z M0 46 L-7 7 L0 0 Z M46 0 L7 7 L0 0 Z M-46 0 L-7 -7 L0 0 Z"/>
+        <path class="rose-point light" d="M0 -46 L-7 -7 L0 0 Z M0 46 L7 7 L0 0 Z M46 0 L7 -7 L0 0 Z M-46 0 L-7 7 L0 0 Z"/>
+        <path class="rose-point minor" d="M28 -28 L4 -4 L0 0 Z M-28 28 L-4 4 L0 0 Z M28 28 L4 4 L0 0 Z M-28 -28 L-4 -4 L0 0 Z"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name" data-i18n="app.title"></span>
+        <span class="brand-tagline" data-i18n="app.tagline"></span>
+      </div>
     </div>
     <div id="lang-picker" class="lang-picker" role="group" data-i18n-attr="aria-label:lang.label"></div>
   </div>
@@ -51,12 +61,17 @@
   <section id="now-panel" class="card now-panel" aria-live="polite"></section>
 
   <section class="map-section" data-i18n-attr="aria-label:map.title">
-    <div id="map" class="map"></div>
+    <div class="map-frame">
+      <div id="map" class="map"></div>
+    </div>
+    <div id="wind-controls" class="wind-controls"></div>
     <ul class="map-legend">
       <li><span class="legend-line thick"></span><span data-i18n="map.legend_option"></span></li>
       <li><span class="legend-line thin"></span><span data-i18n="map.legend_members"></span></li>
       <li><span class="legend-zone"></span><span data-i18n="map.legend_zones"></span></li>
+      <li><span class="legend-restricted"></span><span data-i18n="map.legend_course"></span></li>
     </ul>
+    <p id="wind-source" class="weather-status"></p>
     <p id="weather-status" class="weather-status"></p>
   </section>
 

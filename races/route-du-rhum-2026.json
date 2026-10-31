@@ -1,0 +1,895 @@
+{
+ "id": "route-du-rhum-2026",
+ "name": "Route du Rhum – Destination Guadeloupe 2026",
+ "sources": [
+  "Instructions de course 2026 intégrant les avenants 1 (09/10/2026) et 2 (18/10/2026), §9.3, §10.1, annexes 3 et 4. Skipper Drive linked from https://www.routedurhum.com/espace-skippers",
+  "Virtual Regatta race ids and boats: third-party list https://vro.civis.net/LSV-Dash/api?context=api&context_type=races (retrieved 2026-10-31)"
+ ],
+ "start_time_utc": "2026-11-01T12:02:00Z",
+ "close_time_utc": "2026-11-30T13:00:00Z",
+ "default_boat": "class40",
+ "boats": [
+  {
+   "id": "class40",
+   "vr_race_id": "844.1",
+   "vr_boat": "mono/class40-2021",
+   "polar": "data/polars/class40-2021.vr.json",
+   "start_line": [
+    [
+     48.725,
+     -1.9
+    ],
+    [
+     48.735,
+     -1.9
+    ]
+   ]
+  },
+  {
+   "id": "imoca",
+   "vr_race_id": "845.1",
+   "vr_boat": "mono/imoca_60_foils",
+   "polar": null,
+   "start_line": [
+    [
+     48.735,
+     -1.9
+    ],
+    [
+     48.75,
+     -1.9
+    ]
+   ]
+  },
+  {
+   "id": "ocean_fifty",
+   "vr_race_id": "846.1",
+   "vr_boat": "multi/multi_50",
+   "polar": null,
+   "start_line": [
+    [
+     48.758333,
+     -1.9
+    ],
+    [
+     48.775,
+     -1.9
+    ]
+   ]
+  },
+  {
+   "id": "ultim",
+   "vr_race_id": "797.1",
+   "vr_boat": "Ultim BP XI",
+   "polar": null,
+   "start_line": [
+    [
+     48.758333,
+     -1.9
+    ],
+    [
+     48.775,
+     -1.9
+    ]
+   ]
+  },
+  {
+   "id": "vintage_multi",
+   "vr_race_id": "847.1",
+   "vr_boat": "Happy",
+   "polar": null,
+   "start_line": [
+    [
+     48.75,
+     -1.9
+    ],
+    [
+     48.758333,
+     -1.9
+    ]
+   ]
+  }
+ ],
+ "start_note": "Line along 001°54.000'W crossed westward; positions are 'approximate' in the SI (§9.3). The in-game VR line is not public.",
+ "marks": [
+  {
+   "id": "frehel_gate",
+   "type": "gate",
+   "points": [
+    [
+     48.696667,
+     -2.308333
+    ],
+    [
+     48.713333,
+     -2.308333
+    ]
+   ],
+   "cross": "westward",
+   "status": "official",
+   "note": "The north buoy may move on start day, same longitude."
+  },
+  {
+   "id": "tete_anglais",
+   "type": "point",
+   "position": [
+    16.380833,
+    -61.764167
+   ],
+   "leave_to": "port",
+   "status": "derived",
+   "note": "No coordinates in the SI: vertex A of the ZPC AGOA Guadeloupe zone."
+  },
+  {
+   "id": "basse_terre_buoy",
+   "type": "point",
+   "position": [
+    15.9875,
+    -61.7365
+   ],
+   "leave_to": "starboard",
+   "status": "official"
+  },
+  {
+   "id": "les_saintes",
+   "type": "island",
+   "position": [
+    15.861,
+    -61.61
+   ],
+   "leave_to": "starboard",
+   "status": "derived",
+   "note": "Archipelago, no coordinates in the SI. Position is the archipelago centre, for display."
+  },
+  {
+   "id": "pointe_a_pitre_buoy",
+   "type": "point",
+   "position": [
+    16.1595,
+    -61.522167
+   ],
+   "leave_to": "port",
+   "rounding": true,
+   "status": "official"
+  }
+ ],
+ "course_note": "Guadeloupe is rounded leaving it to port (SI annex 3).",
+ "finish": {
+  "line": [
+   [
+    16.2,
+    -61.5175
+   ],
+   [
+    16.2,
+    -61.513333
+   ]
+  ],
+  "cross": "northward",
+  "status": "official"
+ },
+ "exclusion_zones": [
+  {
+   "id": "plaisanciers",
+   "name": "Plaisanciers",
+   "kind": "spectators",
+   "shape": "line",
+   "points": [
+    [
+     48.683333,
+     -2.391667
+    ],
+    [
+     48.695,
+     -2.333333
+    ],
+    [
+     48.680583,
+     -2.326833
+    ],
+    [
+     48.684833,
+     -2.314833
+    ],
+    [
+     48.714167,
+     -1.970333
+    ],
+    [
+     48.731667,
+     -1.835
+    ]
+   ],
+   "note": "Boundary line closed by the coast (start area). Treated as a line that must not be crossed."
+  },
+  {
+   "id": "wind_farm_saint_brieuc",
+   "name": "Parc éolien de Saint-Brieuc",
+   "kind": "wind_farm",
+   "shape": "polygon",
+   "points": [
+    [
+     48.93,
+     -2.569167
+    ],
+    [
+     48.885,
+     -2.5
+    ],
+    [
+     48.8175,
+     -2.454167
+    ],
+    [
+     48.796667,
+     -2.448333
+    ],
+    [
+     48.791667,
+     -2.509167
+    ],
+    [
+     48.805833,
+     -2.555
+    ],
+    [
+     48.82,
+     -2.575833
+    ],
+    [
+     48.896667,
+     -2.618333
+    ],
+    [
+     48.909167,
+     -2.616667
+    ]
+   ]
+  },
+  {
+   "id": "binic_mussel_beds",
+   "name": "Moulières de Binic",
+   "kind": "other",
+   "shape": "polygon",
+   "points": [
+    [
+     48.601167,
+     -2.777333
+    ],
+    [
+     48.605333,
+     -2.769167
+    ],
+    [
+     48.5935,
+     -2.756333
+    ],
+    [
+     48.589667,
+     -2.764333
+    ]
+   ]
+  },
+  {
+   "id": "tss_ouessant",
+   "name": "DST Ouessant",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     49.075833,
+     -5.501667
+    ],
+    [
+     48.8515,
+     -5.306333
+    ],
+    [
+     48.684,
+     -5.116
+    ],
+    [
+     48.425333,
+     -5.447167
+    ],
+    [
+     48.510833,
+     -5.772667
+    ],
+    [
+     48.636,
+     -6.114333
+    ],
+    [
+     48.94,
+     -5.86
+    ]
+   ]
+  },
+  {
+   "id": "wind_farm_guerande",
+   "name": "Parc éolien du banc de Guérande",
+   "kind": "wind_farm",
+   "shape": "polygon",
+   "points": [
+    [
+     47.145833,
+     -2.704167
+    ],
+    [
+     47.179167,
+     -2.691667
+    ],
+    [
+     47.204167,
+     -2.695833
+    ],
+    [
+     47.2125,
+     -2.658333
+    ],
+    [
+     47.166667,
+     -2.5125
+    ],
+    [
+     47.15,
+     -2.495833
+    ],
+    [
+     47.116667,
+     -2.55
+    ]
+   ]
+  },
+  {
+   "id": "wind_farm_yeu",
+   "name": "Parc éolien d'Yeu",
+   "kind": "wind_farm",
+   "shape": "polygon",
+   "points": [
+    [
+     46.943333,
+     -2.527867
+    ],
+    [
+     46.849617,
+     -2.416583
+    ],
+    [
+     46.808683,
+     -2.48975
+    ],
+    [
+     46.8865,
+     -2.581783
+    ],
+    [
+     46.913217,
+     -2.582567
+    ]
+   ]
+  },
+  {
+   "id": "sem_rev_turbines",
+   "name": "Turbines SEM-REV",
+   "kind": "other",
+   "shape": "polygon",
+   "points": [
+    [
+     47.246667,
+     -2.775833
+    ],
+    [
+     47.239167,
+     -2.766667
+    ],
+    [
+     47.231667,
+     -2.781667
+    ],
+    [
+     47.239167,
+     -2.791667
+    ]
+   ]
+  },
+  {
+   "id": "tss_west_scilly",
+   "name": "TSS West Scilly",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     50.017833,
+     -6.545833
+    ],
+    [
+     49.871667,
+     -6.61
+    ],
+    [
+     49.873333,
+     -6.895
+    ],
+    [
+     50.065833,
+     -6.8075
+    ]
+   ]
+  },
+  {
+   "id": "tss_south_scilly",
+   "name": "TSS South Scilly",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     49.7675,
+     -6.275833
+    ],
+    [
+     49.592333,
+     -6.273333
+    ],
+    [
+     49.5925,
+     -6.568333
+    ],
+    [
+     49.767167,
+     -6.4925
+    ]
+   ]
+  },
+  {
+   "id": "tss_finisterre",
+   "name": "DST cap Finisterre",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     43.598333,
+     -10.033333
+    ],
+    [
+     43.425,
+     -9.556333
+    ],
+    [
+     43.175,
+     -9.733333
+    ],
+    [
+     42.795833,
+     -9.733333
+    ],
+    [
+     42.795833,
+     -10.230833
+    ],
+    [
+     43.315833,
+     -10.230833
+    ]
+   ]
+  },
+  {
+   "id": "wind_farm_viana",
+   "name": "Parc éolien de Viana do Castelo",
+   "kind": "wind_farm",
+   "shape": "polygon",
+   "points": [
+    [
+     41.697167,
+     -9.088
+    ],
+    [
+     41.697167,
+     -9.033333
+    ],
+    [
+     41.675333,
+     -9.033333
+    ],
+    [
+     41.675333,
+     -9.088
+    ]
+   ]
+  },
+  {
+   "id": "tss_cabo_roca",
+   "name": "DST cap Roca",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     38.866667,
+     -9.685
+    ],
+    [
+     38.661667,
+     -9.666667
+    ],
+    [
+     38.565,
+     -10.195
+    ],
+    [
+     38.681667,
+     -10.23
+    ],
+    [
+     38.866667,
+     -10.23
+    ]
+   ]
+  },
+  {
+   "id": "tss_sao_vicente",
+   "name": "DST cap Saint-Vincent",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     37.041667,
+     -9.195
+    ],
+    [
+     36.945,
+     -9.171667
+    ],
+    [
+     36.858333,
+     -9.071667
+    ],
+    [
+     36.835,
+     -8.953333
+    ],
+    [
+     36.42,
+     -9.1
+    ],
+    [
+     36.474333,
+     -9.36
+    ],
+    [
+     36.736667,
+     -9.664167
+    ],
+    [
+     36.943333,
+     -9.721667
+    ]
+   ]
+  },
+  {
+   "id": "tss_canarias_east",
+   "name": "DST Canaries Est",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     28.33,
+     -14.795
+    ],
+    [
+     27.813,
+     -15.005833
+    ],
+    [
+     27.858333,
+     -15.1475
+    ],
+    [
+     28.341667,
+     -14.951667
+    ]
+   ]
+  },
+  {
+   "id": "tss_canarias_west",
+   "name": "DST Canaries Ouest",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     28.563333,
+     -15.655
+    ],
+    [
+     27.973333,
+     -16.215833
+    ],
+    [
+     28.0575,
+     -16.3275
+    ],
+    [
+     28.635,
+     -15.78
+    ]
+   ]
+  },
+  {
+   "id": "mauritania",
+   "name": "Mauritanie",
+   "kind": "other",
+   "shape": "polygon",
+   "points": [
+    [
+     21.516667,
+     -16.416667
+    ],
+    [
+     16.0,
+     -16.416667
+    ],
+    [
+     16.0,
+     -17.583333
+    ],
+    [
+     21.516667,
+     -17.583333
+    ]
+   ]
+  },
+  {
+   "id": "stadium_basse_terre",
+   "name": "Stade nautique Basse-Terre",
+   "kind": "spectators",
+   "shape": "polygon",
+   "points": [
+    [
+     15.995,
+     -61.731833
+    ],
+    [
+     15.985583,
+     -61.723
+    ],
+    [
+     15.9845,
+     -61.723917
+    ],
+    [
+     15.994083,
+     -61.73325
+    ]
+   ]
+  },
+  {
+   "id": "stadium_pointe_a_pitre",
+   "name": "Stade nautique Pointe-à-Pitre",
+   "kind": "spectators",
+   "shape": "polygon",
+   "points": [
+    [
+     16.211333,
+     -61.528667
+    ],
+    [
+     16.2125,
+     -61.522667
+    ],
+    [
+     16.20755,
+     -61.508417
+    ],
+    [
+     16.205333,
+     -61.505
+    ],
+    [
+     16.2,
+     -61.505
+    ],
+    [
+     16.2,
+     -61.5095
+    ],
+    [
+     16.204667,
+     -61.5095
+    ],
+    [
+     16.209333,
+     -61.516667
+    ],
+    [
+     16.21,
+     -61.528083
+    ]
+   ]
+  },
+  {
+   "id": "cetacean_azores",
+   "name": "ZPC Açores (cétacés)",
+   "kind": "cetacean",
+   "shape": "polygon",
+   "points": [
+    [
+     39.833333,
+     -32.0
+    ],
+    [
+     40.733333,
+     -30.4
+    ],
+    [
+     40.166667,
+     -26.866667
+    ],
+    [
+     38.5,
+     -24.566667
+    ],
+    [
+     37.25,
+     -23.666667
+    ],
+    [
+     36.333333,
+     -24.533333
+    ],
+    [
+     36.333333,
+     -26.783333
+    ],
+    [
+     37.183333,
+     -28.333333
+    ],
+    [
+     37.283333,
+     -31.25
+    ],
+    [
+     37.783333,
+     -32.0
+    ]
+   ]
+  },
+  {
+   "id": "cetacean_agoa_guadeloupe",
+   "name": "ZPC AGOA Guadeloupe (cétacés)",
+   "kind": "cetacean",
+   "shape": "polygon",
+   "points": [
+    [
+     16.380833,
+     -61.764167
+    ],
+    [
+     16.510833,
+     -61.474167
+    ],
+    [
+     16.4375,
+     -61.540833
+    ],
+    [
+     16.341667,
+     -61.508333
+    ],
+    [
+     16.333333,
+     -61.694167
+    ]
+   ]
+  },
+  {
+   "id": "tss_seven_stones",
+   "name": "TSS Seven Stones",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     50.333333,
+     -6.083333
+    ],
+    [
+     50.333333,
+     -5.825
+    ],
+    [
+     50.016167,
+     -5.826667
+    ],
+    [
+     49.8925,
+     -6.083
+    ]
+   ]
+  },
+  {
+   "id": "tss_fastnet",
+   "name": "TSS Fastnet",
+   "kind": "tss",
+   "shape": "polygon",
+   "points": [
+    [
+     51.355,
+     -9.611667
+    ],
+    [
+     51.381667,
+     -9.456667
+    ],
+    [
+     51.285833,
+     -9.41
+    ],
+    [
+     51.256667,
+     -9.565
+    ]
+   ]
+  }
+ ],
+ "vigilance_zones": [
+  {
+   "id": "agoa_guadeloupe_watch",
+   "name": "AGOA Guadeloupe",
+   "shape": "polygon",
+   "points": [
+    [
+     16.24,
+     -61.92
+    ],
+    [
+     16.291667,
+     -61.873333
+    ],
+    [
+     16.291667,
+     -61.84
+    ],
+    [
+     16.215,
+     -61.84
+    ],
+    [
+     16.168333,
+     -61.9025
+    ],
+    [
+     16.188333,
+     -61.929167
+    ]
+   ]
+  },
+  {
+   "id": "madeira_watch",
+   "name": "Madère",
+   "shape": "polygon",
+   "points": [
+    [
+     33.5,
+     -17.0
+    ],
+    [
+     33.5,
+     -15.75
+    ],
+    [
+     32.5,
+     -15.75
+    ],
+    [
+     32.0,
+     -16.5
+    ],
+    [
+     32.5,
+     -17.75
+    ]
+   ]
+  }
+ ],
+ "vr_warning": "Virtual Regatta's in-game gates and exclusion zones are not public: compare with the race map in the game."
+}

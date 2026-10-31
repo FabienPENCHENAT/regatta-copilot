@@ -16,18 +16,19 @@ const COLUMNS = [
 ];
 
 export class TimelineTable {
-  constructor(container, translator) {
+  constructor(container, translator, onSelectHour) {
     this.container = container;
     this.translator = translator;
+    this.onSelectHour = onSelectHour;
   }
 
-  render(result, option) {
+  render(result, option, selectedHour) {
     const t = (key, params) => this.translator.t(key, params);
     const title = element("h2", "section-title", t("timeline.title", { option: t(`option.name.${option.id}`) }));
     const table = element("table", "timeline");
     table.append(element("caption", "", t("timeline.caption")), this.#head());
     const body = element("tbody");
-    option.steps.forEach((step) => body.append(this.#row(result, step)));
+    option.steps.forEach((step) => body.append(this.#row(result, step, step.hour === selectedHour)));
     table.append(body);
     const scroller = element("div", "timeline-scroller");
     scroller.append(table);
@@ -47,20 +48,27 @@ export class TimelineTable {
     return head;
   }
 
-  #row(result, step) {
+  #row(result, step, selected) {
     const t = (key, params) => this.translator.t(key, params);
     const twa = describeTwa(step.twa_deg);
     const level = confidenceLevel(step.confidence);
     const when = element("th");
     when.scope = "row";
-    when.append(
+    const showOnMap = element("button", "when-button");
+    showOnMap.type = "button";
+    showOnMap.setAttribute("aria-pressed", String(selected));
+    showOnMap.title = t("timeline.show_on_map");
+    showOnMap.addEventListener("click", () => this.onSelectHour(step.hour));
+    showOnMap.append(
       element("span", "when-hours", t("timeline.in_hours", { h: step.hour })),
       element("span", "when-time", formatLocalTime(result.computed_at, step.hour, this.translator.lang)),
     );
+    when.append(showOnMap);
     const confidence = element("span", "pill", `${Math.round(step.confidence * 100)} % · ${t(`confidence.${level}`)}`);
     confidence.dataset.level = level;
 
     const row = element("tr");
+    if (selected) row.classList.add("selected");
     row.append(
       when,
       this.#cell("label.position", formatCoordinates(step), "coords"),

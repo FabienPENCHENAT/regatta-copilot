@@ -10,6 +10,21 @@ has exactly the shape the backend must return. Keep the two in sync.
 ```
 Display names come from i18n keys `race.<id>` and `boat.<id>`.
 
+## `GET /api/races/<id>`
+The content of `races/<id>.json` (see [route-du-rhum-2026.json](../../races/route-du-rhum-2026.json)): `boats[]`
+with `start_line` and `polar`, ordered `marks[]` (`gate` with `points` + `cross`, or `point`/`island` with
+`position` + `leave_to`), `finish`, `exclusion_zones[]` and `vigilance_zones[]` (`shape`: `polygon` | `line`,
+`points` as `[lat, lon]`). Mark names are i18n keys `mark.<id>`.
+
+## `GET /api/wind?hours=0,4,8,12,16,24,48`
+Deterministic GFS wind (the game's weather) for the map, in leaflet-velocity format (U record then V record,
+m/s, rows north to south):
+```jsonc
+{ "model": "GFS 0.25°", "run": "2026-10-31T06:00:00Z", "start": "2026-11-01T12:00:00Z",
+  "times": [{ "hour": 0, "grid": [{ "header": { "parameterNumber": 2, "nx": 71, "ny": 53, "lo1": -30, "la1": 56,
+    "dx": 0.5, "dy": 0.5, ... }, "data": [...] }, { "header": { "parameterNumber": 3, ... }, "data": [...] }] }] }
+```
+
 ## `POST /api/route`
 Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "settings": { ...options, penalties } }`.
 Progress is reported separately (polling or SSE, decided in step 5).
@@ -33,6 +48,8 @@ Response:
     "game_route": true,           // the deterministic GFS route (the game's weather) belongs to this option
     "eta_delta_h": 0.0,           // arrival gap vs the best option
     "dtf_48h_nm": 2961,           // distance to finish at +48 h
+    "now": { "heading_deg": 265, "twa_deg": 146, "tws_kn": 10.2, "sail": "LightGnk", "speed_kn": 7.5 },
+    // path: one point per hour from the start (the map places the boat at path[hour])
     "steps": [{ "hour": 4, "lat": 47.21, "lon": -7.808, "heading_deg": 248, "twa_deg": 87,
                 "tws_kn": 19, "sail": "Code0", "speed_kn": 11.6, "confidence": 0.94, "zone_radius_nm": 14 }],
     "path": [[47.5, -6.75], [47.28, -7.54]]

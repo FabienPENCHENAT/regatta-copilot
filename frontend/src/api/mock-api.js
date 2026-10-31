@@ -1,5 +1,5 @@
 // Stand-in for the backend API during the mock-up step. Same interface as the future ApiClient:
-// listRaces() and computeRoute(request, onProgress). Returns a fixed example result.
+// listRaces(), getRace(id), getWindForecast(), computeRoute(request, onProgress).
 
 const RACES = [
   {
@@ -15,6 +15,15 @@ export class MockApi {
     return RACES;
   }
 
+  async getRace(raceId) {
+    return fetchJson(`mock/races/${raceId}.json`);
+  }
+
+  // Real GFS wind (the game's weather) at the start and at each route-plan hour.
+  async getWindForecast() {
+    return fetchJson("mock/wind-forecast.json");
+  }
+
   async computeRoute(request, onProgress) {
     for (let done = 1; done <= SCENARIO_COUNT; done += 1) {
       await delay(40);
@@ -24,9 +33,14 @@ export class MockApi {
   }
 
   async loadSample() {
-    const response = await fetch("mock/sample-result.json");
-    return response.json();
+    return fetchJson("mock/sample-result.json");
   }
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Cannot load ${url}`);
+  return response.json();
 }
 
 function delay(ms) {

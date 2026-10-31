@@ -13,7 +13,7 @@ export class NowPanel {
   render(result) {
     const t = (key, params) => this.translator.t(key, params);
     const option = result.options.find((o) => o.id === result.recommended_option);
-    const first = option.steps[0];
+    const first = option.now;
     const twa = describeTwa(first.twa_deg);
 
     const title = element("h2", "now-title", t("now.title"));

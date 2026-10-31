@@ -33,6 +33,39 @@ Pour chaque scénario météo, le routeur calcule la meilleure route. Ensuite, i
 endroit. Exemple : si 17 des 31 meilleures routes passent par l'ouest, l'option Ouest a 17/31 = 55 % de chances
 d'être la meilleure. La route GFS du jeu est calculée en plus, mais n'entre pas dans ce compte.
 
+## Version 2, après tes retours (31/10, après-midi)
+
+Tu as gardé l'ordre des blocs, les options, la feuille de route et les réglages. Tu as demandé une vraie carte
+marine avec le vent, un style plus marin, et un point de départ au bon endroit. Voici ce qui a changé.
+
+- **Carte marine dessinée par l'outil**, sans service externe :
+  - terre beige ;
+  - plateau continental bleuté, avec les lignes de profondeur de 200 à 5 000 m ;
+  - quadrillage des degrés avec les valeurs sur les bords ;
+  - noms des mers en italique, comme sur les cartes du SHOM ;
+  - cadre gradué noir et blanc, comme le bord d'une carte papier.
+  En mode sombre, c'est une palette de nuit inspirée des écrans de navigation.
+- **Le vent réel**, celui du modèle GFS que le jeu utilise, du run de 06h UTC aujourd'hui.
+  - Il est affiché pour le départ de demain, puis à +4, 8, 12, 16, 24 et 48 h.
+  - Tu peux choisir entre l'affichage animé (particules colorées selon la force du vent) et des barbules
+    classiques. Le « ? » à côté des barbules explique comment les lire.
+  - Toucher une heure, en bas de la carte ou dans la feuille de route, déplace le bateau à sa position prévue
+    à ce moment-là.
+- **Le parcours officiel** sur la carte :
+  - ligne de départ Class40 ;
+  - porte de Fréhel (bouées jaunes) ;
+  - marques de Guadeloupe (rouge = à laisser à bâbord, vert = à tribord) ;
+  - ligne d'arrivée ;
+  - 22 zones interdites en magenta pointillé, comme les zones réglementées des cartes.
+  Les coordonnées viennent directement des instructions de course officielles (avenants 1 et 2), enregistrées
+  dans `races/route-du-rhum-2026.json`.
+- **Départ au bon endroit** : l'exemple part maintenant de la ligne Class40 devant Saint-Malo
+  (48°43,8' N, 1°54' W). Les routes passent par la porte de Fréhel, contournent le parc éolien de Saint-Brieuc et
+  le rail d'Ouessant. Le cap, la voile et la vitesse affichés sont calculés avec le vrai vent et la vraie polaire
+  Class40. Seules les options et leurs probabilités restent inventées.
+- **Style marin** : bandeau bleu marine avec une rose des vents, titres soulignés de laiton, sous-titres en
+  italique « carte marine ».
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

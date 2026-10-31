@@ -14,7 +14,8 @@ routeur-voile/
 │   └── mock/               sample result + coastline used by the mock-up
 ├── races/                  one JSON file per race (generic format, no code change to add a race)
 ├── data/polars/            VR polar JSON files (+ sources/ with provenance)
-├── data/geo/               simplified coastline (Natural Earth)
+├── frontend/map-data/      land + depth bands for the chart (built by scripts/build_basemap.py)
+├── scripts/                dev tools (data builders), not imported by the app
 ├── var/                    runtime cache, git-ignored (weather runs, computed routes)
 └── docs/ai/  docs/founder/
 ```
@@ -111,7 +112,14 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `i18n/translator.js`, `i18n/language-picker.js` | Loads `i18n/<lang>.json`, translates keys; FR/EN toggle. |
 | `storage/preferences-store.js` | Last race, boat, language in localStorage. |
 | `form/position-parser.js`, `form/route-form.js` | Parses pasted positions; race/boat/position inputs and submit. |
-| `map/route-map.js`, `map/basemap.js` | Leaflet map (position, member routes, selected option, zones); OSM tiles or coastline. |
+| `map/route-map.js` | Builds the Leaflet chart and its layers; the only map API the app uses. |
+| `map/chart-basemap.js` | Nautical-chart background from `map-data/` (depth bands, land, coastline). No tile server. |
+| `map/graticule-layer.js`, `map/sea-labels.js` | Degree grid with edge labels; italic sea names (i18n). |
+| `map/course-layer.js` | Race course: start line of the chosen boat, gates, marks (IALA colours), finish, forbidden and vigilance zones. |
+| `map/route-layer.js` | Member routes, selected option, target zones, boat at the selected hour. |
+| `map/wind-grid.js` | Bilinear wind lookup on a leaflet-velocity grid. |
+| `map/wind-particles-layer.js`, `map/wind-barbs-layer.js` | Wind as animated particles (leaflet-velocity) or as meteorological barbs (canvas). |
+| `map/wind-controls.js`, `map/map-style.js` | Hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
 | `results/now-panel.js` | "Set this now": heading, sail, TWA, TWS, speed + advice sentence. |
 | `results/option-list.js` | Option cards with probability. |
 | `results/timeline-table.js` | Route plan table (cards on phones). |

@@ -45,8 +45,9 @@ boat `mono/class40-2021`, start 2026-11-01T12:02Z, end 2026-11-30T13:00Z. Other 
 ## Course (Route du Rhum 2026)
 
 Official sources: sailing instructions 2026 with amendments, skipper Drive linked from
-https://www.routedurhum.com/espace-skippers. To be turned into `races/route-du-rhum-2026.json` in step 3,
-**re-checked against those documents** (not copied from another repo). Key facts to verify:
+https://www.routedurhum.com/espace-skippers. **Done** (2026-10-31): `races/route-du-rhum-2026.json` was extracted
+from the SI PDF (Drive file id `1LGlrw0n1OLk7QExBku09wRsaRn-q38tN`, 38 pages, amendments 1–2 included), see
+decision D13. Key facts:
 - Start line along 001°54.000'W, crossed westward; Class40 segment 48°43.500'N–48°44.100'N.
 - Fréhel gate (002°18.500'W, 48°41.8'–48°42.8'N), westbound.
 - Round **Guadeloupe** to port (not only Basse-Terre); Tête à l'Anglais to port; Basse-Terre buoy to starboard;
@@ -54,9 +55,20 @@ https://www.routedurhum.com/espace-skippers. To be turned into `races/route-du-r
 - About 21 forbidden zones (traffic separation schemes, wind farms, Azores cetacean zone, Mauritania...).
 - VR in-game zones and gates are **not public**: compare in the game.
 
-## Coastline
+## Coastline and bathymetry
 
-Natural Earth 1:10m land (public domain), to be downloaded in step 3.
+Natural Earth 1:10m land, minor islands and bathymetry bands 200–5000 m (public domain), from
+`https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/`. `scripts/build_basemap.py`
+(needs `shapely`) clips them to 0–62°N / 85°W–15°E and writes `frontend/map-data/land.geojson` (simplified to
+~400 m) and `depths.geojson`. Coordinates are rounded to 0.001°, which can make a few polygons invalid for
+GEOS: use `make_valid` before geometric operations. The router (step 3) may need a finer coastline near the
+start and in Guadeloupe.
+
+## GFS deterministic (the game's weather, for the map)
+
+NOMADS filter `filter_gfs_0p25.pl`, `dir=/gfs.YYYYMMDD/HH/atmos`, `file=gfs.tHHz.pgrb2.0p25.fFFF`, hourly to
+f120. Area 0–60°N / 80°W–10°E: ≈ 280 KB per lead time. The 06z run of 2026-10-31 was complete at 13:30 UTC;
+the 12z run was not yet.
 
 ## Reference repositories
 
