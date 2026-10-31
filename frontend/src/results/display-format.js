@@ -46,6 +46,15 @@ export function formatLocalTime(isoDate, hoursLater, lang) {
   return date.toLocaleString(lang, { weekday: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+// A duration in hours as "45 min", "2 h" or "1 h 15" (to the minute).
+export function formatHoursMinutes(hours) {
+  const minutes = Math.round(hours * 60);
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return m ? `${h} h ${pad(m, 2)}` : `${h} h`;
+}
+
 function pad(value, digits) {
   return String(value).padStart(digits, "0");
 }

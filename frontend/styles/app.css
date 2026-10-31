@@ -147,6 +147,18 @@ button, input, select { font: inherit; color: inherit; }
 .zone-glow.low { --glow: var(--zone-low); }
 @keyframes glow-pulse { 50% { transform: scale(1.18); opacity: 0.85; } }
 
+/* "Computing your route…" pill, visible even when the panels are collapsed */
+.compute-status {
+  position: fixed; z-index: 25; top: max(20px, env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
+  margin: 0; padding: 8px 16px; border-radius: 999px; font-size: 0.875rem; font-weight: 600;
+  background: var(--ink); color: var(--glass-strong); box-shadow: var(--glass-shadow); white-space: nowrap;
+}
+.compute-status::before {
+  content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; vertical-align: -1px; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* Glass panels */
 .glass {
   background: var(--glass);

@@ -1,7 +1,7 @@
 // Route plan of the selected option as a list of orders: each leg keeps one heading and one sail until the
 // next change (heading, sail, tack or gybe). Numbered like the points on the map; tapping a leg shows it there.
 
-import { describeTwa, formatCoordinates, formatHeading, formatKnots, formatLocalTime, formatNumber } from "./display-format.js";
+import { describeTwa, formatCoordinates, formatHeading, formatHoursMinutes, formatKnots, formatLocalTime, formatNumber } from "./display-format.js";
 import { legAt, planLegs } from "./plan-legs.js";
 import { element } from "../dom.js";
 
@@ -37,7 +37,7 @@ export class RoutePlanList {
     const when = element("span", "plan-when");
     when.append(
       element("span", "plan-number", String(number)),
-      element("span", "plan-hours", leg.start_hour === 0 ? t("wind.time_start") : t("wind.time_plus", { h: formatNumber(leg.start_hour, lang, 0) })),
+      element("span", "plan-hours", leg.start_hour === 0 ? t("wind.time_start") : `+${formatHoursMinutes(leg.start_hour)}`),
       element("span", "plan-time", formatLocalTime(result.computed_at, leg.start_hour, lang)),
     );
     const main = element("span", "plan-main");
@@ -63,8 +63,6 @@ export class RoutePlanList {
   }
 
   #duration(hours) {
-    return hours >= 1
-      ? this.translator.t("plan.leg_duration", { h: formatNumber(hours, this.translator.lang, Number.isInteger(hours) ? 0 : 1) })
-      : this.translator.t("plan.leg_duration_min", { m: Math.round(hours * 60) });
+    return formatHoursMinutes(hours);
   }
 }

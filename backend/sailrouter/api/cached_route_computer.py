@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from time import perf_counter
@@ -24,6 +25,7 @@ from sailrouter.weather.model_run import ModelRun
 ROUTE_HOURS = 120.0
 FALLBACK_RESULT_LIFETIME = timedelta(minutes=30)  # result made on an older run than expected: retry soon
 log = logging.getLogger(__name__)
+_COMPUTING = threading.Lock()  # shared by requests and the background pre-computation
 
 
 class CachedRouteComputer:
@@ -57,16 +59,22 @@ class CachedRouteComputer:
         cached = self._cache.get(key, now)
         if cached is not None:
             return {**cached, "ensemble": ensemble_status_json(self._job.status())}
-        began = perf_counter()
-        result = self._compute(request, start, gefs_run)
-        game_run = result["weather"].get("game_run", result["weather"]["run"])
-        fell_back = not game_run.startswith(expected_gfs.cycle.strftime("%Y-%m-%dT%H"))
-        # Scenarios were on disk but the ensemble failed (logged): keep the GFS-only answer briefly, retry soon.
-        fell_back = fell_back or (gefs_run is not None and result["weather"]["member_count"] == 1)
-        self._cache.put(key, result, now + FALLBACK_RESULT_LIFETIME if fell_back else None)
-        log.info("route %s/%s computed in %.0f s on GFS %s, %s%s", race.id, boat.id, perf_counter() - began,
-                 game_run, result["weather"]["model"], " (older GFS run, expires in 30 min)" if fell_back else "")
-        return result
+        # One computation at a time: several at once (clicks in a row, background refresh) fight for the
+        # processors and all get slow. Once our turn comes, the same result may already be stored.
+        with _COMPUTING:
+            cached = self._cache.get(key, now)
+            if cached is not None:
+                return {**cached, "ensemble": ensemble_status_json(self._job.status())}
+            began = perf_counter()
+            result = self._compute(request, start, gefs_run)
+            game_run = result["weather"].get("game_run", result["weather"]["run"])
+            fell_back = not game_run.startswith(expected_gfs.cycle.strftime("%Y-%m-%dT%H"))
+            # Scenarios were on disk but the ensemble failed (logged): keep the GFS-only answer briefly, retry soon.
+            fell_back = fell_back or (gefs_run is not None and result["weather"]["member_count"] == 1)
+            self._cache.put(key, result, now + FALLBACK_RESULT_LIFETIME if fell_back else None)
+            log.info("route %s/%s computed in %.0f s on GFS %s, %s%s", race.id, boat.id, perf_counter() - began,
+                     game_run, result["weather"]["model"], " (older GFS run, expires in 30 min)" if fell_back else "")
+            return result
 
     def _compute(self, request: RouteRequest, start: datetime, gefs_run: ModelRun | None) -> dict:
         position = GeoPoint(request.position.lat, request.position.lon)

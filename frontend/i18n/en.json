@@ -213,8 +213,6 @@
   "settings.percent": "%",
   "settings.game_values": "Reset to the game's values",
   "plan.leg_until": "until {time}",
-  "plan.leg_duration": "{h} h",
-  "plan.leg_duration_min": "{m} min",
   "plan.wind": "Wind {min}–{max} kn · TWA {twa} · {speed}",
   "plan.wind_steady": "Wind {min} kn · TWA {twa} · {speed}",
   "ensemble.downloading": "Weather scenarios: downloading {done}/{total} ({percent}%). Options will appear on their own.",
@@ -243,5 +241,6 @@
   "settings.polar_import_done": "Polar imported: the route is recomputed with it.",
   "settings.polar_reset_done": "Back to the community polar.",
   "settings.polar_not_json": "This file is not JSON. Copy the whole response of the game's request.",
-  "settings.polar_refused": "Polar refused: {reason}"
+  "settings.polar_refused": "Polar refused: {reason}",
+  "compute.running": "Computing your route… (about 30 s, instant if already computed)"
 }

@@ -213,8 +213,6 @@
   "settings.percent": "%",
   "settings.game_values": "Remettre les valeurs du jeu",
   "plan.leg_until": "jusqu'à {time}",
-  "plan.leg_duration": "{h} h",
-  "plan.leg_duration_min": "{m} min",
   "plan.wind": "Vent {min}–{max} nd · TWA {twa} · {speed}",
   "plan.wind_steady": "Vent {min} nd · TWA {twa} · {speed}",
   "ensemble.downloading": "Scénarios météo : téléchargement {done}/{total} ({percent} %). Les options arriveront toutes seules.",
@@ -243,5 +241,6 @@
   "settings.polar_import_done": "Polaire importée : la route est recalculée avec.",
   "settings.polar_reset_done": "Retour à la polaire communautaire.",
   "settings.polar_not_json": "Ce fichier n'est pas du JSON. Copie la réponse complète de la requête du jeu (voir « Comment ça marche »).",
-  "settings.polar_refused": "Polaire refusée : {reason}"
+  "settings.polar_refused": "Polaire refusée : {reason}",
+  "compute.running": "Calcul de ta route en cours… (environ 30 s, instantané si déjà calculé)"
 }

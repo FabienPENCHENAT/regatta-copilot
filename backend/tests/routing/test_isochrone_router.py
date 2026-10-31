@@ -36,7 +36,7 @@ def test_beam_reach_goes_straight(make_router):
     end = route.points[-1]
     assert GreatCircle.distance_nm(50.0, -10.0, end.lat_deg, end.lon_deg) == pytest.approx(60.0, rel=0.005)
     assert route.points[0].twa_deg == pytest.approx(-90.0, abs=5.0)  # wind on port side
-    assert len(route.points) == 7  # start + 6 hourly steps
+    assert len(route.points) == 25  # start + 24 quarter-hour steps
 
 
 def test_reaches_the_target_and_stops(make_router):

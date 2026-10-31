@@ -2,6 +2,15 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D42 — Finer time steps, one computation at a time, visible computing state (user, 2026-10-31)
+- Orders can change at any time in the game: `TimeSchedule` now uses phases — 15 min until +6 h, 30 min until
+  +24 h, 1 h until +48 h, 3 h after (108 isochrones over 120 h instead of 56). Legs start and last to the quarter
+  hour at first ("+2 h 15", "1 h 45"). Ensemble ≈ 30–50 s (once per run and inputs, thanks to the result cache).
+- Ticking several sails in a row launched several 31-member computations at once (plus the background
+  pre-computation): 2–4 min each and no visible feedback (the race card, collapsed, hid the busy button). Now:
+  one computation at a time on the server (`_COMPUTING` lock in `CachedRouteComputer`, cache re-checked after
+  waiting); the page ignores answers to superseded requests and shows a "computing your route…" pill.
+
 ## D-NEXT — Backlog choices (user, 2026-10-31)
 Not to do: routing all the way to the finish / ETA ("do not estimate something improbable"); online hosting
 (single user, local is fine). Keep in mind for later: skipper energy (longer manoeuvres when tired). In progress:

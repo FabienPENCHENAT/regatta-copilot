@@ -28,6 +28,7 @@ const DEFAULT_POSITION_TEXT = `48°43'48"N 001°54'00"W`; // Class40 start line,
 class App {
   #race = null;
   #result = null;
+  #latestRequest = 0; // only the answer to the latest request is shown
   #state = { optionId: null, hour: 0, windMode: "particles", view: "near" };
 
   constructor() {
@@ -109,21 +110,33 @@ class App {
   }
 
   async compute(request) {
+    const requestNumber = ++this.#latestRequest;
     this.form.showBusy();
+    this.#showComputing(true);
     try {
       const { result, wind } = await this.computation.run({
         ...request, ...this.settings.request, nextMark: this.nextMark.value,
       });
+      if (requestNumber !== this.#latestRequest) return; // a newer request replaced this one
       if (result.next_mark) this.nextMark.showDetected(result.next_mark.id);
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
+      this.#showComputing(false);
       this.formPanel.collapse();
       this.wind.reset(wind);
       this.#showResult(result);
     } catch (error) {
+      if (requestNumber !== this.#latestRequest) return;
       this.form.showIdle();
+      this.#showComputing(false);
       this.form.showError(this.translator.t("form.compute_error", { reason: error.message }));
     }
+  }
+
+  #showComputing(visible) {
+    const status = byId("compute-status");
+    status.textContent = this.translator.t("compute.running");
+    status.hidden = !visible;
   }
 
   #createForm() {
