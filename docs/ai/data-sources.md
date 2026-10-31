@@ -52,7 +52,7 @@ decision D13. Key facts:
 - Fréhel gate (002°18.500'W, 48°41.8'–48°42.8'N), westbound.
 - Round **Guadeloupe** to port (not only Basse-Terre); Tête à l'Anglais to port; Basse-Terre buoy to starboard;
   Les Saintes to starboard; Pointe-à-Pitre landfall buoy rounded to port; finish line on 16°12.000'N, northbound.
-- About 21 forbidden zones (traffic separation schemes, wind farms, Azores cetacean zone, Mauritania...).
+- 22 forbidden zones (traffic separation schemes, wind farms, Azores cetacean zone, Mauritania...).
 - VR in-game zones and gates are **not public**: compare in the game.
 
 ## Coastline and bathymetry

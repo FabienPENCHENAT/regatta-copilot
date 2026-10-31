@@ -2,6 +2,23 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D22 — Hosting deferred; local site with `./run.sh` (user choice, 2026-10-31)
+The user wants "a real site" but chose to stay local until the real engine is wired: `./run.sh` serves the
+frontend on port 8000 and prints the LAN address for the phone. It will start FastAPI in step 5. Candidate free
+host for later: Hugging Face Spaces (2 vCPU / 16 GB, enough for 31 routes) over Render (512 MB).
+
+## D21 — Theme toggle and settings dialog (user feedback, 2026-10-31)
+The settings icon looked like a sun and the user expected a theme switch: the rail now has a real cog for
+settings plus a light/dark toggle (`ThemeToggle`, remembered in localStorage; map layers restyle on change).
+Settings are a one-column `<dialog>`. The "now" panel follows the selected option, not only the recommended one.
+Logo: a single minimal jib (user said "phoque", read as "foc").
+
+## D20 — Map-first glass layout (user reference screenshot, 2026-10-31)
+The user sent a dashboard reference (full-bleed muted map, slim icon rail, frosted floating cards, ring metrics,
+coloured tiles, glowing hotspots) and asked for that style with the map as the central element. It replaces the
+"ocean + light manga" identity and the portolan background of the same day. Target zones are glowing dots
+coloured by confidence; panels can be hidden from the rail; map framing uses the free screen area (`map-insets.js`).
+
 ## D19 — Backend installed in editable mode, CLI before the API (2026-10-31)
 `backend/pyproject.toml` (setuptools, pytest config) + `backend/requirements.txt` (numpy, eccodes, shapely, pytest).
 `pip install -e backend` makes `python -m sailrouter` work from any folder; the CLI finds the repo through the
