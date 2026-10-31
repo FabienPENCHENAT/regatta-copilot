@@ -95,6 +95,17 @@ Inspirée de ta capture « tableau de bord » :
 - Sur téléphone, la carte occupe la moitié haute et les panneaux défilent par-dessus.
 - Le style « manga » et le fond portulan de la version 3 ont été retirés.
 
+## Version 5 : corrections (31/10)
+
+- « À régler maintenant » suit l'option sélectionnée. Dans l'exemple, les trois options ont le même réglage au
+  départ, car elles passent toutes par Fréhel et Ouessant avant de se séparer vers +16 h.
+- Réglages refaits : une seule colonne, des lignes « Virement [3] min », un vrai bouton d'import de polaire.
+- La roue dentée des réglages ressemble à une roue dentée. Un bouton lune/soleil bascule le thème clair ou sombre,
+  et le choix est mémorisé.
+- Logo : un foc, version minimaliste.
+- **Lancer le site en local** : `./run.sh` à la racine du projet, puis ouvrir http://localhost:8000. Le script
+  affiche aussi l'adresse à ouvrir sur ton téléphone (même Wi-Fi).
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

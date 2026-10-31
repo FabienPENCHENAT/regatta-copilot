@@ -75,4 +75,11 @@ export class RouteMap {
   retranslate() {
     this.seaLabels.render();
   }
+
+  // Layers read the theme colours when they draw; the app redraws course, routes and wind right after.
+  refreshTheme() {
+    this.basemap.restyle();
+    this.graticule.redraw();
+    this.particles.hide();
+  }
 }

@@ -12,6 +12,7 @@ import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
 import { PanelRail } from "./layout/panel-rail.js";
+import { ThemeToggle } from "./layout/theme-toggle.js";
 import { measureMapInsets } from "./layout/map-insets.js";
 import { formatUtcHour } from "./results/display-format.js";
 import { MockApi } from "./api/mock-api.js";
@@ -42,6 +43,11 @@ class App {
       settingsButton: byId("settings-open"),
       settingsDialog: byId("settings"),
       onLayoutChange: () => this.#fitMap(),
+    });
+    this.themeToggle = new ThemeToggle(byId("theme-toggle"), {
+      translator: this.translator,
+      preferences: this.preferences,
+      onChange: () => this.#redrawForTheme(),
     });
     this.form = this.#createForm();
   }
@@ -116,7 +122,7 @@ class App {
     const { optionId, hour, windMode, view } = this.#state;
     const option = result.options.find((o) => o.id === optionId);
     const step = option.steps.find((s) => s.hour === hour);
-    this.nowPanel.render(result);
+    this.nowPanel.render(result, option);
     this.optionList.render(result, option.id);
     this.routePlan.render(result, option, hour);
     this.map.showResult(result, option);
@@ -127,6 +133,12 @@ class App {
       run: formatUtcHour(result.weather.run),
       next: formatUtcHour(result.weather.next_run_expected),
     });
+  }
+
+  #redrawForTheme() {
+    this.map.refreshTheme();
+    if (this.#race) this.map.showCourse(this.#race, byId("boat").value);
+    if (this.#result) this.#render({ fitMap: false });
   }
 
   #fitMap() {
@@ -144,6 +156,7 @@ class App {
   #translateStaticText() {
     this.translator.applyTo(document.body);
     this.languagePicker.render(this.translator.lang);
+    this.themeToggle.render();
     this.form.showIdle();
     document.title = this.translator.t("app.title");
   }

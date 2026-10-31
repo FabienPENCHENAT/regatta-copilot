@@ -1,5 +1,5 @@
-// "Set this now" for the recommended option: colour tiles for heading and sail (what you type in the game),
-// plain tiles for wind and speed, then the advice sentence.
+// "Set this now" for the selected option: colour tiles for heading and sail (what you type in the game),
+// plain tiles for wind and speed, then the overall advice sentence.
 
 import { describeTwa, formatHeading, formatKnots } from "./display-format.js";
 import { createTermTip } from "./term-tip.js";
@@ -11,9 +11,8 @@ export class NowPanel {
     this.translator = translator;
   }
 
-  render(result) {
+  render(result, option) {
     const t = (key, params) => this.translator.t(key, params);
-    const option = result.options.find((o) => o.id === result.recommended_option);
     const now = option.now;
     const twa = describeTwa(now.twa_deg);
 

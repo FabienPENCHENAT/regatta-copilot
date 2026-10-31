@@ -120,6 +120,7 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/wind-grid.js` | Bilinear wind lookup on a leaflet-velocity grid. |
 | `map/wind-particles-layer.js`, `map/wind-barbs-layer.js` | Wind as animated particles (leaflet-velocity) or as meteorological barbs (canvas). |
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
+| `layout/theme-toggle.js` | Light/dark switch; follows the system until the user picks, then remembers it. |
 | `layout/panel-rail.js`, `layout/map-insets.js` | Icon rail that shows/hides the floating panels and opens settings; measures the screen area the panels cover so the map frames routes in the free space. |
 | `results/now-panel.js` | "Set this now": colour tiles (heading, sail) and plain tiles (wind, speed) + advice sentence. |
 | `results/option-list.js` | Option cards with a probability ring. |

@@ -20,7 +20,7 @@
   "boat.ultim": "Ultim",
   "boat.vintage_multi": "Vintage Multi",
   "now.title": "À régler maintenant",
-  "now.for_option": "Pour l'option conseillée : {option}",
+  "now.for_option": "Pour l'option : {option}",
   "label.heading": "Cap",
   "label.twa": "TWA",
   "label.tws": "TWS",
@@ -136,5 +136,8 @@
   "rail.options": "Options et réglages du moment",
   "settings.close": "Fermer les réglages",
   "option.ring_caption": "de chances",
-  "map.legend_title": "Légende et sources"
+  "map.legend_title": "Légende et sources",
+  "settings.minutes": "min",
+  "theme.to_dark": "Passer en thème sombre",
+  "theme.to_light": "Passer en thème clair"
 }
