@@ -67,16 +67,14 @@ export class RouteLayer {
       .addTo(this.#boat);
   }
 
-  // Whole computed track, for the eye only: a soft halo under a dashed line.
+  // Whole computed track on the game's weather, for the eye only: a thin, faint dashed line under the options.
   #idealRoute(ideal) {
     if (!ideal) return;
     const label = this.translator.t("map.ideal_route", {
       distance: Math.round(ideal.distance_nm).toLocaleString(this.translator.lang),
       to_go: Math.round(ideal.to_go_nm ?? 0).toLocaleString(this.translator.lang),
     });
-    L.polyline(ideal.path, { color: this.color("--ideal-halo"), weight: 8, opacity: 0.55, interactive: false })
-      .addTo(this.#routes);
-    L.polyline(ideal.path, { color: this.color("--ideal-line"), weight: 2, dashArray: "8 6" })
+    L.polyline(ideal.path, { color: this.color("--ideal-halo"), weight: 1.5, opacity: 0.35, dashArray: "4 6" })
       .bindTooltip(label, { sticky: true })
       .addTo(this.#routes);
   }
