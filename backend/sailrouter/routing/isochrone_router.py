@@ -64,7 +64,7 @@ class IsochroneRouter:
     def _step(self, front: Isochrone, begin: datetime, end: datetime, progress: MarkProgress) -> Isochrone:
         step_s = (end - begin).total_seconds()
         tws, twd = self._wind.wind_at(front.lat_deg, front.lon_deg, begin.timestamp())
-        headings = self._fan.headings_deg[None, :]
+        headings = self._fan.headings(progress.bearing_to_target_deg(front.leg, front.lat_deg, front.lon_deg))
         twa = (twd[:, None] - headings + 180.0) % 360.0 - 180.0
         tws_grid = np.broadcast_to(tws[:, None], twa.shape)
         sail, speed = self._speed.best(tws_grid, twa)
@@ -72,7 +72,7 @@ class IsochroneRouter:
         distance_nm = speed * np.maximum(step_s - lost_s, 0.0) / 3600.0
         parent = np.broadcast_to(np.arange(len(front))[:, None], twa.shape).ravel()
         lat0, lon0 = front.lat_deg[parent], front.lon_deg[parent]
-        heading = np.broadcast_to(headings, twa.shape).ravel()
+        heading = headings.ravel()
         lat1, lon1 = GreatCircle.destination(lat0, lon0, heading, distance_nm.ravel())
         leg = progress.advance(front.leg[parent], lat0, lon0, lat1, lon1)
         lat1, lon1 = progress.end_at_finish(front.leg[parent], leg, lat0, lon0, lat1, lon1)

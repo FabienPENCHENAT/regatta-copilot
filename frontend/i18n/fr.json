@@ -244,7 +244,7 @@
   "how.route.title": "Le calcul d'une route",
   "how.route.caption": "Chaque ligne pointillée relie les points atteignables en même temps : c'est une isochrone.",
   "how.route.1.title": "Essayer tous les caps",
-  "how.route.1.text": "Depuis ta position, 72 caps, un tous les 5°. Pour chacun, le vent prévu à cet endroit et à cette heure donne la vitesse avec ta voile la plus rapide.",
+  "how.route.1.text": "Depuis ta position, un cap tous les 1°, sur 110° de chaque côté de la direction de la marque visée. Pour chacun, le vent prévu à cet endroit et à cette heure donne la vitesse avec ta voile la plus rapide.",
   "how.route.2.title": "Avancer pas à pas",
   "how.route.2.text": "Pas de 15 min jusqu'à +6 h, 30 min jusqu'à +24 h, 1 h jusqu'à +48 h, puis 3 h. Virements, empannages et changements de voile coûtent le temps réglé.",
   "how.route.3.title": "Éviter la terre et les zones",

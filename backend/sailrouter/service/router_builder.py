@@ -73,4 +73,4 @@ class RouterBuilder:
     def router(
         wind: WindField, speed_model: SpeedModel, penalty: ManeuverPenalty, obstacles: ObstacleChecker,
     ) -> IsochroneRouter:
-        return IsochroneRouter(wind, speed_model, penalty, obstacles, HeadingFan(5.0), IsochronePruner(0.5))
+        return IsochroneRouter(wind, speed_model, penalty, obstacles, HeadingFan(1.0, 220.0), IsochronePruner(0.5))

@@ -244,7 +244,7 @@
   "how.route.title": "How a route is computed",
   "how.route.caption": "Each dotted line joins the points reachable at the same time: an isochrone.",
   "how.route.1.title": "Try every heading",
-  "how.route.1.text": "From your position, 72 headings, one every 5°. For each, the wind forecast at that place and time gives the speed with your fastest sail.",
+  "how.route.1.text": "From your position, a heading every 1°, over 110° on each side of the direction of the mark aimed at. For each, the wind forecast at that place and time gives the speed with your fastest sail.",
   "how.route.2.title": "Move step by step",
   "how.route.2.text": "15 min steps until +6 h, 30 min until +24 h, 1 h until +48 h, then 3 h. Tacks, gybes and sail changes cost the time you set.",
   "how.route.3.title": "Avoid land and zones",

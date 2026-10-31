@@ -62,7 +62,7 @@ def make_router():
         speed = one_sail_speed_model()
         penalty = ManeuverPenalty(zero_winch(), fixed_loss_s={"tack": tack_loss_s, "gybe": 0, "sailChange": 0})
         return IsochroneRouter(
-            constant_wind_from_north(), speed, penalty, obstacles(with_island), HeadingFan(5.0), IsochronePruner(0.5)
+            constant_wind_from_north(), speed, penalty, obstacles(with_island), HeadingFan(5.0, 360.0), IsochronePruner(0.5)
         )
 
     return build

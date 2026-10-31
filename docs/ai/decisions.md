@@ -2,6 +2,16 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D47 — Headings every 1° over 220° around the mark bearing (user, 2026-10-31)
+- `HeadingFan(1.0, 220.0)`: per front point, 221 headings centred on the bearing to its leg's target
+  (`MarkProgress.bearing_to_target_deg`), like routers made for the game (eSail4VR: 220°, 1°). Was 72 headings
+  every 5° over 360°. Orders can now be given to the degree.
+- Dead ends (bay, mark to round) are not handled by a 360° fallback: user accepts the risk ("on le voit à
+  l'avance"). Tests keep `HeadingFan(5.0, 360.0)`.
+- `ObstacleChecker` tests the segment END first (one lookup) before sampling: most headings aimed at the coast
+  are settled at once; same routes. Ensemble from the start: ≈ 41 s (was ≈ 30 s with 5°, 61 s before the
+  endpoint shortcut). Possible later: 1° for the first 24 h only, coarser after.
+
 ## D46 — 1 nm coast margin, re-opened around gates (user, 2026-10-31)
 - User: routes passing close to the coast here may touch land in the game (Natural Earth 1:10M ≠ the game's
   coast). `geography/CoastMargin` widens the land raster by `COAST_MARGIN_NM` = 1 (ellipse per cell, longitude

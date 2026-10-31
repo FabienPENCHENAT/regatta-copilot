@@ -44,6 +44,9 @@ class ObstacleChecker:
         clear = np.maximum(land.clearance_deg(lat0, lon0), land.clearance_deg(lat1, lon1)) > span
         crosses = np.zeros(lat0.size, dtype=bool)
         idx = np.nonzero(~clear)[0]
+        ends_on_land = land.is_land(lat1[idx], lon1[idx])  # one lookup settles most segments aimed at the coast
+        crosses[idx[ends_on_land]] = True
+        idx = idx[~ends_on_land]
         coarse_step = land.coarse_grid.resolution_deg / 2
         maybe = self._any_sample(land.may_be_near_land, lat0[idx], lon0[idx], lat1[idx], lon1[idx], coarse_step)
         idx = idx[maybe]

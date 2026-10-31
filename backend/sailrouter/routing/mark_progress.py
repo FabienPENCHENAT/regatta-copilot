@@ -84,6 +84,11 @@ class MarkProgress:
         lon1[finishing] = lon0 + t * (lon1[finishing] - lon0)
         return lat1, lon1
 
+    def bearing_to_target_deg(self, leg: NDArray, lat: NDArray, lon: NDArray) -> NDArray:
+        """Initial bearing from each point to the target of its leg (the finish once every leg is done)."""
+        k = np.minimum(np.asarray(leg, dtype=np.intp), len(self.legs) - 1)
+        return GreatCircle.bearing_deg(lat, lon, self._target_lat[k], self._target_lon[k])
+
     def distance_to_go_nm(self, leg: NDArray, lat: NDArray, lon: NDArray) -> NDArray:
         """Distance to the next mark, then mark to mark to the finish (0 once finished)."""
         k = np.minimum(leg, self.finished_leg - 1)
