@@ -197,5 +197,9 @@
   "beaufort.9": "strong gale",
   "beaufort.10": "storm",
   "beaufort.11": "violent storm",
-  "beaufort.12": "hurricane force"
+  "beaufort.12": "hurricane force",
+  "form.edit": "Edit",
+  "form.summary": "{boat} · {position}",
+  "panel.collapse": "Collapse the panel",
+  "panel.expand": "Show the panel"
 }

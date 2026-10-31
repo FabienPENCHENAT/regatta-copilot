@@ -47,6 +47,11 @@
   <form id="route-form" class="glass panel form-panel" novalidate>
     <p class="greeting" data-i18n="form.greeting"></p>
     <h1 class="race-title" data-i18n="race.route-du-rhum-2026"></h1>
+    <div class="form-summary">
+      <span id="form-summary-text" class="form-summary-text"></span>
+      <button type="button" id="form-edit" class="text-button" data-i18n="form.edit"></button>
+    </div>
+    <div class="form-body">
     <div class="form-row">
       <label class="field">
         <span class="field-label" data-i18n="form.race"></span>
@@ -64,9 +69,13 @@
     </label>
     <p id="position-feedback" class="position-feedback" aria-live="polite"></p>
     <button id="submit" class="submit" type="submit"></button>
+    </div>
   </form>
 
-  <div class="tools">
+  <div id="tools" class="tools">
+    <button type="button" id="tools-toggle" class="collapse-toggle side">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
     <div id="map-controls" class="glass map-controls"></div>
     <details class="glass legend-panel">
       <summary data-i18n="map.legend_title"></summary>
@@ -87,7 +96,12 @@
   </div>
 
   <div id="dock" class="dock">
-    <section id="now-panel" class="glass panel now-panel" aria-live="polite"></section>
+    <section id="now-dock" class="glass panel now-panel">
+      <button type="button" id="now-toggle" class="collapse-toggle down">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div id="now-panel" aria-live="polite"></div>
+    </section>
     <section id="options" class="options"></section>
   </div>
 </main>

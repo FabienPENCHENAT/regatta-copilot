@@ -197,5 +197,9 @@
   "beaufort.9": "fort coup de vent",
   "beaufort.10": "tempête",
   "beaufort.11": "violente tempête",
-  "beaufort.12": "ouragan"
+  "beaufort.12": "ouragan",
+  "form.edit": "Modifier",
+  "form.summary": "{boat} · {position}",
+  "panel.collapse": "Réduire le panneau",
+  "panel.expand": "Afficher le panneau"
 }

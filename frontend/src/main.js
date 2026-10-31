@@ -12,6 +12,7 @@ import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
 import { SettingsDialog } from "./layout/settings-dialog.js";
+import { PanelCollapser } from "./layout/panel-collapser.js";
 import { ThemeToggle } from "./layout/theme-toggle.js";
 import { measureMapInsets } from "./layout/map-insets.js";
 import { formatUtcHour } from "./results/display-format.js";
@@ -40,6 +41,15 @@ class App {
     this.optionList = new OptionList(byId("options"), this.translator, (optionId) => this.update({ optionId }));
     this.routePlan = new RoutePlanList(byId("plan"), this.translator, (hour) => this.update({ hour }));
     this.settings = new SettingsDialog(byId("settings-open"), byId("settings"));
+    this.formPanel = new PanelCollapser(byId("route-form"), {
+      toggle: byId("form-edit"), translator: this.translator, labelToggle: false,
+    });
+    this.nowDock = new PanelCollapser(byId("now-dock"), {
+      toggle: byId("now-toggle"), translator: this.translator, expandOnPanelClick: true,
+    });
+    this.toolsPanel = new PanelCollapser(byId("tools"), {
+      toggle: byId("tools-toggle"), translator: this.translator, expandOnPanelClick: true,
+    });
     this.themeToggle = new ThemeToggle(byId("theme-toggle"), {
       translator: this.translator,
       preferences: this.preferences,
@@ -81,6 +91,7 @@ class App {
   async compute(request) {
     const result = await this.api.computeRoute(request, (done, total) => this.form.showProgress(done, total));
     this.form.showIdle();
+    this.formPanel.collapse();
     this.#showResult(result);
   }
 
@@ -93,6 +104,7 @@ class App {
         positionInput: byId("position"),
         positionFeedback: byId("position-feedback"),
         submitButton: byId("submit"),
+        summary: byId("form-summary-text"),
       },
       {
         translator: this.translator,
@@ -153,6 +165,7 @@ class App {
     this.translator.applyTo(document.body);
     this.languagePicker.render(this.translator.lang);
     this.themeToggle.render();
+    [this.formPanel, this.nowDock, this.toolsPanel].forEach((panel) => panel?.render());
     this.form.showIdle();
     document.title = this.translator.t("app.title");
   }

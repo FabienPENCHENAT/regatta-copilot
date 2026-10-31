@@ -133,6 +133,16 @@ Inspirée de ta capture « tableau de bord » :
 - Sur ordinateur, les options s'empilent à droite du tableau d'instruments et la feuille de route prend toute
   la hauteur à droite.
 
+## Version 8 : panneaux repliables (31/10, soir)
+
+- Après « Calculer ma route », le bloc « Ma course » se replie en une ligne (course, bateau, position) avec un
+  bouton « Modifier ».
+- « À régler maintenant » se range vers le bas avec la petite flèche en haut à droite. Il n'en reste que le titre,
+  et un clic dessus le fait remonter.
+- Toute la colonne de droite (contrôles de la carte, légende, feuille de route) se range vers la droite avec la
+  flèche sur son bord gauche. Une fine bande reste visible ; un clic dessus la ramène.
+- Les options restent toujours visibles.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

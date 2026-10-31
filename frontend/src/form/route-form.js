@@ -1,5 +1,6 @@
 // The three inputs (race, boat, position) and the "Compute my route" button.
-// Reports a valid position as soon as it is typed, so the map can show it before computing.
+// Reports a valid position as soon as it is typed, so the map can show it before computing, and keeps a
+// one-line summary for when the form is collapsed.
 
 import { formatCoordinates } from "../results/display-format.js";
 
@@ -7,8 +8,8 @@ export class RouteForm {
   #races = [];
   #position = null;
 
-  constructor({ form, raceSelect, boatSelect, positionInput, positionFeedback, submitButton }, deps) {
-    Object.assign(this, { form, raceSelect, boatSelect, positionInput, positionFeedback, submitButton });
+  constructor({ form, raceSelect, boatSelect, positionInput, positionFeedback, submitButton, summary }, deps) {
+    Object.assign(this, { form, raceSelect, boatSelect, positionInput, positionFeedback, submitButton, summary });
     this.translator = deps.translator;
     this.parser = deps.parser;
     this.onPositionChange = deps.onPositionChange;
@@ -49,7 +50,10 @@ export class RouteForm {
       this.#fillBoatOptions();
       this.#notifySelection();
     });
-    this.boatSelect.addEventListener("change", () => this.#notifySelection());
+    this.boatSelect.addEventListener("change", () => {
+      this.#renderSummary();
+      this.#notifySelection();
+    });
     this.positionInput.addEventListener("input", () => this.#readPosition());
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -86,7 +90,15 @@ export class RouteForm {
         ? this.translator.t("form.position_error")
         : this.translator.t("form.position_hint");
     this.onPositionChange(this.#position);
+    this.#renderSummary();
     return valid;
+  }
+
+  // One line shown when the form is collapsed after a computation.
+  #renderSummary() {
+    const boat = this.translator.t(`boat.${this.boatSelect.value}`);
+    const position = this.#position ? formatCoordinates(this.#position) : "—";
+    this.summary.textContent = this.translator.t("form.summary", { boat, position });
   }
 
   #notifySelection() {

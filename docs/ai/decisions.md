@@ -2,6 +2,12 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D25 — Collapsible panels to free the chart (user request, 2026-10-31)
+After "Compute my route" the race form collapses to one summary line with an "Edit" button. The "set this now"
+panel slides down to its title and the whole right column (map tools, legend, route plan) slides right leaving a
+strip; a click on the strip or on the toggle brings them back. One reusable class, `PanelCollapser`; the CSS
+decides the collapsed look from `data-collapsed`. Options stay visible. On phones, panels scroll instead.
+
 ## D24 — "Set this now" as instruments; panel toggles removed (user feedback, 2026-10-31)
 The rail buttons that hid panels confused the user ("the screen moves but nothing happens"): removed; the rail
 keeps theme, settings, "how it works" and language. Map views: 24 h, 48 h, whole race. The "now" panel became

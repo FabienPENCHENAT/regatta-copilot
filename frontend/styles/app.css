@@ -241,6 +241,37 @@ select, input[type="text"], input[type="number"] {
 .submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(17, 26, 36, 0.25); }
 .submit:disabled { opacity: 0.75; cursor: progress; }
 
+/* Collapsible panels: form → summary line, "now" → slides down to its title, right column → slides right */
+.form-summary { display: none; }
+.text-button { border: 0; background: none; padding: 4px 0; color: var(--accent); font-weight: 600; cursor: pointer; }
+#route-form[data-collapsed="true"] { gap: 4px; padding-block: 14px; }
+#route-form[data-collapsed="true"] .form-body, #route-form[data-collapsed="true"] .greeting { display: none; }
+#route-form[data-collapsed="true"] .race-title { margin: 0; font-size: 1.25rem; }
+#route-form[data-collapsed="true"] .form-summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.form-summary-text { font: 500 0.8125rem/1.3 var(--font-mono); color: var(--muted); min-width: 0; }
+.collapse-toggle {
+  position: absolute; z-index: 2; width: 30px; height: 30px; padding: 0; display: grid; place-items: center; cursor: pointer;
+  border: 0; border-radius: 50%; background: var(--field); color: var(--muted);
+}
+.collapse-toggle:hover { color: var(--ink); }
+.collapse-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s; }
+.collapse-toggle.down { top: 16px; right: 16px; }
+.now-panel { position: relative; transition: transform 0.35s ease; }
+.now-panel[data-collapsed="true"] { transform: translateY(calc(100% - 46px)); cursor: pointer; }
+.now-panel[data-collapsed="true"] .collapse-toggle svg { transform: rotate(180deg); }
+@media (min-width: 1000px) {
+  .tools { position: relative; transition: transform 0.35s ease; }
+  .tools[data-collapsed="true"] { transform: translateX(calc(100% - 14px)); cursor: pointer; }
+  .tools[data-collapsed="true"] > :not(.collapse-toggle) { opacity: 0.85; }
+  .collapse-toggle.side { top: 50%; left: -15px; transform: translateY(-50%); background: var(--glass-strong); box-shadow: var(--glass-shadow); }
+  .tools[data-collapsed="true"] .collapse-toggle svg { transform: rotate(180deg); }
+}
+@media (max-width: 999px) {
+  .collapse-toggle.side { display: none; }
+  .now-panel[data-collapsed="true"] { transform: none; }
+  .now-panel[data-collapsed="true"] .instruments, .now-panel[data-collapsed="true"] .advice { display: none; }
+}
+
 /* Route plan list */
 .plan-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .plan-step {
