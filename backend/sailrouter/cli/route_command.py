@@ -51,7 +51,7 @@ class RouteCommand:
 
     def execute(
         self, race_id: str, boat_id: str | None, position: GeoPoint, hours: float,
-        start: datetime | None = None, next_mark: str | None = None,
+        start: datetime | None = None, next_mark: str | None = None, options: BoatOptions | None = None,
     ) -> RouteReport:
         clock_start = perf_counter()
         now = datetime.now(UTC)
@@ -62,7 +62,7 @@ class RouteCommand:
         schedule = TimeSchedule(start or max(race.start_time, now), hours)
         clock = GfsRunClock()
         wind, run = self._timed("weather", lambda: self._wind_field(clock, schedule, now))
-        speed_model, penalty = self._timed("polar", lambda: self._boat_models(boat.polar_path))
+        speed_model, penalty = self._timed("polar", lambda: self._boat_models(boat.polar_path, options or BoatOptions()))
         obstacles = self._timed("land", lambda: self._obstacles(race))
         progress = MarkProgress.from_race(race, position, first_mark_id=next_mark)
         router = IsochroneRouter(wind, speed_model, penalty, obstacles, HeadingFan(5.0), IsochronePruner(0.5))
@@ -86,9 +86,8 @@ class RouteCommand:
         source = GfsWindSource(clock, LeadTimePlan(), downloader, store, GribDecoder())
         return source.wind_field(schedule.start, schedule.end, now, _print_download_progress)
 
-    def _boat_models(self, polar_path: str) -> tuple[SpeedModel, ManeuverPenalty]:
+    def _boat_models(self, polar_path: str, options: BoatOptions) -> tuple[SpeedModel, ManeuverPenalty]:
         vr_polar = VrPolarParser().load(self._paths.resolve(polar_path))
-        options = BoatOptions()
         return SpeedModel(vr_polar, options), ManeuverPenalty(vr_polar.winch, pro_winch=options.pro_winch)
 
     def _obstacles(self, race: Race) -> ObstacleChecker:

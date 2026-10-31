@@ -118,13 +118,14 @@
   <div class="settings-body">
     <fieldset class="settings-section">
       <legend data-i18n="settings.boat_options"></legend>
-      <div class="check-grid">
-        <label class="check"><input id="opt-foils" type="checkbox" checked><span data-i18n="settings.foils"></span></label>
-        <label class="check"><input id="opt-heavy" type="checkbox" checked><span data-i18n="settings.heavy"></span></label>
-        <label class="check"><input id="opt-light" type="checkbox" checked><span data-i18n="settings.light"></span></label>
-        <label class="check"><input id="opt-reach" type="checkbox" checked><span data-i18n="settings.reach"></span></label>
-        <label class="check"><input id="opt-winch" type="checkbox" checked><span data-i18n="settings.winch"></span></label>
-        <label class="check"><input id="opt-hull" type="checkbox" checked><span data-i18n="settings.hull"></span></label>
+      <p class="fine-print" data-i18n="settings.base_sails"></p>
+      <div id="boat-options" class="check-grid">
+        <label class="check"><input type="checkbox" data-option="foil"><span data-i18n="settings.foils"></span></label>
+        <label class="check"><input type="checkbox" data-option="light"><span data-i18n="settings.light"></span></label>
+        <label class="check"><input type="checkbox" data-option="heavy"><span data-i18n="settings.heavy"></span></label>
+        <label class="check"><input type="checkbox" data-option="reach"><span data-i18n="settings.reach"></span></label>
+        <label class="check"><input type="checkbox" data-option="pro_winch"><span data-i18n="settings.winch"></span></label>
+        <label class="check"><input type="checkbox" data-option="hull"><span data-i18n="settings.hull"></span></label>
       </div>
     </fieldset>
     <fieldset class="settings-section">

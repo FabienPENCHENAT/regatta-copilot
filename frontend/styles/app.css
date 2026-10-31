@@ -388,12 +388,14 @@ select, input[type="text"], input[type="number"] {
 .sail-wardrobe { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .sail-chip {
   display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 10px; font-size: 0.75rem;
-  color: var(--muted); background: var(--field); opacity: 0.75;
+  color: var(--ink); background: var(--field);
 }
 .sail-chip svg { width: 22px; height: 22px; flex-shrink: 0; }
 .sail-mast { stroke: currentColor; stroke-width: 1.4; }
 .sail-shape { fill: currentColor; opacity: 0.45; }
 .sail-chip.light .sail-shape { opacity: 0.25; }
+.sail-chip.not-owned { opacity: 0.35; background: transparent; border: 1px dashed var(--line); }
+.sail-chip.not-owned .sail-name { text-decoration: line-through; }
 .sail-chip.selected {
   grid-column: 1 / -1; order: -1; opacity: 1; padding: 10px 12px; font-size: 1rem; font-weight: 600;
   background: var(--tile-sail); color: var(--tile-sail-ink);

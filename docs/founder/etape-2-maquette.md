@@ -153,6 +153,18 @@ Inspirée de ta capture « tableau de bord » :
 - La légende ne garde que les symboles de la carte et une ligne toujours visible : « Mise à jour des données vers
   17:30 · dans 2 h 02 », à ton heure locale.
 
+## Version 10 : tes voiles et tes options (31/10)
+
+- Dans « Réglages », coche les options que tu possèdes dans le jeu. Par défaut : foils seulement, comme ton bateau.
+  Le Jib et le Spi sont toujours à bord.
+- Le calcul n'utilise que tes voiles. Sur la météo de ce matin, ça change vraiment la route : avec ton bateau, le
+  routeur passe plus au nord le premier jour et il reste 21 milles de plus à faire au bout de 5 jours.
+- Les noms des voiles sont ceux du jeu : Jib, Spi, Trinquette, Génois léger, Code 0, Spi lourd, Spi léger. Celles que
+  tu n'as pas sont barrées dans « À régler maintenant ».
+- Tous les bateaux de la Route du Rhum ont les mêmes 7 voiles. Seul l'effet des options change selon le bateau : par
+  exemple, les foils donnent +8 % en IMOCA contre +4 % sur les autres. Le calcul en tient compte via la polaire de
+  chaque bateau.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

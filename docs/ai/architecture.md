@@ -157,6 +157,7 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
 | `how.html`, `src/how-main.js`, `how/how-page.js` | "How it works" page: data, refresh times, method, options, limits; text in i18n. |
 | `layout/theme-toggle.js` | Light/dark switch; follows the system until the user picks, then remembers it. |
+| `settings/boat-options-form.js` | Owned VR options (sail packs, foils, hull, pro winch), saved in the browser, sent with each computation; lists the owned sails. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `layout/settings-dialog.js`, `layout/map-insets.js` | Opens the settings dialog from the rail; measures the screen area the panels cover so the map frames routes in the free space. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |

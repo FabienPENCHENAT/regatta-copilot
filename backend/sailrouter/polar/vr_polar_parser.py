@@ -9,6 +9,10 @@ from sailrouter.polar.foil_bonus import FoilBonus
 from sailrouter.polar.vr_polar import VrPolar
 from sailrouter.polar.winch_timings import MANEUVERS, ManeuverTiming, WinchTimings
 
+# VR numbers sails the same way for every boat, but spells their names differently per polar
+# ("Jib", "jib", "JIB", "LIGHT_JIB"...). Canonical names come from the sail number.
+SAIL_NAMES_BY_ID = {1: "Jib", 2: "Spi", 3: "Staysail", 4: "LightJib", 5: "Code0", 6: "HeavyGnk", 7: "LightGnk"}
+
 
 class VrPolarParser:
     """Raw VR `Meta_GetPolar` JSON (`tws[]`, `twa[]`, `sail[].speed[twa][tws]`, `foil`, `hull`, `winch`)
@@ -18,11 +22,11 @@ class VrPolarParser:
         return self.parse(json.loads(path.read_text(encoding="utf-8")))
 
     def parse(self, data: dict[str, Any]) -> VrPolar:
-        sails = sorted(data["sail"], key=lambda sail: sail["id"])
+        sails = sorted(data["sail"], key=self._sail_id)
         polar = BoatPolar(
             tws_kn=data["tws"],
             twa_deg=data["twa"],
-            sail_names=tuple(sail["name"] for sail in sails),
+            sail_names=tuple(SAIL_NAMES_BY_ID.get(self._sail_id(sail), sail["name"]) for sail in sails),
             speeds_kn=[sail["speed"] for sail in sails],
         )
         return VrPolar(
@@ -33,6 +37,10 @@ class VrPolarParser:
             global_speed_ratio=float(data.get("globalSpeedRatio", 1.0)),
             winch=self._parse_winch(data["winch"]),
         )
+
+    @staticmethod
+    def _sail_id(sail: dict[str, Any]) -> int:
+        return int(sail.get("id", sail.get("_id")))
 
     @staticmethod
     def _parse_foil(foil: dict[str, Any]) -> FoilBonus:

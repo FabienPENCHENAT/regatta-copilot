@@ -14,6 +14,7 @@ import { OptionList } from "./results/option-list.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
 import { SettingsDialog } from "./layout/settings-dialog.js";
 import { PanelCollapser } from "./layout/panel-collapser.js";
+import { BoatOptionsForm } from "./settings/boat-options-form.js";
 import { ThemeToggle } from "./layout/theme-toggle.js";
 import { measureMapInsets } from "./layout/map-insets.js";
 import { describeNextRefresh } from "./results/data-refresh.js";
@@ -42,6 +43,10 @@ class App {
     this.optionList = new OptionList(byId("options"), this.translator, (optionId) => this.update({ optionId }));
     this.routePlan = new RoutePlanList(byId("plan"), this.translator, (hour) => this.update({ hour }));
     this.settings = new SettingsDialog(byId("settings-open"), byId("settings"));
+    this.boatOptions = new BoatOptionsForm(byId("boat-options"), {
+      preferences: this.preferences,
+      onChange: () => this.#result && this.#render({ fitMap: false }),
+    });
     this.formPanel = new PanelCollapser(byId("route-form"), {
       toggle: byId("form-edit"), translator: this.translator, labelToggle: false,
     });
@@ -120,7 +125,7 @@ class App {
           this.preferences.update(selection);
           if (this.#race) this.map.showCourse(this.#race, selection.boatId);
         },
-        onSubmit: (request) => this.compute(request),
+        onSubmit: (request) => this.compute({ ...request, options: this.boatOptions.options }),
       },
     );
   }
@@ -136,7 +141,7 @@ class App {
     const { optionId, hour, windMode, view } = this.#state;
     const option = result.options.find((o) => o.id === optionId);
     const step = option.steps.find((s) => s.hour === hour);
-    this.nowPanel.render(result, option);
+    this.nowPanel.render(result, option, this.boatOptions.ownedSails());
     this.optionList.render(result, option.id);
     this.routePlan.render(result, option, hour);
     this.map.showResult(result, option);

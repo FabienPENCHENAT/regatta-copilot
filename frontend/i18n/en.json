@@ -55,7 +55,7 @@
   "tack.starboard": "starboard",
   "tack.port": "port",
   "sail.Jib": "Jib",
-  "sail.Spi": "Spinnaker",
+  "sail.Spi": "Spi",
   "sail.Staysail": "Staysail",
   "sail.LightJib": "Light jib",
   "sail.Code0": "Code 0",
@@ -74,8 +74,8 @@
   "settings.title": "Settings",
   "settings.boat_options": "Boat options",
   "settings.foils": "Foils",
-  "settings.heavy": "Heavy sails (staysail, heavy gennaker)",
-  "settings.light": "Light sails (light jib, light gennaker)",
+  "settings.heavy": "Heavy sails: staysail, heavy gennaker",
+  "settings.light": "Light sails: light jib, light gennaker",
   "settings.reach": "Code 0",
   "settings.winch": "Pro winch (faster manoeuvres)",
   "settings.hull": "Polished hull",
@@ -203,5 +203,7 @@
   "race.status_start_hours": "Start in {h} h",
   "race.status_start_days": "Start in {d} d {h} h",
   "race.status_racing": "Racing for {d} d {h} h",
-  "race.status_finished": "Race over"
+  "race.status_finished": "Race over",
+  "settings.base_sails": "The Jib and the Spi are always on board. Tick the options you bought in the game: the computation will only use those sails.",
+  "sail.not_owned": "Option not owned"
 }

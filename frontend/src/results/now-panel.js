@@ -17,7 +17,7 @@ export class NowPanel {
     this.translator = translator;
   }
 
-  render(result, option) {
+  render(result, option, ownedSails) {
     const t = (key, params) => this.translator.t(key, params);
     const now = option.now;
     const head = element("div", "panel-head");
@@ -25,7 +25,7 @@ export class NowPanel {
       element("span", "panel-subtitle", t("now.for_option", { option: t(`option.name.${option.id}`) })));
 
     const instruments = element("div", "instruments");
-    instruments.append(this.#headingCell(now), this.#sailCell(now), this.#windAndSpeedCell(now));
+    instruments.append(this.#headingCell(now), this.#sailCell(now, ownedSails), this.#windAndSpeedCell(now));
     const advice = element("p", "advice", t(result.advice.key,
       { ...result.advice.params, direction: { key: `direction.${result.advice.params.option}` } }));
     this.container.replaceChildren(head, instruments, advice);
@@ -47,9 +47,9 @@ export class NowPanel {
     return cell;
   }
 
-  #sailCell(now) {
+  #sailCell(now, ownedSails) {
     const cell = this.#cell("instrument-sail", "label.sail");
-    cell.append(createSailWardrobe(this.translator, now.sail));
+    cell.append(createSailWardrobe(this.translator, now.sail, ownedSails));
     return cell;
   }
 

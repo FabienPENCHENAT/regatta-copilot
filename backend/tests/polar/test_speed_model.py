@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import numpy as np
@@ -51,3 +52,14 @@ def test_options_restrict_sails_and_add_bonuses(vr_polar):
     _, edge = full.best(13.5, 120.0)  # TWS 13.5: halfway in the 11–16 kn foil ramp
     _, edge_base = SpeedModel(vr_polar, BoatOptions(foil=False)).best(13.5, 120.0)
     assert edge == pytest.approx(edge_base * 1.02)
+
+
+def test_sail_names_come_from_sail_numbers_whatever_the_spelling():
+    # IMOCA and Ocean Fifty polars spell sails "jib" or "LIGHT_JIB"; options must still recognise them.
+    raw = json.loads(POLAR.read_text())
+    for sail, spelling in zip(raw["sail"], ("JIB", "spi", "STAYSAIL", "LIGHT_JIB", "CODE_0", "heavygnk", "LIGHT_GNK")):
+        sail["name"] = spelling
+    raw["sail"][0]["_id"] = raw["sail"][0].pop("id")
+    polar = VrPolarParser().parse(raw)
+    assert polar.polar.sail_names == ("Jib", "Spi", "Staysail", "LightJib", "Code0", "HeavyGnk", "LightGnk")
+    SpeedModel(polar, BoatOptions.from_owned("foil"))  # would raise "no sail allowed" with raw spellings

@@ -10,6 +10,7 @@ from sailrouter.cli.route_command import RouteCommand
 from sailrouter.cli.route_file_writer import RouteFileWriter
 from sailrouter.cli.route_summary_printer import RouteSummaryPrinter
 from sailrouter.domain.position_parser import PositionParser
+from sailrouter.polar.boat_options import BoatOptions
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,6 +23,9 @@ def build_parser() -> argparse.ArgumentParser:
     route.add_argument("--hours", type=float, default=120.0, help="routing horizon in hours (default 120)")
     route.add_argument("--start", default=None, help="UTC start, ISO 8601 (default: race start, or now if later)")
     route.add_argument("--next-mark", default=None, help="id of the next mark, if earlier marks are passed")
+    route.add_argument("--options", default="all",
+                       help='owned VR options: "all", "none" (Jib + Spi only) or a list among '
+                            'light,heavy,reach,foil,hull,pro_winch, e.g. "foil"')
     route.add_argument("--name", default=None, help="output file name in var/routes/ (no extension)")
     route.add_argument("--root", type=Path, default=REPO_ROOT, help=argparse.SUPPRESS)
     return parser
@@ -36,7 +40,8 @@ def main(argv: list[str] | None = None) -> int:
     start = _parse_start(args.start) if args.start else None
     paths = ProjectPaths(args.root)
     try:
-        report = RouteCommand(paths).execute(args.race, args.boat, position, args.hours, start, args.next_mark)
+        options = BoatOptions.from_owned(args.options)
+        report = RouteCommand(paths).execute(args.race, args.boat, position, args.hours, start, args.next_mark, options)
     except (ValueError, KeyError, RuntimeError, ConnectionError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1

@@ -2,6 +2,18 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D27 — Owned boat options drive the routing; sail names follow the game (user feedback, 2026-10-31)
+The user owns only the base sails (Jib, Spi) and the foils. Routing with the full pack advised sails they do not
+have (light gennaker). Now: `BoatOptions.from_owned("foil")` and `--options` on the CLI; the settings dialog
+saves the owned options in the browser (default: foils only) and sends them with each computation; the sail
+wardrobe fades and strikes out sails not owned. Comparison on the 2026-10-31 06z run from the start: full pack
+2 110 nm left at +120 h, Jib + Spi + foils 2 131 nm, with a more northerly track on day 1.
+All five Rhum boats (Class40, IMOCA, Ocean Fifty, Ultim, Vintage Multi) have the same 7 sails, numbered 1–7 in
+their polars but spelled differently ("Jib", "jib", "JIB", "LIGHT_JIB"): the parser now names sails from their
+number. Options are the same for every boat but their effect differs (foils ×1.084 on the IMOCA, ×1.04 on the
+others; hull ×1.003): read from each boat's polar. French names as in the game: Jib, Spi, Trinquette,
+Génois léger, Code 0, Spi lourd, Spi léger.
+
 ## D26 — Race card redesign and a lean legend (user feedback, 2026-10-31)
 The race card was "the least pretty block": the race name is now the title (and the race selector), followed by
 a Saint-Malo → Pointe-à-Pitre line with the official distance (3 542 nm, added to the race file), a live status

@@ -9,6 +9,7 @@ SAIL_PACKS = {
     "reach": ("Code0",),
 }
 BASE_SAILS = ("Jib", "Spi")
+OPTION_NAMES = ("light", "heavy", "reach", "foil", "hull", "pro_winch")
 
 
 @dataclass(frozen=True)
@@ -21,6 +22,18 @@ class BoatOptions:
     foil: bool = True
     hull: bool = True
     pro_winch: bool = True
+
+    @classmethod
+    def from_owned(cls, owned: str) -> BoatOptions:
+        """Builds options from a comma-separated list of owned ones, e.g. "foil" or "foil,hull".
+        "all" means the full pack, "none" the bare boat (Jib and Spi only)."""
+        if owned.strip() == "all":
+            return cls()
+        names = {name.strip() for name in owned.split(",") if name.strip() and name.strip() != "none"}
+        unknown = names - set(OPTION_NAMES)
+        if unknown:
+            raise ValueError(f"unknown boat option(s): {', '.join(sorted(unknown))} (known: {', '.join(OPTION_NAMES)})")
+        return cls(**{name: name in names for name in OPTION_NAMES})
 
     def allows_sail(self, sail_name: str) -> bool:
         if sail_name in BASE_SAILS:

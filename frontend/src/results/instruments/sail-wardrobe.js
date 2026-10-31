@@ -1,5 +1,6 @@
 // The boat's sail wardrobe, from upwind to downwind sails, with a small silhouette of each.
-// The sail to hoist now is highlighted; the others stay visible so the choice makes sense.
+// The sail to hoist now is highlighted; sails the player does not own are faded. Every VR boat has these
+// same 7 sails (numbered 1 to 7 in the polars); names follow the game's interface.
 
 import { element } from "../../dom.js";
 
@@ -14,15 +15,19 @@ const SAILS = [
   { id: "Spi", shape: "M12 3 C22 6 22 17 17 21 L7 21 C2 17 2 6 12 3 Z" },
 ];
 
-export function createSailWardrobe(translator, selectedSail) {
+export function createSailWardrobe(translator, selectedSail, ownedSails) {
   const list = element("ul", "sail-wardrobe");
   for (const sail of SAILS) {
     const item = element("li", "sail-chip");
     if (sail.id === selectedSail) item.classList.add("selected");
     if (sail.light) item.classList.add("light");
+    if (!ownedSails.includes(sail.id)) {
+      item.classList.add("not-owned");
+      item.title = translator.t("sail.not_owned");
+    }
     item.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><line class="sail-mast" x1="7" y1="2" x2="7" y2="22"/>
       <path class="sail-shape" d="${sail.shape}"/></svg>`;
-    item.append(element("span", "", translator.t(`sail.${sail.id}`)));
+    item.append(element("span", "sail-name", translator.t(`sail.${sail.id}`)));
     if (sail.id === selectedSail) item.setAttribute("aria-current", "true");
     list.append(item);
   }
