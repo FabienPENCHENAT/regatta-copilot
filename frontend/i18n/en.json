@@ -269,7 +269,7 @@
   "how.limits.title": "What the tool does not do",
   "how.limits.advice": "It does not play for you: you enter your orders in the game.",
   "how.limits.horizon": "No arrival time: beyond 2 to 3 days the weather becomes uncertain. Recompute with each new forecast.",
-  "how.limits.game": "The game may differ slightly: its coastline, exact penalties and skipper energy are not published.",
+  "how.limits.game": "The game may differ slightly: its coastline and the detail of its penalties are not published.",
   "how.limits.polar": "The community polar may differ slightly from the game's.",
   "how.sources": "Sources: NOAA NOMADS (GFS, GEFS) · official sailing instructions · Virtual Regatta polars · Natural Earth · Leaflet · leaflet-velocity",
   "form.lat": "Lat.",
@@ -285,5 +285,6 @@
   "form.hemisphere_name.S": "south",
   "form.hemisphere_name.E": "east",
   "form.hemisphere_name.W": "west",
-  "form.hemisphere_toggle": "Switch hemisphere (currently {current})"
+  "form.hemisphere_toggle": "Switch hemisphere (currently {current})",
+  "how.limits.energy": "No skipper energy: in the game, a tired skipper manoeuvres up to twice as slowly (twice as fast when fully rested). Here manoeuvre times are fixed: avoid chaining manoeuvres when your energy is low."
 }

@@ -269,7 +269,7 @@
   "how.limits.title": "Ce que l'outil ne fait pas",
   "how.limits.advice": "Il ne joue pas à ta place : c'est toi qui saisis tes ordres dans le jeu.",
   "how.limits.horizon": "Pas d'heure d'arrivée : au-delà de 2 à 3 jours, la météo devient incertaine. Recalcule à chaque nouvelle prévision.",
-  "how.limits.game": "Le jeu peut différer un peu : trait de côte, pénalités exactes et énergie du skipper ne sont pas publiés.",
+  "how.limits.game": "Le jeu peut différer un peu : son trait de côte et le détail de ses pénalités ne sont pas publiés.",
   "how.limits.polar": "La polaire communautaire peut différer légèrement de celle du jeu.",
   "how.sources": "Sources : NOAA NOMADS (GFS, GEFS) · instructions de course officielles · polaires Virtual Regatta · Natural Earth · Leaflet · leaflet-velocity",
   "form.lat": "Lat.",
@@ -285,5 +285,6 @@
   "form.hemisphere_name.S": "sud",
   "form.hemisphere_name.E": "est",
   "form.hemisphere_name.W": "ouest",
-  "form.hemisphere_toggle": "Changer d'hémisphère (actuellement {current})"
+  "form.hemisphere_toggle": "Changer d'hémisphère (actuellement {current})",
+  "how.limits.energy": "Pas d'énergie du skipper : dans le jeu, un skipper fatigué manœuvre jusqu'à 2 fois plus lentement (2 fois plus vite en pleine forme). Ici, les temps de manœuvre sont fixes : évite d'enchaîner les manœuvres quand ton énergie est basse."
 }
