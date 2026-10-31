@@ -24,9 +24,10 @@ export class ApiClient {
     return this.#get("/api/ensemble/status");
   }
 
-  // Map wind (the game's GFS) at the start and at each route-plan hour.
-  async getWindForecast(startIso) {
-    return this.#get(`/api/wind?start=${encodeURIComponent(startIso)}`);
+  // Map wind (the game's GFS) from the route start: the default hours, or the given ones (e.g. [11]).
+  async getWindForecast(startIso, hours = null) {
+    const query = hours ? `&hours=${hours.join(",")}` : "";
+    return this.#get(`/api/wind?start=${encodeURIComponent(startIso)}${query}`);
   }
 
   async #get(url) {

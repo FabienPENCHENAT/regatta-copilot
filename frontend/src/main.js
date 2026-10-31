@@ -9,6 +9,7 @@ import { RouteForm } from "./form/route-form.js";
 import { RaceHeader } from "./form/race-header.js";
 import { RouteMap } from "./map/route-map.js";
 import { MapControls } from "./map/map-controls.js";
+import { WindForecastCache } from "./map/wind-forecast-cache.js";
 import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
@@ -25,13 +26,13 @@ const DEFAULT_POSITION_TEXT = `48°43'48"N 001°54'00"W`; // Class40 start line,
 
 class App {
   #race = null;
-  #wind = null;
   #result = null;
   #state = { optionId: null, hour: 0, windMode: "particles", view: "near" };
 
   constructor() {
     this.api = new ApiClient();
     this.computation = new RouteComputation(this.api);
+    this.wind = new WindForecastCache(this.api);
     this.preferences = new PreferencesStore();
     this.translator = new Translator();
     this.languagePicker = new LanguagePicker(byId("lang-picker"), (lang) => this.changeLanguage(lang));
@@ -106,7 +107,7 @@ class App {
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
       this.formPanel.collapse();
-      this.#wind = wind;
+      this.wind.reset(wind);
       this.#showResult(result);
     } catch (error) {
       this.form.showIdle();
@@ -176,11 +177,15 @@ class App {
     if (this.#result) this.#render({ fitMap: false });
   }
 
+  // Shows the closest loaded wind at once, then the exact hour as soon as it arrives.
   #renderWind(hour, windMode, view) {
-    const hours = this.#wind.times.map((time) => time.hour);
-    const time = this.#wind.times.findLast((t) => t.hour <= hour) ?? this.#wind.times[0]; // nearest hour before
-    this.map.showWind(time.grid, windMode);
-    this.mapControls.render({ view, hours, hour: time.hour, windMode });
+    const shown = this.wind.nearest(hour);
+    this.map.showWind(shown.grid, windMode);
+    this.mapControls.render({ view, hours: this.wind.chipHours, hour, windMode });
+    if (shown.exact) return;
+    this.wind.load(hour).then((loaded) => {
+      if (loaded && this.#state.hour === hour) this.map.showWind(this.wind.nearest(hour).grid, this.#state.windMode);
+    });
   }
 
   #translateStaticText() {

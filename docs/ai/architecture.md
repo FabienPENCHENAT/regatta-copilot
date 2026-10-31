@@ -169,6 +169,7 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/graticule-layer.js`, `map/sea-labels.js` | Degree grid with edge labels; italic sea names (i18n). |
 | `map/course-layer.js` | Race course: start line of the chosen boat, gates, marks (IALA colours), finish, forbidden and vigilance zones. |
 | `map/route-layer.js` | Computed track, member routes, selected option with numbered leg markers (same numbers as the plan), boat at the selected hour. |
+| `map/wind-forecast-cache.js` | Map wind already loaded by hour; fetches any other hour on demand (`/api/wind?hours=11`). |
 | `map/wind-grid.js` | Bilinear wind lookup on a leaflet-velocity grid. |
 | `map/wind-particles-layer.js`, `map/wind-barbs-layer.js` | Wind as animated particles (leaflet-velocity) or as meteorological barbs (canvas). |
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |

@@ -16,7 +16,8 @@ with `start_line` and `polar`, ordered `marks[]` (`gate` with `points` + `cross`
 `position` + `leave_to`), `finish`, `exclusion_zones[]` and `vigilance_zones[]` (`shape`: `polygon` | `line`,
 `points` as `[lat, lon]`). Mark names are i18n keys `mark.<id>`.
 
-## `GET /api/wind?start=<ISO UTC>`
+## `GET /api/wind?start=<ISO UTC>[&hours=11,13]`
+`hours` (optional, TODO backend after the step-4 merge): only these hours after `start`; default 0,4,8,12,16,24,48.
 Deterministic GFS wind (the game's weather) for the map, in leaflet-velocity format (U record then V record,
 m/s, rows north to south):
 ```jsonc
