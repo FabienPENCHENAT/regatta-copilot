@@ -70,6 +70,5 @@ Comment le lire :
 - Les groupes sont faits avec une règle simple (deux routes à moins d'environ 70 milles à +48 h sont dans la
   même option). Une prévision isolée rejoint le groupe le plus proche plutôt que de créer une option à 3 %.
 - Au plus **4 options**.
-- Le site (cartes des options, textes) n'a pas encore été adapté aux nouveaux noms « Nord », « Est » et
-  « Consensus » : c'est la prochaine étape côté écran.
+- Le calcul avec les 31 scénarios prend environ 50 secondes : la page attend pendant ce temps.
 - Rien n'a été vérifié dans le jeu lui-même.

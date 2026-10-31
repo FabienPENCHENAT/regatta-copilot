@@ -22,8 +22,9 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   speed; gap to the earliest. Weather after +120 h is ignored.
 - **Advice**: `advice.consensus {count, total, hours: 48}` for one option, else
   `advice.head_direction {option, count, total, hours: 48}`.
-- The frontend (not changed in this step) still needs i18n keys `option.name.{consensus,north,east}`,
-  `direction.{consensus,north,east}`, `option.kind.consensus`, `option.kind_short.consensus`, `advice.consensus`.
+- i18n keys for these ids and kinds (`option.name.*`, `direction.*`, `option.kind*.consensus`,
+  `advice.consensus`) and the `ensemble.*` status texts were added on the frontend side in parallel (main,
+  commit 39adffc).
 
 ## D32 — Grouping member routes into options (step 4, 2026-10-31)
 - Distance between two member routes = max(gap at +48 h, 2 × gap at +24 h): doubling the 24 h gap puts both
