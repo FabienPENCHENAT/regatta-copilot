@@ -274,18 +274,24 @@ select, input[type="text"], input[type="number"] {
   width: 100%; box-sizing: border-box; min-height: 44px; padding: 8px 12px;
   border: 1px solid var(--line); border-radius: var(--radius-small); background: var(--field);
 }
-.position-input { position: relative; display: block; }
-.position-input svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); fill: none; stroke: var(--tile-heading); stroke-width: 1.8; }
-#position { padding-left: 38px; font-family: var(--font-mono); font-size: 0.9375rem; }
-#position[aria-invalid="true"] { border-color: var(--conf-low-ink); }
+.position-field { border: 0; margin: 0; padding: 0; }
+/* Degrees / minutes / seconds boxes and a hemisphere button, one row per axis */
+.position-fields { display: grid; gap: 6px; }
+.position-row { display: grid; grid-template-columns: 36px repeat(3, minmax(0, 1fr)) 44px; gap: 6px; align-items: center; }
+.position-axis { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+.position-cell { position: relative; display: block; }
+.position-fields input.position-part {
+  min-height: 44px; padding: 8px 20px 8px 10px; text-align: right; font-family: var(--font-mono); font-size: 1rem;
+}
+.position-fields input.position-part[aria-invalid="true"] { border-color: #c2410c; }
+.position-unit { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); color: var(--muted); pointer-events: none; }
+.position-hemisphere {
+  min-height: 44px; border: 0; border-radius: var(--radius-small); background: var(--ink); color: var(--glass-strong);
+  font-weight: 700; cursor: pointer;
+}
+.position-hemisphere:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .position-feedback { margin: -4px 0 0; font-size: 0.75rem; color: var(--muted); }
 .position-feedback[data-state="ok"] { display: none; }
-.position-input::after {
-  content: ""; position: absolute; right: 12px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); border-radius: 50%;
-  background: var(--tile-sail) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2305331f' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center / 11px no-repeat;
-  opacity: 0; transition: opacity 0.2s;
-}
-.position-input.valid::after { opacity: 1; }
 .position-feedback[data-state="ok"] { color: var(--conf-high-ink); }
 .position-feedback[data-state="error"] { color: #c2410c; }
 .submit {

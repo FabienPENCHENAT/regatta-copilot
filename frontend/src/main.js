@@ -153,7 +153,7 @@ class App {
     return new RouteForm(
       {
         form: byId("route-form"), raceSelect: byId("race"), boatPicker: byId("boat-picker"),
-        positionInput: byId("position"), positionFeedback: byId("position-feedback"),
+        positionFields: byId("position"), positionFeedback: byId("position-feedback"),
         submitButton: byId("submit"), summary: byId("form-summary-text"),
       },
       {

@@ -62,14 +62,10 @@
         <legend class="field-label" data-i18n="form.boat"></legend>
         <div id="boat-picker" class="boat-picker"></div>
       </fieldset>
-      <label class="field">
-        <span class="field-label" data-i18n="form.position"></span>
-        <span class="position-input">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
-          <input id="position" type="text" inputmode="text" autocomplete="off" spellcheck="false"
-                 aria-describedby="position-feedback" data-i18n-attr="placeholder:form.position_placeholder">
-        </span>
-      </label>
+      <fieldset class="field position-field">
+        <legend class="field-label" data-i18n="form.position"></legend>
+        <div id="position" class="position-fields" aria-describedby="position-feedback"></div>
+      </fieldset>
       <p id="position-feedback" class="position-feedback" aria-live="polite"></p>
       <label class="field">
         <span class="field-label" data-i18n="form.next_mark"></span>

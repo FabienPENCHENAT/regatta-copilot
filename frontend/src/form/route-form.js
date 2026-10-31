@@ -3,20 +3,24 @@
 // one-line summary for when the card is collapsed.
 
 import { BoatPicker } from "./boat-picker.js";
+import { PositionFields } from "./position-fields.js";
 import { formatCoordinates } from "../results/display-format.js";
 
 export class RouteForm {
   #races = [];
   #position = null;
 
-  constructor({ form, raceSelect, boatPicker, positionInput, positionFeedback, submitButton, summary }, deps) {
-    Object.assign(this, { form, raceSelect, positionInput, positionFeedback, submitButton, summary });
+  constructor({ form, raceSelect, boatPicker, positionFields, positionFeedback, submitButton, summary }, deps) {
+    Object.assign(this, { form, raceSelect, positionFeedback, submitButton, summary });
     this.translator = deps.translator;
     this.parser = deps.parser;
     this.onPositionChange = deps.onPositionChange;
     this.onSubmit = deps.onSubmit;
     this.onSelectionChange = deps.onSelectionChange;
     this.boats = new BoatPicker(boatPicker, this.translator, () => this.#selectionChanged());
+    this.position = new PositionFields(positionFields, {
+      translator: this.translator, parser: this.parser, onChange: () => this.#readPosition(),
+    });
     this.#bindEvents();
   }
 
@@ -29,7 +33,7 @@ export class RouteForm {
   }
 
   get positionText() {
-    return this.positionInput.value;
+    return this.position.text;
   }
 
   // Runs the same checks as the button (used to compute automatically when the page opens).
@@ -41,16 +45,18 @@ export class RouteForm {
     this.#races = races;
     this.#fillRaceOptions(raceId);
     this.#renderBoats(boatId);
+    this.position.retranslate(); // first call after the language file is loaded
   }
 
   setPositionText(text) {
-    this.positionInput.value = text;
+    this.position.setText(text);
     this.#readPosition();
   }
 
   retranslate() {
     this.#fillRaceOptions(this.raceId);
     this.#renderBoats(this.boatId);
+    this.position.retranslate();
     this.#readPosition();
   }
 
@@ -74,10 +80,9 @@ export class RouteForm {
       this.#renderBoats();
       this.#selectionChanged();
     });
-    this.positionInput.addEventListener("input", () => this.#readPosition());
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
-      if (!this.#readPosition()) return this.positionInput.focus();
+      if (!this.#readPosition()) return this.position.focus();
       this.onSubmit({ raceId: this.raceId, boatId: this.boatId, position: this.#position });
     });
   }
@@ -93,15 +98,14 @@ export class RouteForm {
   }
 
   #readPosition() {
-    const text = this.positionInput.value;
-    this.#position = this.parser.parse(text);
+    this.#position = this.position.value;
     const valid = this.#position !== null;
-    this.positionInput.setAttribute("aria-invalid", String(!valid && text.trim() !== ""));
-    this.positionInput.parentElement.classList.toggle("valid", valid);
-    this.positionFeedback.dataset.state = valid ? "ok" : text.trim() ? "error" : "empty";
+    const empty = this.position.isEmpty;
+    this.position.container.classList.toggle("valid", valid);
+    this.positionFeedback.dataset.state = valid ? "ok" : empty ? "empty" : "error";
     this.positionFeedback.textContent = valid
       ? this.translator.t("form.position_ok", { coords: formatCoordinates(this.#position) })
-      : text.trim()
+      : !empty
         ? this.translator.t("form.position_error")
         : this.translator.t("form.position_hint");
     this.onPositionChange(this.#position);

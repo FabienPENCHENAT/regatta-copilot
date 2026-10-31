@@ -2,6 +2,14 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D44 — Position typed in boxes, as shown in the game (user, 2026-10-31)
+- One free-text field needed °, ', " and N/W typed by hand ("un peu complexe"). `form/PositionFields`: per axis,
+  degrees / minutes / seconds boxes (numeric keypad, auto-advance when full or on space ° ' ") and a hemisphere
+  button (N/S, E/O). Pasting a whole position in any box still works (`PositionParser`). The last position stays
+  pre-filled, so usually only minutes and seconds change. Saved as the same DMS text as before.
+- Rejected: fetching the boat position from the game (no public API; a reading browser extension was offered and
+  declined by the user).
+
 ## D43 — A newer request cancels the older one; land checked only for possible winners (user, 2026-10-31)
 - "Changing an option takes far more than 30 s": each settings change queued a full 31-member computation
   (≈ 30–40 s each, one at a time since D42), so three ticks cost ≈ 1 min 45.
