@@ -2,6 +2,16 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D46 — 1 nm coast margin, re-opened around gates (user, 2026-10-31)
+- User: routes passing close to the coast here may touch land in the game (Natural Earth 1:10M ≠ the game's
+  coast). `geography/CoastMargin` widens the land raster by `COAST_MARGIN_NM` = 1 (ellipse per cell, longitude
+  width at the band's highest latitude), cached in `var/land/` (≈ 3 s once, then 0.7 s to load).
+- `ObstacleChecker` with a `margin` mask: a segment may not enter the margin; a segment STARTING inside it (start
+  line, anchorage) is only checked against real land, so the boat can get out.
+- `geography/GateCorridors`: within 1 nm of every gate/line of the race, the margin is replaced by the real
+  land again — committees place gates in navigable water; without this the 1 nm Fréhel gate kept 0.17 nm.
+  Checked: Class40 and IMOCA routes from the start cross Fréhel at 48.712–48.713°N (north end).
+
 ## D45 — The game's weather timing: 3-hourly GFS, switch 3 h 40 after the cycle (user, 2026-10-31)
 - Source: eSail4VR guide ("calcul du vent", "horaires et retards"), a router connected to the game. VR reads GFS
   0.25° every 3 h and interpolates linearly in time (per U/V component) then bilinearly in space; a run is

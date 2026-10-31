@@ -248,7 +248,7 @@
   "how.route.2.title": "Avancer pas à pas",
   "how.route.2.text": "Pas de 15 min jusqu'à +6 h, 30 min jusqu'à +24 h, 1 h jusqu'à +48 h, puis 3 h. Virements, empannages et changements de voile coûtent le temps réglé.",
   "how.route.3.title": "Éviter la terre et les zones",
-  "how.route.3.text": "Toute trajectoire qui coupe la côte ou une zone interdite est éliminée. Les marques à contourner sont laissées du côté imposé.",
+  "how.route.3.text": "Toute trajectoire qui coupe une zone interdite ou passe à moins de 1 mille de la côte est éliminée : notre trait de côte n'est pas exactement celui du jeu, la marge évite de toucher dans le jeu. Près des portes du parcours, seule la vraie côte compte. Les marques à contourner sont laissées du côté imposé.",
   "how.route.4.title": "Garder les meilleurs",
   "how.route.4.text": "Dans chaque direction, on garde le point le plus avancé vers la marque. On recommence jusqu'à 5 jours, puis on remonte le chemin.",
   "how.options.title": "Options et probabilités",

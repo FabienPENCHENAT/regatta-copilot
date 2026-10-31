@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
+import numpy as np
+
 from sailrouter.domain.race import Race
+from sailrouter.geography.coast_margin import CoastMargin
 from sailrouter.geography.coastline_loader import CoastlineLoader
+from sailrouter.geography.gate_corridors import GateCorridors
 from sailrouter.geography.land_mask import LandMask
 from sailrouter.geography.obstacle_checker import ObstacleChecker
 from sailrouter.geography.polygon_rasterizer import PolygonRasterizer
@@ -23,6 +28,7 @@ from sailrouter.weather.wind_field import WindField
 
 WEATHER_AREA = WeatherArea(south_deg=0.0, north_deg=60.0, west_deg=-80.0, east_deg=10.0)
 LAND_RESOLUTION_DEG = 0.005  # ≈ 550 m × 370 m at 48°N: keeps the 1 nm wide Fréhel gate open
+COAST_MARGIN_NM = 1.0  # routes keep this far from Natural Earth's coast, which differs from the game's (D46)
 
 
 class RouterBuilder:
@@ -42,9 +48,26 @@ class RouterBuilder:
     def obstacles(self, race: Race) -> ObstacleChecker:
         area = WEATHER_AREA
         grid = RasterGrid(area.south_deg, area.west_deg, area.north_deg, area.east_deg, LAND_RESOLUTION_DEG)
-        polygons = CoastlineLoader().load(self._paths.land_geojson)
-        land = LandMask(grid, PolygonRasterizer(grid).rasterize(polygons))
-        return ObstacleChecker(land, ZoneCrossingDetector(race.exclusion_zones))
+        packed = PolygonRasterizer(grid).rasterize(CoastlineLoader().load(self._paths.land_geojson))
+        widened = GateCorridors(COAST_MARGIN_NM).open(grid, self._widened_land(grid, packed), packed,
+                                                      [*race.marks, race.finish])
+        margin = LandMask(grid, widened)
+        return ObstacleChecker(LandMask(grid, packed), ZoneCrossingDetector(race.exclusion_zones), margin)
+
+    def _widened_land(self, grid: RasterGrid, packed: np.ndarray) -> np.ndarray:
+        """The land raster widened by the coast margin, kept on disk (a few seconds to build, then shared by the
+        member workers). The file name holds everything it depends on."""
+        source = self._paths.land_geojson.stat()
+        name = f"coast-{COAST_MARGIN_NM:g}nm-{LAND_RESOLUTION_DEG:g}deg-{source.st_size}-{int(source.st_mtime)}.npy"
+        path = self._paths.land_cache_dir / name
+        if path.exists():
+            return np.load(path)
+        widened = CoastMargin(COAST_MARGIN_NM).widen(grid, packed)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        partial = path.with_suffix(f".{os.getpid()}.partial.npy")
+        np.save(partial, widened)
+        os.replace(partial, path)
+        return widened
 
     @staticmethod
     def router(

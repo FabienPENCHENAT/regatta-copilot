@@ -248,7 +248,7 @@
   "how.route.2.title": "Move step by step",
   "how.route.2.text": "15 min steps until +6 h, 30 min until +24 h, 1 h until +48 h, then 3 h. Tacks, gybes and sail changes cost the time you set.",
   "how.route.3.title": "Avoid land and zones",
-  "how.route.3.text": "Any track crossing the coast or an exclusion zone is dropped. Marks to round are left on the required side.",
+  "how.route.3.text": "Any track crossing an exclusion zone or passing within 1 nm of the coast is dropped: our coastline is not exactly the game's, the margin avoids running aground in the game. Near course gates, only the real coast counts. Marks to round are left on the required side.",
   "how.route.4.title": "Keep the best",
   "how.route.4.text": "In each direction, the point furthest towards the mark is kept. Repeat up to 5 days, then trace the path back.",
   "how.options.title": "Options and probabilities",

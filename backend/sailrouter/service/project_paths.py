@@ -21,6 +21,11 @@ class ProjectPaths:
         return self.root / "frontend" / "map-data" / "land.geojson"
 
     @property
+    def land_cache_dir(self) -> Path:
+        """Land rasters derived from the coastline (the coast margin), rebuilt when the coastline changes."""
+        return self.root / "var" / "land"
+
+    @property
     def weather_dir(self) -> Path:
         return self.root / "var" / "weather"
 
