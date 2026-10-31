@@ -61,6 +61,8 @@ class CachedRouteComputer:
         result = self._compute(request, start, gefs_run)
         game_run = result["weather"].get("game_run", result["weather"]["run"])
         fell_back = not game_run.startswith(expected_gfs.cycle.strftime("%Y-%m-%dT%H"))
+        # Scenarios were on disk but the ensemble failed (logged): keep the GFS-only answer briefly, retry soon.
+        fell_back = fell_back or (gefs_run is not None and result["weather"]["member_count"] == 1)
         self._cache.put(key, result, now + FALLBACK_RESULT_LIFETIME if fell_back else None)
         log.info("route %s/%s computed in %.0f s on GFS %s, %s%s", race.id, boat.id, perf_counter() - began,
                  game_run, result["weather"]["model"], " (older GFS run, expires in 30 min)" if fell_back else "")
