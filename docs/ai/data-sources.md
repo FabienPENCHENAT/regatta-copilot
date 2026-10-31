@@ -55,6 +55,23 @@ decision D13. Key facts:
 - 22 forbidden zones (traffic separation schemes, wind farms, Azores cetacean zone, Mauritania...).
 - VR in-game zones and gates are **not public**: compare in the game.
 
+### Derived Guadeloupe gates (decision D39)
+
+The SI give sides, not lines: each rounding mark is encoded as a directed gate (`status: "derived"`, `position` =
+the physical mark). Checked on 2026-10-31 against `frontend/map-data/land.geojson` (Natural Earth 1:10m, as
+rasterised by the router at 0.005°) and the race's exclusion zones:
+
+| Mark | Line `[lat, lon]` | Crossed | Check |
+|---|---|---|---|
+| Tête à l'Anglais (islet = vertex A of the AGOA zone, no SI coordinates) | (16.380833, −61.764167) → (16.380833, −62.3) | southward | whole line at sea; starts at the AGOA zone corner, so passing east of the islet means crossing the zone. |
+| Basse-Terre buoy (official position) | (15.9875, −61.7365) → (15.9875, −61.69) | southward | sea from the buoy to −61.7008 (1:10m coast; −61.6975 on the raster), land beyond. The Basse-Terre nautical stadium (forbidden) cuts it at −61.7268…−61.7248: legal water −61.7365…−61.7268 (≈ 0.55 nm, ≈ 0.2 nm for a north–south track because the stadium is tilted) and −61.7248…−61.70 (but the coast bends west north of 16°N). Real routes crossed at −61.735…−61.723. |
+| Les Saintes (archipelago, no SI coordinates; `position` = centre 15.861, −61.61) | (15.885, −61.6) → (16.0, −61.6) | eastward | sea from 15.885 (north tip of Terre-de-Haut at 1:10m: 15.883) to 15.9955, Basse-Terre beyond. Passing south of the archipelago, or between its islands, does not cross it. |
+| Pointe-à-Pitre landfall buoy (official position) | (16.1595, −61.522167) → (16.1595, −61.49) | northward | whole line at sea, no zone. The finish line (16.2 N) lies 2.4 nm north. |
+
+Risks (not verified): at the Basse-Terre buoy the real coast is probably west of the 1:10m one (the stadium
+zone, which is at sea, reaches −61.723), so the router may pass closer to land than possible; VR may use other
+lines. Compare with the game map.
+
 ## Coastline and bathymetry
 
 Natural Earth 1:10m land, minor islands and bathymetry bands 200–5000 m (public domain), from

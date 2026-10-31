@@ -2,6 +2,61 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D41 — The player's own polar (user, 2026-10-31)
+- `POST /api/races/{race}/boats/{boat}/polar` takes the JSON the player copied from the game's network tab
+  (raw polar, or any wrapper such as `LogEventResponse`). `polar/PlayerPolarReader` finds the shallowest object
+  holding `sail`, `tws`, `twa` at any depth (also inside a JSON string, depth ≤ 8), checks 7 sails with ids 1–7,
+  a `winch` block and that `VrPolarParser` accepts it (tables matching the axes, `foil`...), else 400 with the
+  reason. **Only the polar object is stored** (the wrapper may hold session data):
+  `var/polars/<race>-<boat>.vr.json`, git-ignored. `DELETE` removes it (back to the community polar).
+- `service/BoatPolarLocator` decides the polar file for the GFS planner and the GEFS workers (player's first).
+  `GET …/polar` returns the raw polar plus `_source` (`player` | `community`) and `_imported_at`.
+- The result cache key holds the polar fingerprint (`community` or `player@<file mtime>`): an import or a
+  removal gives fresh results.
+
+## D40 — Background weather refresher; requests never wait for a GFS download (user, 2026-10-31)
+- A new deterministic GFS run used to be downloaded inside `POST /api/route` (~100 s). Now
+  `service/WeatherRefresher` runs in a daemon thread started with the app (FastAPI lifespan; off with
+  `create_app(refresh_in_background=False)`, as in the tests), every 10 min: (a) `GfsWindSource.download_latest`
+  for the route window **+ 12 h** (the window slides; files already on disk cost nothing, an incomplete newest
+  run costs one probe request), (b) `EnsembleDownloadJob.ensure` (GEFS, unchanged, D30), (c)
+  `LastRoutePrecomputer.precompute(weather_changed)`.
+- Requests route on the newest GFS run **on disk** covering the window (`prefer_cached`); they download only when
+  no candidate run (latest due + 2 older) is on disk, e.g. the very first start. A result made on an older run
+  than the expected one still expires after 30 min (D34). The cache key now holds the GFS run actually used
+  (instead of the expected one), so the pre-computation after a download finds a new key.
+- The last request (`var/last_request.json`, also in memory) is computed again when the GFS or GEFS run changed
+  (always on the first cycle after start-up, cheap when cached), and also at every cycle while it is less than
+  6 h old: during the race the start is rounded to 30 min in the key, so a result goes stale every 30 min.
+  A failed pre-computation is retried at the next cycle.
+- `api/CachedRouteComputer` holds the cached computation, shared by the endpoint and the refresher. It lives in
+  `api` rather than `service` because it builds the JSON result and uses the JSON result cache (both `api`);
+  the refresher (`service`) only receives callables, so dependencies still point downwards.
+- Rejected: downloading GFS in a second job class mirroring `EnsembleDownloadJob` (a thread per model, more
+  state); one refresher thread is enough since the GEFS job already has its own thread.
+- Limit: when no run is on disk at all, a request and the refresher may download the same GFS files at once
+  (no cross-thread lock for GFS); it only happens on the very first start.
+
+## D39 — Guadeloupe rounding marks as directed half-line gates; next mark chosen by the player (user, 2026-10-31)
+- Point marks were 2-nm waypoints, with no side check. Each mark left to one side is now a `gate` whose line
+  runs from the physical mark to land or open water, crossed in one direction: crossing it proves the side, with
+  the existing gate logic (`MarkProgress`). `position` keeps the physical mark (map, and the router's target:
+  `Mark.target`). Constructions (derived from the SI, Guadeloupe rounded to port = anticlockwise), status
+  `derived`: Tête à l'Anglais to port → half-line from the islet west to 062°18'W, southbound; Basse-Terre buoy
+  to starboard → buoy east to the coast, southbound (boat between buoy and coast); Les Saintes to starboard →
+  061°36'W from 15°53.1'N to 16°00'N across the Canal des Saintes, eastbound (north of the archipelago);
+  Pointe-à-Pitre landfall buoy to port → buoy east to 061°29.4'W, northbound. Checks in
+  [data-sources.md](data-sources.md#course-route-du-rhum-2026).
+- The `island` kind (skipped by the router) is gone: no race uses it any more; `point` stays a waypoint.
+- Segments crossing the **finish** now stop on the line (`MarkProgress.end_at_finish`): the 1:10m land and the
+  Pointe-à-Pitre spectator zone just north of it blocked every finishing segment, so no route could finish.
+  The arrival time is still the end of the step (≤ 1 h late within 24 h, ≤ 3 h beyond).
+- `NextMarkFinder` never auto-passes a rounding mark (`leave_to`): from anywhere around Guadeloupe it answers
+  Tête à l'Anglais. The player picks the next mark: `POST /api/route` `next_mark` (id, or null = automatic,
+  unknown id → 400); results carry `next_mark: {id, auto}`; the cache key holds `next_mark`.
+- Synthetic check (constant 15 kn trade wind from 030°, 080°, 120°, 200°, 300°, from 17°N 60°W, real coast and
+  zones): every route rounds the four marks in order on the right side and finishes in 16–20 h.
+
 ## D38 — Passed marks detected from the position (bug found 2026-10-31)
 Routing from mid-Atlantic (45°N 12°W) sailed back towards the Fréhel gate (3 800 nm to go): the next mark was
 only skipped with an explicit `--next-mark`. `routing/NextMarkFinder` now finds the first mark ahead: a gate or

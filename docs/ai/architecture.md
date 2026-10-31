@@ -57,9 +57,9 @@ Commands (from the repo root):
 |---|---|
 | `GeoPoint` | Latitude/longitude pair, longitude normalised to [-180, 180). |
 | `GreatCircle` | Distance, initial bearing, destination point and signed cross-track distance on the sphere (vectorised, nm). |
-| `SegmentIntersector` | Planar segment–segment intersection in (lon, lat), vectorised (gates, lines, zones). |
+| `SegmentIntersector` | Planar segment–segment intersection in (lon, lat) and where a segment meets a line, vectorised (gates, lines, zones). |
 | `PositionParser` | Turns user text (`46°12'30"N 012°34'10"W`, `46.21, -12.57`, ...) into a `GeoPoint`. Twin of `frontend/src/form/position-parser.js`. |
-| `Mark`, `ExclusionZone`, `RaceBoat`, `Race` | Course definition: ordered marks (gate/line/point/island), finish line, forbidden zones (polygon or line), boats with polar and start line. |
+| `Mark`, `ExclusionZone`, `RaceBoat`, `Race` | Course definition: ordered marks (gate/line/point; a mark left to one side is a directed gate from the physical mark, `position` = the mark, `target` = where the router aims), finish line, forbidden zones (polygon or line), boats with polar and start line. |
 
 ### `course` — loading races
 | Class | Responsibility |
@@ -80,7 +80,7 @@ Commands (from the repo root):
 | `GribDecoder` | GRIB2 file → `WindGrid` (ecCodes). |
 | `WindGrid` | U/V (m/s) on a regular lat/lon grid at one valid time. |
 | `WindField` | Wind of ONE forecast: bilinear in space, linear in time on U/V → TWS (kn), TWD (deg). Vectorised. |
-| `GfsWindSource` | The `WindField` of the latest complete GFS run covering a window (falls back to older runs). |
+| `GfsWindSource` | The `WindField` of the latest complete GFS run covering a window (falls back to older runs); `cached_run` = newest run already on disk, `download_latest` = download only, `prefer_cached` = no download when a run is on disk. |
 | `GefsQueryBuilder` | NOMADS grib-filter query for one GEFS 0.5° member (`c00`, `p01`..`p30`, `GEFS_MEMBERS`) and lead time. |
 | `GefsRunDownloader` | Puts every member × lead time of a run in the store; last lead of every member first (completeness probe); progress counts cached files. |
 | `GefsRunCatalog` | Candidate GEFS runs (latest due, then 2 older), lead times covering a window (3-hourly to f240), files on disk, newest complete run. |
@@ -91,6 +91,7 @@ Commands (from the repo root):
 | Class | Responsibility |
 |---|---|
 | `VrPolarParser` | Raw VR `Meta_GetPolar` JSON → `VrPolar`. |
+| `PlayerPolarReader` | Finds the VR polar in the JSON the player pasted (raw or wrapped at any depth) and checks it (7 sails, tables, `winch`); `InvalidPolarError`. |
 | `VrPolar` | Everything a VR polar file holds: `BoatPolar`, `FoilBonus`, hull ratio, `WinchTimings`. |
 | `BoatPolar` | Speed tables per sail; bilinear lookup (TWS, \|TWA\|) for all sails at once. |
 | `FoilBonus` | Foil speed factor (×1.04 in TWA 80–160 / TWS 16–35, linear merge ramps, ramps multiplied). |
@@ -116,10 +117,10 @@ Commands (from the repo root):
 | `HeadingFan` | Candidate headings (every 5°) from each front point. |
 | `Isochrone` | One front: positions, parent indices, and the arriving segment's heading, TWA, TWS, sail, speed, leg. |
 | `CourseLeg` | One leg: anchor (start / previous mark), target, gate line + crossing direction or waypoint radius. |
-| `MarkProgress` | Legs of the race from a position; detects passing (gate crossed westward, waypoint within 2 nm); distance to go. |
+| `MarkProgress` | Legs of the race from a position; detects passing (gate/line crossed in its direction, so rounding marks on the right side; waypoint within 2 nm); finishing segments end on the finish line; distance to go. |
 | `IsochronePruner` | Keeps the most advanced leg, then the farthest point from the leg anchor per 0.5° sector. |
 | `IsochroneRouter` | Runs the steps: wind → best sail/speed → maneuver penalty → destination → drop obstacles → marks → prune. |
-| `NextMarkFinder` | First mark still ahead of a position (gates/lines crossed are skipped). |
+| `NextMarkFinder` | First mark still ahead of a position (gates/lines crossed by > 2 nm are skipped; rounding marks, with `leave_to`, never are). |
 | `RouteLegSplitter` | Cuts a route into legs with the same orders (heading within 10°, sail, tack) for the route plan. |
 | `RouteTracer` | Picks the best final point (marks passed, then distance to go) and walks parents back → `Route`. |
 | `Route`, `RoutePoint` | Ordered points (time, position, and heading/TWA/TWS/sail/speed of the leg starting there); `position_at(hours)` interpolates. |
@@ -151,7 +152,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 ### `service` — application layer shared by the CLI and the API
 | Class | Responsibility |
 |---|---|
-| `RoutePlanner` | Routes one boat on the deterministic GFS (the game's weather) → `RouteReport`; also provides the GFS wind for the map. |
+| `RoutePlanner` | Routes one boat on the deterministic GFS (the game's weather) → `RouteReport` (with the next mark used and whether it was automatic); also provides the GFS wind for the map. `prefer_cached` (web): newest run on disk. |
 | `RouterBuilder` | Boat models (polar, owned sails, manoeuvre overrides), land + zones obstacles, `IsochroneRouter` for a wind field. |
 | `EnsembleRoutePlanner` | Routes the 31 members in a spawned `ProcessPoolExecutor` (cpu − 1 workers) while the GFS route runs in-process, then `EnsembleSynthesizer` → `EnsembleReport`. |
 | `member_routing_worker` (module) | `MemberRoutingSpec`; per-process `initialize` (race, polar, land raster once) and `route_member` (decode one member, route it). |
@@ -159,13 +160,21 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `EnsembleStatus` | `ready` / `downloading` / `unavailable`, run, done/total files, member count. |
 | `build_ensemble_job` (`ensemble_job_factory.py`) | Wires the job (NOMADS client at ≤ 2 requests/s). |
 | `RouteReport`, `EnsembleReport`, `ProjectPaths` | Results of one run; where data and caches live. |
+| `WeatherRefresher` | Background thread, every 10 min: latest GFS run for the route window + 12 h on disk, GEFS job `ensure`, then a pre-computation callback (`weather_changed`). |
+| `build_gfs_source` (`gfs_source_factory.py`) | Wires `GfsWindSource` on the project cache. |
+| `PlayerPolarStore` | The player's imported polars, `var/polars/<race>-<boat>.vr.json` (safe ids, atomic write, import time = mtime). |
+| `BoatPolarLocator` | The polar file a boat sails with (player's, else community), its source and fingerprint for the cache key. |
 
 ### `api` — FastAPI
 | Module | Responsibility |
 |---|---|
-| `app_factory.py` | Builds the app: routers under `/api`, frontend files at `/`, one shared `EnsembleDownloadJob`. |
-| `routes_races.py` | Race list, race file, boat polar. |
-| `routes_routing.py` | `POST /api/route` (ensemble when the GEFS run is on disk, else GFS only), `GET /api/ensemble/status`, `GET /api/wind`. |
+| `app_factory.py` | Builds the app: routers under `/api`, frontend files at `/`, one shared `EnsembleDownloadJob`, the `WeatherRefresher` started/stopped with the app (lifespan; `refresh_in_background=False` in tests). |
+| `routes_races.py` | Race list, race file. |
+| `routes_polars.py` | `GET`/`POST`/`DELETE /api/races/{race}/boats/{boat}/polar`: polar in use (+ `_source`, `_imported_at`), player import, back to community. |
+| `routes_routing.py` | `POST /api/route` (through `CachedRouteComputer`, remembers the request), `GET /api/ensemble/status`, `GET /api/wind`. |
+| `cached_route_computer.py` (`CachedRouteComputer`) | One route request → stored result or fresh computation (ensemble when the GEFS run is on disk, else GFS only, on the newest GFS run on disk), stored with its key; shared by the endpoint and the refresher. |
+| `last_route_request_store.py` (`LastRouteRequestStore`) | Last request received, in memory and in `var/last_request.json`. |
+| `last_route_precomputer.py` (`LastRoutePrecomputer`) | Refresher callbacks: route window of the last request's race; recompute the last request when the weather changed (or while it is < 6 h old). |
 | `schemas.py` | Request models; converts settings to `BoatOptions`. |
 | `route_json_writer.py` (`RouteJsonWriter`) | One `Route` → `now`, `steps`, `legs`, hourly `path`, full track. |
 | `route_result_cache.py` | Stored results keyed by inputs + weather run ids (instant reopening until the next run). |
@@ -209,11 +218,18 @@ The response shape is documented in [api-contract.md](api-contract.md).
 
 ```
 user: race + boat + position + owned sails + manoeuvre times
-  → POST /api/route → RaceCatalog → window = [max(race start, now), +120 h]
+  → POST /api/route → CachedRouteComputer → RaceCatalog → window = [max(race start, now), +120 h]
+  → stored result for (inputs, next mark, polar, GFS run on disk, GEFS run)? → answer at once
   → EnsembleDownloadJob.ensure(window): GEFS run on disk? (else download in background, answer with GFS only)
   → EnsembleRoutePlanner: 31 × (GefsMemberLoader → IsochroneRouter → RouteTracer) in worker processes
                           + RoutePlanner on the deterministic GFS (the game's route) in-process
   → EnsembleSynthesizer: RouteDistanceMatrix → RouteOptionClusterer → MedoidPicker → OptionLabeler
                          → probabilities, ConfidenceGrader, EtaGapEstimator, AdviceWriter
   → EnsembleResultBuilder → JSON → frontend (text translated client-side)
+```
+
+Background (`WeatherRefresher`, every 10 min while the app runs):
+```
+window of the last request's race → GfsWindSource.download_latest(window + 12 h) → EnsembleDownloadJob.ensure
+  → runs changed (or last request < 6 h old) → CachedRouteComputer.result(last request) → var/results/
 ```

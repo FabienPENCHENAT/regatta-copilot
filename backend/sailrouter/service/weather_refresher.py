@@ -71,7 +71,8 @@ class WeatherRefresher:
         weather = (gfs_run.key if gfs_run else None, gefs_run.key if gefs_run else None)
         downloaded = gfs_run is not None and gfs_run != before
         if downloaded:
-            log.info("GFS run %s downloaded for %s – %s", gfs_run.key, start.isoformat(), end.isoformat())
+            log.info("GFS run %s completed on disk for %s – %s (+ margin)", gfs_run.key, start.isoformat(),
+                     end.isoformat())
         changed = weather != self._weather
         if changed:
             log.info("weather for routing: GFS %s, GEFS %s", *weather)
