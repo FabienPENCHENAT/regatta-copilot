@@ -115,46 +115,91 @@
   },
   {
    "id": "tete_anglais",
-   "type": "point",
+   "type": "gate",
+   "points": [
+    [
+     16.380833,
+     -61.764167
+    ],
+    [
+     16.380833,
+     -62.3
+    ]
+   ],
+   "cross": "southward",
+   "leave_to": "port",
    "position": [
     16.380833,
     -61.764167
    ],
-   "leave_to": "port",
    "status": "derived",
-   "note": "No coordinates in the SI: vertex A of the ZPC AGOA Guadeloupe zone."
+   "note": "Guadeloupe is rounded leaving it to port (anticlockwise): Tête à l'Anglais to port = cross the half-line from the islet westward, southbound. No coordinates in the SI: islet = vertex A of the ZPC AGOA Guadeloupe zone."
   },
   {
    "id": "basse_terre_buoy",
-   "type": "point",
+   "type": "gate",
+   "points": [
+    [
+     15.9875,
+     -61.7365
+    ],
+    [
+     15.9875,
+     -61.69
+    ]
+   ],
+   "cross": "southward",
+   "leave_to": "starboard",
    "position": [
     15.9875,
     -61.7365
    ],
-   "leave_to": "starboard",
-   "status": "official"
+   "status": "derived",
+   "note": "Buoy position official (SI). Buoy to starboard = pass between the buoy and the coast: line from the buoy eastward to the coast, crossed southward. The Basse-Terre nautical stadium lies across it (forbidden); legal water on both sides of it (see data-sources.md)."
   },
   {
    "id": "les_saintes",
-   "type": "island",
+   "type": "gate",
+   "points": [
+    [
+     15.885,
+     -61.6
+    ],
+    [
+     16.0,
+     -61.6
+    ]
+   ],
+   "cross": "eastward",
+   "leave_to": "starboard",
    "position": [
     15.861,
     -61.61
    ],
-   "leave_to": "starboard",
    "status": "derived",
-   "note": "Archipelago, no coordinates in the SI. Position is the archipelago centre, for display."
+   "note": "Archipelago, no coordinates in the SI. Les Saintes to starboard = pass north of them through the Canal des Saintes: line along 061°36'W from the archipelago to Basse-Terre, crossed eastward. Position = archipelago centre, for display."
   },
   {
    "id": "pointe_a_pitre_buoy",
-   "type": "point",
+   "type": "gate",
+   "points": [
+    [
+     16.1595,
+     -61.522167
+    ],
+    [
+     16.1595,
+     -61.49
+    ]
+   ],
+   "cross": "northward",
+   "leave_to": "port",
    "position": [
     16.1595,
     -61.522167
    ],
-   "leave_to": "port",
-   "rounding": true,
-   "status": "official"
+   "status": "derived",
+   "note": "Landfall buoy position official (SI), rounded to port: line from the buoy eastward, crossed northward (the buoy stays on the boat's port side)."
   }
  ],
  "course_note": "Guadeloupe is rounded leaving it to port (SI annex 3).",

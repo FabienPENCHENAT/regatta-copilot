@@ -18,10 +18,9 @@ NM_PER_DEG_LAT = 60.0
 class MarkProgress:
     """Which mark is next for each point, and whether a step passes it.
 
-    V1 simplification: gates and lines (Fréhel gate, finish) must be crossed in the right direction;
-    `point` marks are waypoints reached within `waypoint_radius_nm` (the side they are left to is not
-    checked); `island` marks are skipped (land avoidance keeps the boat off them).
-    Leg index `len(legs)` means finished.
+    Gates and lines must be crossed in their direction; a mark rounded to one side is a directed gate (see
+    `Mark`), so crossing it on the wrong side of the mark does not count. `point` marks are waypoints reached
+    within `waypoint_radius_nm`. Leg index `len(legs)` means finished.
     """
 
     def __init__(self, legs: Sequence[CourseLeg]) -> None:
@@ -47,12 +46,10 @@ class MarkProgress:
         legs: list[CourseLeg] = []
         anchor = start
         for mark in marks:
-            if mark.kind == "island":
-                continue
             line = (mark.points[0], mark.points[1]) if mark.is_line else None
             radius = 0.0 if line else waypoint_radius_nm
-            legs.append(CourseLeg(mark.id, anchor, mark.centre, line, mark.cross, radius))
-            anchor = mark.centre
+            legs.append(CourseLeg(mark.id, anchor, mark.target, line, mark.cross, radius))
+            anchor = mark.target
         return cls(legs)
 
     @property
@@ -69,6 +66,23 @@ class MarkProgress:
             passed = self._passes(self.legs[k], lat0[on_leg], lon0[on_leg], lat1[on_leg], lon1[on_leg])
             new_leg[np.nonzero(on_leg)[0][passed]] = k + 1
         return new_leg
+
+    def end_at_finish(self, old_leg: NDArray, new_leg: NDArray, lat0: NDArray, lon0: NDArray, lat1: NDArray,
+                      lon1: NDArray) -> tuple[NDArray, NDArray]:
+        """Segments that cross the finish line stop on it: what lies beyond (harbour, spectator zone) is never
+        sailed, so it must not block the finish."""
+        finishing = (new_leg >= self.finished_leg) & (old_leg < self.finished_leg)
+        line = self.legs[-1].line
+        if line is None or not finishing.any():
+            return lat1, lon1
+        a, b = line
+        lat0, lon0 = lat0[finishing], lon0[finishing]
+        t = SegmentIntersector.crossing_fraction(lon0, lat0, lon1[finishing], lat1[finishing],
+                                                 a.lon_deg, a.lat_deg, b.lon_deg, b.lat_deg)
+        lat1, lon1 = lat1.copy(), lon1.copy()
+        lat1[finishing] = lat0 + t * (lat1[finishing] - lat0)
+        lon1[finishing] = lon0 + t * (lon1[finishing] - lon0)
+        return lat1, lon1
 
     def distance_to_go_nm(self, leg: NDArray, lat: NDArray, lon: NDArray) -> NDArray:
         """Distance to the next mark, then mark to mark to the finish (0 once finished)."""

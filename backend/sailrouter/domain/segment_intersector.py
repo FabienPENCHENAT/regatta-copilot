@@ -28,6 +28,15 @@ class SegmentIntersector:
         )
         return straddle & boxes
 
+    @staticmethod
+    def crossing_fraction(px, py, qx, qy, ax, ay, bx, by) -> NDArray[np.float64]:
+        """Where P→Q meets the line through A and B, as a fraction of P→Q (1 for parallel segments)."""
+        rx, ry, sx, sy = qx - px, qy - py, bx - ax, by - ay
+        denominator = rx * sy - ry * sx
+        with np.errstate(divide="ignore", invalid="ignore"):
+            t = ((ax - px) * sy - (ay - py) * sx) / denominator
+        return np.where(denominator == 0, 1.0, np.clip(t, 0.0, 1.0))
+
 
 def _orientation(ax, ay, bx, by, px, py):
     """Sign of the cross product (B − A) × (P − A): > 0 when P is left of A→B."""

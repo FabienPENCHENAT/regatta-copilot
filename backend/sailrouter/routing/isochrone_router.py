@@ -25,8 +25,9 @@ class IsochroneRouter:
     """Runs the isochrone method for ONE wind field.
 
     Each step, vectorised over front points × headings: wind at the parent (start of the step) → best sail
-    and speed → maneuver penalty against the parent's TWA and sail → destination → drop segments that cross
-    land or a forbidden zone → mark progress → prune. Stops at the horizon or when a point finishes.
+    and speed → maneuver penalty against the parent's TWA and sail → destination → mark progress (finishing
+    segments stop on the finish line) → drop segments that cross land or a forbidden zone → prune. Stops at the
+    horizon or when a point finishes.
     """
 
     def __init__(
@@ -72,9 +73,10 @@ class IsochroneRouter:
         lat0, lon0 = front.lat_deg[parent], front.lon_deg[parent]
         heading = np.broadcast_to(headings, twa.shape).ravel()
         lat1, lon1 = GreatCircle.destination(lat0, lon0, heading, distance_nm.ravel())
+        leg = progress.advance(front.leg[parent], lat0, lon0, lat1, lon1)
+        lat1, lon1 = progress.end_at_finish(front.leg[parent], leg, lat0, lon0, lat1, lon1)
         moving = distance_nm.ravel() > 0
         free = moving & ~self._obstacles.blocked(lat0, lon0, lat1, lon1)
-        leg = progress.advance(front.leg[parent], lat0, lon0, lat1, lon1)
         candidates = Isochrone(
             time=end,
             lat_deg=lat1[free],
