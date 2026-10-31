@@ -2,6 +2,17 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D45 — The game's weather timing: 3-hourly GFS, switch 3 h 40 after the cycle (user, 2026-10-31)
+- Source: eSail4VR guide ("calcul du vent", "horaires et retards"), a router connected to the game. VR reads GFS
+  0.25° every 3 h and interpolates linearly in time (per U/V component) then bilinearly in space; a run is
+  picked up ≈ 3 h 40 after its cycle (first lead times on NOMADS).
+- `LeadTimePlan.game()` (f000, f003… f384) replaces the hourly lead times for the game's route and the map;
+  `GfsRunClock` GFS delay 3 h 40 (GEFS keeps 5 h). An incomplete newest run still falls back to the previous one.
+- `ENGINE_VERSION` in the result cache key: stored results made with the old weather are recomputed.
+- Rejected for now: mixing runs like the game does (the past step bracketing "now" kept from the previous run):
+  the exact switch rule is not documented (user: too risky). Not modelled, by user choice: auto-sail 1.4 %
+  overlap / boost, skipper energy (stated on the How it works page).
+
 ## D44 — Position typed in boxes, as shown in the game (user, 2026-10-31)
 - One free-text field needed °, ', " and N/W typed by hand ("un peu complexe"). `form/PositionFields`: per axis,
   degrees / minutes / seconds boxes (numeric keypad, auto-advance when full or on space ° ' ") and a hemisphere

@@ -4,7 +4,7 @@
 import { element } from "../dom.js";
 
 const RUN_HOURS_UTC = [0, 6, 12, 18];
-const READY_DELAY_MIN = 4 * 60 + 30; // a NOAA run is usable about 4 h 30 after its nominal hour
+const READY_DELAY_MIN = 3 * 60 + 40; // a GFS run is usable (and used by the game) about 3 h 40 after its nominal hour
 
 export class HowPage {
   constructor(timeline, translator) {

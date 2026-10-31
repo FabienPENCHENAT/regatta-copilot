@@ -16,7 +16,7 @@ https://nomads.ncep.noaa.gov/cgi-bin/filter_gefs_atmos_0p50a.pl
 - Response: GRIB2, two messages (`10u`, `10v`, m/s), grid 101 × 171, first point 5°N / 280°E, step 0.5°.
 - Use HTTP/1.1 (`curl --http1.1`): HTTP/2 requests to the NOMADS directory listing hung in tests.
 - NOMADS bans clients that send too many requests per minute: throttle (≈ 1 request/s) and retry with backoff.
-- Runs 00/06/12/18 UTC, complete ≈ 4–5 h later.
+- Runs 00/06/12/18 UTC. GFS usable ≈ 3 h 40 later (the game switches about then), GEFS ≈ 5 h later.
 
 **AWS fallback**: `https://noaa-gefs-pds.s3.amazonaws.com/gefs.YYYYMMDD/HH/atmos/pgrb2sp25/gep01.tHHz.pgrb2s.0p25.f024`
 (+ `.idx`; fetch `UGRD:10 m above ground` and `VGRD:...` with HTTP Range). Global, no subregion, no rate limit.
@@ -84,7 +84,7 @@ start and in Guadeloupe.
 ## GFS deterministic (the game's weather, for the map)
 
 NOMADS filter `filter_gfs_0p25.pl`, `dir=/gfs.YYYYMMDD/HH/atmos`, `file=gfs.tHHz.pgrb2.0p25.fFFF`, hourly to
-f120 (3-hourly after). Area 0–60°N / 80°W–10°E: ≈ 280 KB per lead time. Response grid: 361 × 241 points, first
+f120 (3-hourly after); only the 3-hourly lead times are used, as in the game (D45). Area 0–60°N / 80°W–10°E: ≈ 280 KB per lead time. Response grid: 361 × 241 points, first
 point 0°N / 280°E, 0.25°, `jScansPositively=1` (south to north), messages `10u` and `10v`. A lead time that is not
 published yet answers **HTTP 404** with an HTML page "data file is not present". Used by the router (step 3,
 decision D14). The 06z run of 2026-10-31 was complete at 13:30 UTC;

@@ -24,3 +24,9 @@ def test_gefs_plan_is_three_hourly():
 def test_window_outside_forecast_is_refused():
     with pytest.raises(ValueError):
         LeadTimePlan().lead_hours_covering(-1, 5)
+
+
+def test_the_game_reads_gfs_every_3_hours():
+    plan = LeadTimePlan.game()
+    assert plan.all_lead_hours()[:4] == [0, 3, 6, 9] and plan.all_lead_hours()[-1] == 384
+    assert plan.lead_hours_covering(13.9, 20.0) == [12, 15, 18, 21]

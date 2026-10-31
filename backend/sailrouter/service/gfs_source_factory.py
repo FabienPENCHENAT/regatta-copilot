@@ -16,4 +16,4 @@ def build_gfs_source(paths: ProjectPaths) -> GfsWindSource:
     """Wires the deterministic GFS source on the project's weather cache (planner, map wind, refresher)."""
     store = ForecastStore(paths.weather_dir)
     downloader = GfsRunDownloader(NomadsClient(), GfsQueryBuilder(WEATHER_AREA), store)
-    return GfsWindSource(GfsRunClock(), LeadTimePlan(), downloader, store, GribDecoder())
+    return GfsWindSource(GfsRunClock(), LeadTimePlan.game(), downloader, store, GribDecoder())

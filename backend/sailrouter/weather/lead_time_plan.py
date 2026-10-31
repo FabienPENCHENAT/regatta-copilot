@@ -6,14 +6,20 @@ import math
 class LeadTimePlan:
     """Which forecast lead times (hours after the cycle) exist and must be fetched for a time window.
 
-    Deterministic GFS 0.25° on NOMADS is hourly up to f120, then 3-hourly up to f384. GEFS is 3-hourly
-    from f000 (decision D6): build it with `hourly_until_h=0`.
+    Deterministic GFS 0.25° on NOMADS is hourly up to f120, then 3-hourly up to f384, but the game only uses
+    the 3-hourly steps and interpolates linearly between them (decision D45): use `game()`. GEFS is 3-hourly
+    from f000 (decision D6).
     """
 
     def __init__(self, hourly_until_h: int = 120, coarse_step_h: int = 3, last_h: int = 384) -> None:
         self._hourly_until = hourly_until_h
         self._coarse_step = coarse_step_h
         self._last = last_h
+
+    @classmethod
+    def game(cls) -> LeadTimePlan:
+        """GFS 0.25° as Virtual Regatta reads it: 3-hourly from f000 to f384."""
+        return cls(hourly_until_h=0, coarse_step_h=3, last_h=384)
 
     @classmethod
     def gefs(cls) -> LeadTimePlan:

@@ -1,7 +1,8 @@
-// When the site's data will next be refreshed: NOAA issues a run every 6 h and it is usable about 4.5 h later.
+// When the site's data will next be refreshed: NOAA issues a run every 6 h and the game's weather (GFS)
+// is usable about 3 h 40 later.
 
 const RUN_INTERVAL_H = 6;
-const PUBLICATION_DELAY_H = 4.5;
+const PUBLICATION_DELAY_H = 3 + 40 / 60;
 const HOUR_MS = 3600 * 1000;
 
 export function nextDataRefresh(runIso, now = new Date()) {
