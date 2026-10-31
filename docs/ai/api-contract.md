@@ -26,9 +26,14 @@ m/s, rows north to south):
 ```
 
 ## `POST /api/route`
-Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "options": { "sails": ["Code0", ...], "foil", "hull", "pro_winch" } }`
-(optional sails among LightJib, LightGnk, Staysail, HeavyGnk, Code0; Jib and Spi are always allowed).
+Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "options": { "sails": ["Code0", ...] },
+"maneuvers": { "tack": { "light_min", "strong_min", "speed_percent" }, "gybe": {...}, "sailChange": {...} } }`
+(optional sails among LightJib, LightGnk, Staysail, HeavyGnk, Code0; Jib and Spi are always allowed; foils, hull
+and pro winch are never applied; missing maneuvers use the polar's standard-winch values).
 One synchronous call (~5 s, ~2 min the first time a GFS run is downloaded).
+
+Each option has `legs`: `[{ start_hour, end_hour, heading_deg, sail, twa_deg, tws_min_kn, tws_max_kn, speed_kn,
+lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe or heading change ≥ 10°).
 
 Until the ensemble exists: one option `{ "id": "gfs", "kind": "game" }`, `"probability": null`, step
 `"confidence": null`, `"members": []`, and `ideal_route` = the computed 120 h track with `distance_nm`, `to_go_nm`, `finished`.

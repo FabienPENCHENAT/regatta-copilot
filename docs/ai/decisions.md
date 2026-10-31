@@ -2,6 +2,18 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D29 — Polar-only routing, editable manoeuvre times, leg-based route plan, all Rhum boats (user, 2026-10-31)
+- The user wants directions, not a full game simulation: the site routes on owned sails and each boat's polar
+  speeds only. Foils, polished hull and pro winch are never applied (`BoatOptionsIn` has `sails` only; the CLI
+  keeps `--options` for experiments).
+- Manoeuvre times stay editable (user insisted): pre-filled from the polar `winch` block (standard winch), saved
+  per boat in the browser, "reset to the game's values" button; sent as `maneuvers` and applied with
+  `WinchTimings.with_overrides`. 0 disables a manoeuvre penalty.
+- Route plan = legs, not fixed hours: `RouteLegSplitter` starts a new leg on a sail change, a tack/gybe, or a
+  heading change ≥ 10° from the leg's first heading. Result field `options[].legs`.
+- Polars for IMOCA (`mono/imoca_60_foils`, updated 2026-04-29), Ocean Fifty, Ultim BP XI and Vintage Multi
+  (Happy) added from vro.civis.net; every Rhum boat now computes. Changing boat reloads its polar and recomputes.
+
 ## D28 — Site wired to the engine; options per sail; VR manoeuvre times (user feedback, 2026-10-31)
 - The user may own sails individually (not by pack): `BoatOptions(sails=frozenset, foil, hull, pro_winch)`;
   packs remain as CLI shorthands. The settings dialog has one checkbox per optional sail plus equipment.

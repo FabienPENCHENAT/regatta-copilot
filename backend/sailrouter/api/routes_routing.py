@@ -25,7 +25,8 @@ def routing_router(paths: ProjectPaths) -> APIRouter:
         position = GeoPoint(request.position.lat, request.position.lon)
         try:
             report = RoutePlanner(paths).plan(
-                request.race_id, request.boat_id, position, ROUTE_HOURS, options=request.options.to_options(),
+                request.race_id, request.boat_id, position, ROUTE_HOURS,
+                options=request.options.to_options(), maneuvers=request.maneuver_timings(),
             )
         except (ValueError, KeyError) as error:
             raise HTTPException(400, str(error)) from error

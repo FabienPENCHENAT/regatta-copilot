@@ -11,10 +11,20 @@ affichée pour le téléphone). La première fois, le script installe ce qu'il f
 - À l'ouverture, le site calcule tout seul depuis ta dernière position.
 - **Réglages** :
   - une case par voile optionnelle (Génois léger, Spi léger, Trinquette, Spi lourd, Code 0) ;
-  - foils, coque polie et winch pro ;
   - dès que tu changes une case, la route est recalculée.
-- **Temps de manœuvre** : ils ne se saisissent plus. Ils sont lus dans la polaire du jeu, par exemple « virement
-  de 3 à 5 min à 50 % de vitesse » sans winch pro.
+
+## Mise à jour du soir (31/10)
+
+- **Le calcul ne tient compte que de tes voiles et de la vitesse propre à chaque bateau.** Plus de foils, de coque
+  polie ni de winch pro : la route donne la direction, tu recalcules au fil de la course.
+- **Les temps de manœuvre restent modifiables** dans les réglages. Ils sont pré-remplis avec les valeurs du jeu
+  pour le bateau choisi et mémorisés par bateau, avec un bouton « Remettre les valeurs du jeu ». Mets 0 pour
+  ignorer une manœuvre.
+- **La feuille de route suit les ordres à donner** : une ligne par changement de cap (10° ou plus), de voile, ou
+  par virement ou empannage, avec la durée. Par exemple : « Départ · 265° · Spi · 2 h », puis
+  « +2 h · 290° · Spi · 1 h »…
+- **Les 5 bateaux de la Route du Rhum calculent** : Class40, IMOCA, Ocean Fifty, Ultim et Vintage Multi.
+  Changer de bateau recharge ses temps de manœuvre et relance le calcul.
 
 ## Ce qui n'est pas encore là
 

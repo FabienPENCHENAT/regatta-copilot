@@ -1,9 +1,10 @@
-// Route plan of the selected option at +4/8/12/16/24/48 h, as a compact list: when, heading and sail,
-// wind and speed, target position, and a confidence bar. Tapping a step shows that hour on the map.
+// Route plan of the selected option as a list of orders: each leg keeps one heading and one sail until the
+// next change (heading, sail, tack or gybe). Shows the next 48 h; tapping a leg shows its start on the map.
 
-import { confidenceLevel, describeTwa, formatCoordinates, formatHeading, formatKnots, formatLocalTime } from "./display-format.js";
-import { createTermTip } from "./term-tip.js";
+import { describeTwa, formatCoordinates, formatHeading, formatKnots, formatLocalTime, formatNumber } from "./display-format.js";
 import { element } from "../dom.js";
+
+const PLAN_HORIZON_H = 48;
 
 export class RoutePlanList {
   constructor(container, translator, onSelectHour) {
@@ -15,49 +16,55 @@ export class RoutePlanList {
   render(result, option, selectedHour) {
     const t = (key, params) => this.translator.t(key, params);
     const head = element("div", "panel-head");
-    const title = element("h2", "panel-title", t("timeline.title", { option: t(`option.name.${option.id}`) }));
-    title.append(createTermTip(this.translator, "tip.confidence"));
-    head.append(title, element("span", "panel-subtitle", t("timeline.caption")));
+    head.append(element("h2", "panel-title", t("timeline.title", { option: t(`option.name.${option.id}`) })),
+      element("span", "panel-subtitle", t("timeline.caption")));
+    const legs = option.legs.filter((leg) => leg.start_hour < PLAN_HORIZON_H);
+    const current = legs.findLast((leg) => leg.start_hour <= selectedHour);
     const list = element("ol", "plan-list");
-    option.steps.forEach((step) => list.append(this.#step(result, step, step.hour === selectedHour)));
+    legs.forEach((leg) => list.append(this.#leg(result, leg, leg === current)));
     this.container.replaceChildren(head, list);
   }
 
-  #step(result, step, selected) {
+  #leg(result, leg, selected) {
     const t = (key, params) => this.translator.t(key, params);
-    const twa = describeTwa(step.twa_deg);
-    const level = confidenceLevel(step.confidence);
-    const item = element("li");
+    const lang = this.translator.lang;
+    const twa = describeTwa(leg.twa_deg);
     const button = element("button", "plan-step");
     button.type = "button";
     button.setAttribute("aria-pressed", String(selected));
     button.title = t("timeline.show_on_map");
-    button.addEventListener("click", () => this.onSelectHour(step.hour));
+    button.addEventListener("click", () => this.onSelectHour(Math.floor(leg.start_hour)));
 
     const when = element("span", "plan-when");
-    when.append(element("span", "plan-hours", t("wind.time_plus", { h: step.hour })),
-      element("span", "plan-time", formatLocalTime(result.computed_at, step.hour, this.translator.lang)));
-
+    when.append(
+      element("span", "plan-hours", leg.start_hour === 0 ? t("wind.time_start") : t("wind.time_plus", { h: formatNumber(leg.start_hour, lang, 0) })),
+      element("span", "plan-time", formatLocalTime(result.computed_at, leg.start_hour, lang)),
+    );
     const main = element("span", "plan-main");
     main.append(
-      element("span", "plan-order", `${formatHeading(step.heading_deg)} · ${t(`sail.${step.sail}`)}`),
-      element("span", "plan-wind", `${t("label.tws")} ${formatKnots(step.tws_kn, this.translator)} · ${t("label.twa")} ${twa.angle} ${t(twa.tackKey)} · ${formatKnots(step.speed_kn, this.translator)}`),
-      element("span", "plan-position", formatCoordinates(step)),
+      element("span", "plan-order", `${formatHeading(leg.heading_deg)} · ${t(`sail.${leg.sail}`)}`),
+      element("span", "plan-wind", this.#conditions(leg, twa)),
+      element("span", "plan-position", formatCoordinates(leg)),
     );
-
-    const confidence = element("span", "plan-confidence");
-    if (level === null) {
-      confidence.append(element("span", "confidence-value pending", t("confidence.pending")));
-    } else {
-      confidence.dataset.level = level;
-      const bar = element("span", "confidence-bar");
-      bar.style.setProperty("--share", `${Math.round(step.confidence * 100)}%`);
-      confidence.append(bar, element("span", "confidence-value", `${Math.round(step.confidence * 100)} %`));
-      confidence.setAttribute("aria-label", `${t("label.confidence")} ${t(`confidence.${level}`)}`);
-    }
-
-    button.append(when, main, confidence);
+    const duration = element("span", "plan-duration", this.#duration(leg.end_hour - leg.start_hour));
+    button.append(when, main, duration);
+    const item = element("li");
     item.append(button);
     return item;
+  }
+
+  // "Wind 10–12 kn · TWA 146° starboard · 7.9 kn", or "Wind 11 kn · …" when the wind does not change.
+  #conditions(leg, twa) {
+    const lang = this.translator.lang;
+    const [min, max] = [formatNumber(leg.tws_min_kn, lang, 0), formatNumber(leg.tws_max_kn, lang, 0)];
+    return this.translator.t(min === max ? "plan.wind_steady" : "plan.wind", {
+      min, max, twa: `${twa.angle} ${this.translator.t(twa.tackKey)}`, speed: formatKnots(leg.speed_kn, this.translator),
+    });
+  }
+
+  #duration(hours) {
+    return hours >= 1
+      ? this.translator.t("plan.leg_duration", { h: formatNumber(hours, this.translator.lang, Number.isInteger(hours) ? 0 : 1) })
+      : this.translator.t("plan.leg_duration_min", { m: Math.round(hours * 60) });
   }
 }

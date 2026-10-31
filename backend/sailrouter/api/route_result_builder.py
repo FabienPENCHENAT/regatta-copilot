@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from sailrouter.domain.great_circle import GreatCircle
 from sailrouter.routing.route import Route
+from sailrouter.routing.route_leg_splitter import RouteLeg, RouteLegSplitter
 from sailrouter.routing.route_point import RoutePoint
 from sailrouter.service.route_report import RouteReport
 
@@ -49,6 +50,19 @@ class RouteResultBuilder:
             "now": _settings(route.points[0]),
             "steps": [self._step(route, hour) for hour in PLAN_HOURS if route.covers(hour)],
             "path": _hourly_path(route),
+            "legs": [self._leg(route, leg) for leg in RouteLegSplitter().split(route)],
+        }
+
+    @staticmethod
+    def _leg(route: Route, leg: RouteLeg) -> dict:
+        hours = lambda moment: round((moment - route.start) / timedelta(hours=1), 2)  # noqa: E731
+        return {
+            "start_hour": hours(leg.start), "end_hour": hours(leg.end),
+            "heading_deg": round(leg.heading_deg), "sail": leg.sail, "twa_deg": round(leg.twa_deg),
+            "tws_min_kn": round(leg.tws_min_kn, 1), "tws_max_kn": round(leg.tws_max_kn, 1),
+            "speed_kn": round(leg.speed_kn, 1),
+            "lat": round(leg.start_point.lat_deg, 4), "lon": round(leg.start_point.lon_deg, 4),
+            "end_lat": round(leg.end_point.lat_deg, 4), "end_lon": round(leg.end_point.lon_deg, 4),
         }
 
     @staticmethod

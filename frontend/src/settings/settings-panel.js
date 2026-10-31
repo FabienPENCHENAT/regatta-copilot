@@ -1,42 +1,30 @@
-// The settings dialog: opened from the rail, it holds the owned boat options and the manoeuvre times
-// read from the boat's polar.
+// The settings dialog: opened from the rail, it holds the owned sails and the editable manoeuvre times
+// (pre-filled from the boat's polar). Any change asks for a new computation.
 
 import { BoatOptionsForm } from "./boat-options-form.js";
 import { ManeuverTimes } from "./maneuver-times.js";
 
 export class SettingsPanel {
-  #winch = null;
-
-  constructor(dialog, openButton, { translator, preferences, onOptionsChange }) {
+  constructor(dialog, openButton, { translator, preferences, onChange }) {
     openButton.addEventListener("click", () => dialog.showModal());
-    this.maneuvers = new ManeuverTimes(dialog.querySelector("#maneuver-times"), translator);
-    this.boatOptions = new BoatOptionsForm(dialog, {
-      preferences,
-      onChange: (options) => {
-        this.#renderManeuvers();
-        onOptionsChange(options);
-      },
-    });
+    this.sails = new BoatOptionsForm(dialog, { preferences, onChange });
+    this.maneuvers = new ManeuverTimes(dialog.querySelector("#maneuver-times"), { translator, preferences, onChange });
   }
 
-  get options() {
-    return this.boatOptions.options;
+  // What the backend needs for a computation.
+  get request() {
+    return { options: this.sails.options, maneuvers: this.maneuvers.values };
   }
 
   ownedSails() {
-    return this.boatOptions.ownedSails();
+    return this.sails.ownedSails();
   }
 
-  showPolar(polar) {
-    this.#winch = polar?.winch ?? null;
-    this.#renderManeuvers();
+  showPolar(boatId, polar) {
+    this.maneuvers.load(boatId, polar?.winch);
   }
 
   retranslate() {
-    this.#renderManeuvers();
-  }
-
-  #renderManeuvers() {
-    this.maneuvers.render(this.#winch, this.options.pro_winch);
+    this.maneuvers.render();
   }
 }

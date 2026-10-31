@@ -112,6 +112,7 @@ Commands (from the repo root):
 | `MarkProgress` | Legs of the race from a position; detects passing (gate crossed westward, waypoint within 2 nm); distance to go. |
 | `IsochronePruner` | Keeps the most advanced leg, then the farthest point from the leg anchor per 0.5° sector. |
 | `IsochroneRouter` | Runs the steps: wind → best sail/speed → maneuver penalty → destination → drop obstacles → marks → prune. |
+| `RouteLegSplitter` | Cuts a route into legs with the same orders (heading within 10°, sail, tack) for the route plan. |
 | `RouteTracer` | Picks the best final point (marks passed, then distance to go) and walks parents back → `Route`. |
 | `Route`, `RoutePoint` | Ordered points (time, position, and heading/TWA/TWS/sail/speed of the leg starting there). |
 
@@ -173,11 +174,11 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
 | `how.html`, `src/how-main.js`, `how/how-page.js` | "How it works" page: data, refresh times, method, options, limits; text in i18n. |
 | `layout/theme-toggle.js` | Light/dark switch; follows the system until the user picks, then remembers it. |
-| `settings/settings-panel.js`, `settings/boat-options-form.js`, `settings/maneuver-times.js` | Settings dialog: owned sails one by one and equipment (saved in the browser, sent with each computation), manoeuvre times read from the VR polar. |
+| `settings/settings-panel.js`, `settings/boat-options-form.js`, `settings/maneuver-times.js` | Settings dialog: owned sails one by one, editable manoeuvre times pre-filled from the VR polar (saved per boat); any change recomputes. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
 | `results/option-list.js` | Option cards with a probability ring. |
-| `results/route-plan-list.js` | Route plan as a compact list with confidence bars; a step selects the hour on the map. |
+| `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, wind, duration) over 48 h; a leg selects its hour on the map. |
 | `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |
 | `api/api-client.js`, `api/route-computation.js` | Calls the backend; one computation = route then map wind. |
 

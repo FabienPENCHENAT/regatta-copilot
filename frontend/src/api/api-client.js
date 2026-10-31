@@ -14,9 +14,9 @@ export class ApiClient {
     return this.#get(`/api/races/${encodeURIComponent(raceId)}/boats/${encodeURIComponent(boatId)}/polar`);
   }
 
-  // request: { raceId, boatId, position: { lat, lon }, options: { sails, foil, hull, pro_winch } }
-  async computeRoute({ raceId, boatId, position, options }) {
-    return this.#send("/api/route", { race_id: raceId, boat_id: boatId, position, options });
+  // request: { raceId, boatId, position: { lat, lon }, options: { sails }, maneuvers: { tack: {...}, ... } }
+  async computeRoute({ raceId, boatId, position, options, maneuvers }) {
+    return this.#send("/api/route", { race_id: raceId, boat_id: boatId, position, options, maneuvers });
   }
 
   // Map wind (the game's GFS) at the start and at each route-plan hour.

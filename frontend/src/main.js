@@ -46,7 +46,7 @@ class App {
     this.settings = new SettingsPanel(byId("settings"), byId("settings-open"), {
       translator: this.translator,
       preferences: this.preferences,
-      onOptionsChange: () => this.#result && this.form.submit(), // owned sails change the best route
+      onChange: () => this.#result && this.form.submit(), // sails and manoeuvre times change the best route
     });
     this.formPanel = new PanelCollapser(byId("route-form"), { toggle: byId("form-edit"), translator: this.translator, labelToggle: false });
     this.dockPanel = new PanelCollapser(byId("dock"), { toggle: byId("dock-toggle"), translator: this.translator, expandOnPanelClick: true });
@@ -65,15 +65,13 @@ class App {
     this.#showResultPanels(false);
     this.form.setRaces(await this.api.listRaces(), saved);
     this.form.setPositionText(saved.positionText ?? DEFAULT_POSITION_TEXT);
-    const [race, polar] = await Promise.all([
+    const [race] = await Promise.all([
       this.api.getRace(this.form.raceId),
-      this.api.getPolar(this.form.raceId, this.form.boatId).catch(() => null),
       this.map.loadBasemap({ depthsUrl: "map-data/depths.geojson", landUrl: "map-data/land.geojson" }),
     ]);
     this.#race = race;
-    this.map.showCourse(race, this.form.boatId);
     this.raceHeader.render(race);
-    this.settings.showPolar(polar);
+    await this.#loadBoat(this.form.boatId);
     this.form.submit();
   }
 
@@ -99,7 +97,7 @@ class App {
   async compute(request) {
     this.form.showBusy();
     try {
-      const { result, wind } = await this.computation.run({ ...request, options: this.settings.options });
+      const { result, wind } = await this.computation.run({ ...request, ...this.settings.request });
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
       this.formPanel.collapse();
@@ -122,13 +120,21 @@ class App {
         translator: this.translator,
         parser: new PositionParser(),
         onPositionChange: (position) => this.map.showPosition(position),
-        onSelectionChange: (selection) => {
+        onSelectionChange: async (selection) => {
           this.preferences.update(selection);
-          if (this.#race) this.map.showCourse(this.#race, selection.boatId);
+          await this.#loadBoat(selection.boatId);
+          if (this.#result) this.form.submit(); // another boat, another speed: recompute
         },
         onSubmit: (request) => this.compute(request),
       },
     );
+  }
+
+  // Start line on the map and manoeuvre times of the chosen boat.
+  async #loadBoat(boatId) {
+    if (this.#race) this.map.showCourse(this.#race, boatId);
+    const polar = await this.api.getPolar(this.form.raceId, boatId).catch(() => null);
+    this.settings.showPolar(boatId, polar);
   }
 
   #showResult(result) {
@@ -166,7 +172,7 @@ class App {
 
   #renderWind(hour, windMode, view) {
     const hours = this.#wind.times.map((time) => time.hour);
-    const time = this.#wind.times.find((t) => t.hour === hour) ?? this.#wind.times[0];
+    const time = this.#wind.times.findLast((t) => t.hour <= hour) ?? this.#wind.times[0]; // nearest hour before
     this.map.showWind(time.grid, windMode);
     this.mapControls.render({ view, hours, hour: time.hour, windMode });
   }

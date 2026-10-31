@@ -34,3 +34,16 @@ def test_detects_tack_gybe_and_sail_change():
 def test_tack_with_sail_change_costs_the_larger():
     penalty = ManeuverPenalty(winch(), fixed_loss_s={"tack": 60, "sailChange": 80})
     assert penalty.loss_s(40, 0, -40, 1, 15.0) == pytest.approx(80)
+
+
+def test_player_values_override_the_game_for_one_winch_level():
+    from sailrouter.polar.winch_timings import ManeuverTiming, WinchTimings
+
+    game = WinchTimings(
+        {(m, lvl): ManeuverTiming(180, 0.5, 300, 0.5) for m in ("tack", "gybe", "sailChange") for lvl in ("std", "pro")},
+        light_wind_kn=10, heavy_wind_kn=30,
+    )
+    mine = game.with_overrides("std", {"tack": ManeuverTiming(60, 0.8, 120, 0.8)})
+    assert ManeuverPenalty(mine, pro_winch=False).loss_for("tack", 5.0) == pytest.approx(60 * 0.2)
+    assert ManeuverPenalty(mine, pro_winch=False).loss_for("gybe", 5.0) == pytest.approx(180 * 0.5)
+    assert ManeuverPenalty(mine, pro_winch=True).loss_for("tack", 5.0) == pytest.approx(180 * 0.5)

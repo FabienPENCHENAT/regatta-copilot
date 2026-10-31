@@ -33,7 +33,7 @@
    "id": "imoca",
    "vr_race_id": "845.1",
    "vr_boat": "mono/imoca_60_foils",
-   "polar": null,
+   "polar": "data/polars/imoca-60-foils.vr.json",
    "start_line": [
     [
      48.735,
@@ -49,7 +49,7 @@
    "id": "ocean_fifty",
    "vr_race_id": "846.1",
    "vr_boat": "multi/multi_50",
-   "polar": null,
+   "polar": "data/polars/multi-50.vr.json",
    "start_line": [
     [
      48.758333,
@@ -65,7 +65,7 @@
    "id": "ultim",
    "vr_race_id": "797.1",
    "vr_boat": "Ultim BP XI",
-   "polar": null,
+   "polar": "data/polars/ultim-bp-xi.vr.json",
    "start_line": [
     [
      48.758333,
@@ -81,7 +81,7 @@
    "id": "vintage_multi",
    "vr_race_id": "847.1",
    "vr_boat": "Happy",
-   "polar": null,
+   "polar": "data/polars/happy.vr.json",
    "start_line": [
     [
      48.75,

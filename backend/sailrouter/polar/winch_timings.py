@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 MANEUVERS = ("tack", "gybe", "sailChange")
 
@@ -26,3 +26,12 @@ class WinchTimings:
 
     def timing(self, maneuver: str, level: str) -> ManeuverTiming:
         return self.timings[(maneuver, level)]
+
+    def with_overrides(self, level: str, overrides: dict[str, ManeuverTiming]) -> WinchTimings:
+        """A copy where the player's own values replace the game's for some maneuvers at one winch level."""
+        timings = dict(self.timings)
+        for maneuver, timing in overrides.items():
+            if maneuver not in MANEUVERS:
+                raise ValueError(f"unknown maneuver {maneuver!r} (known: {', '.join(MANEUVERS)})")
+            timings[(maneuver, level)] = timing
+        return replace(self, timings=timings)

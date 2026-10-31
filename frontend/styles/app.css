@@ -311,7 +311,7 @@ select, input[type="text"], input[type="number"] {
 /* Route plan list */
 .plan-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .plan-step {
-  width: 100%; display: grid; grid-template-columns: 58px minmax(0, 1fr) 68px; gap: 10px; align-items: center;
+  width: 100%; display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 10px; align-items: center;
   padding: 10px; border: 0; border-radius: 14px; background: transparent; text-align: left; cursor: pointer;
 }
 .plan-step:hover { background: var(--field); }
@@ -323,6 +323,7 @@ select, input[type="text"], input[type="number"] {
 .plan-order { font-weight: 600; }
 .plan-wind { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .plan-position { font: 500 0.75rem/1.3 var(--font-mono); color: var(--muted); }
+.plan-duration { padding: 3px 8px; border-radius: 999px; background: var(--field); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .plan-confidence { display: grid; gap: 3px; justify-items: end; }
 .confidence-bar { width: 100%; height: 6px; border-radius: 3px; background: var(--line); position: relative; overflow: hidden; }
 .confidence-bar::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--share); border-radius: 3px; background: var(--level); }
@@ -492,9 +493,12 @@ select, input[type="text"], input[type="number"] {
 .check { display: flex; gap: 10px; align-items: center; min-height: 34px; font-size: 0.875rem; }
 .check input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--accent); }
 .maneuver-times { display: grid; gap: 6px; }
-.maneuver-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; font-size: 0.875rem; }
+.maneuver-row { display: grid; grid-template-columns: 150px repeat(3, minmax(0, 1fr)); gap: 10px; align-items: center; font-size: 0.875rem; }
+.maneuver-head { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
 .maneuver-name { font-weight: 600; }
-.maneuver-figures { color: var(--muted); font-variant-numeric: tabular-nums; }
+.maneuver-input { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.8125rem; }
+.maneuver-input input { min-height: 36px; padding: 4px 8px; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) { .maneuver-row { grid-template-columns: 100px repeat(3, minmax(0, 1fr)); gap: 6px; } }
 .file-button {
   justify-self: start; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; cursor: pointer;
   border-radius: 12px; background: var(--ink); color: var(--glass-strong); font-size: 0.875rem; font-weight: 600;
