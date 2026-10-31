@@ -44,6 +44,7 @@ class RouteRequest(BaseModel):
     position: PositionIn
     options: BoatOptionsIn = BoatOptionsIn()
     maneuvers: dict[str, ManeuverIn] = {}  # keys: tack, gybe, sailChange; missing = the game's values
+    next_mark: str | None = None  # id of the next mark to round; None = found from the position
 
     def maneuver_timings(self) -> dict[str, ManeuverTiming]:
         return {name: maneuver.to_timing() for name, maneuver in self.maneuvers.items()}
