@@ -444,6 +444,9 @@ select, input[type="text"], input[type="number"] {
 .advice { margin: 12px 0 0; font-size: 0.875rem; font-weight: 600; }
 
 .options { flex: 1 1 0; min-width: 0; display: grid; gap: 8px; align-content: end; }
+.options-list { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.ensemble-status { margin: 0; justify-self: start; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: var(--glass-strong); color: var(--muted); box-shadow: var(--glass-shadow); }
+.ensemble-status[data-state="downloading"]::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--tile-heading); animation: glow-pulse 1.6s ease-in-out infinite; }
 .dock-title {
   margin: 0; justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
   font-size: 0.8125rem; font-weight: 600; border-radius: 999px; background: var(--glass-strong); box-shadow: var(--glass-shadow);

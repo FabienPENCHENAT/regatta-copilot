@@ -13,6 +13,7 @@ import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
 import { describeNextRefresh } from "./results/data-refresh.js";
+import { EnsembleStatus } from "./results/ensemble-status.js";
 import { SettingsPanel } from "./settings/settings-panel.js";
 import { PanelCollapser } from "./layout/panel-collapser.js";
 import { ThemeToggle } from "./layout/theme-toggle.js";
@@ -56,6 +57,9 @@ class App {
     });
     this.form = this.#createForm();
     this.raceHeader = new RaceHeader(byId("race-header"), this.translator);
+    this.ensembleStatus = new EnsembleStatus(byId("ensemble-status"), {
+      api: this.api, translator: this.translator, onReady: () => this.form.submit(),
+    });
   }
 
   async start() {
@@ -87,6 +91,7 @@ class App {
       this.raceHeader.render(this.#race);
     }
     if (this.#result) this.#render({ fitMap: false });
+    this.ensembleStatus.render();
   }
 
   update(changes) {
@@ -141,6 +146,7 @@ class App {
     this.#result = result;
     this.#state = { ...this.#state, optionId: result.recommended_option, hour: 0, view: "near" };
     this.#showResultPanels(true);
+    this.ensembleStatus.show(result.ensemble);
     this.#render({ fitMap: true });
   }
 

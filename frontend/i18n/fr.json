@@ -218,5 +218,17 @@
   "plan.leg_duration": "{h} h",
   "plan.leg_duration_min": "{m} min",
   "plan.wind": "Vent {min}–{max} nd · TWA {twa} · {speed}",
-  "plan.wind_steady": "Vent {min} nd · TWA {twa} · {speed}"
+  "plan.wind_steady": "Vent {min} nd · TWA {twa} · {speed}",
+  "ensemble.downloading": "Scénarios météo : téléchargement {done}/{total} ({percent} %). Les options arriveront toutes seules.",
+  "ensemble.ready": "Options calculées sur {members} scénarios météo (NOAA GEFS).",
+  "ensemble.unavailable": "Scénarios météo indisponibles pour l'instant : route calculée sur la météo du jeu seulement.",
+  "option.name.north": "Option Nord",
+  "option.name.east": "Option Est",
+  "option.name.consensus": "Route commune",
+  "option.kind.consensus": "Tous les scénarios vont dans le même sens",
+  "option.kind_short.consensus": "Consensus",
+  "direction.north": "le nord",
+  "direction.east": "l'est",
+  "direction.consensus": "cette route",
+  "advice.consensus": "{count} scénarios sur {total} vont dans le même sens : suis cette route les {hours} prochaines heures."
 }

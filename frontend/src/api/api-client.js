@@ -19,6 +19,11 @@ export class ApiClient {
     return this.#send("/api/route", { race_id: raceId, boat_id: boatId, position, options, maneuvers });
   }
 
+  // Where the 31 GEFS scenarios stand: { state: "ready" | "downloading" | "unavailable", done, total, ... }.
+  async getEnsembleStatus() {
+    return this.#get("/api/ensemble/status");
+  }
+
   // Map wind (the game's GFS) at the start and at each route-plan hour.
   async getWindForecast(startIso) {
     return this.#get(`/api/wind?start=${encodeURIComponent(startIso)}`);

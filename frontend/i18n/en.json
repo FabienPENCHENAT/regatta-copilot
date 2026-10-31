@@ -218,5 +218,17 @@
   "plan.leg_duration": "{h} h",
   "plan.leg_duration_min": "{m} min",
   "plan.wind": "Wind {min}–{max} kn · TWA {twa} · {speed}",
-  "plan.wind_steady": "Wind {min} kn · TWA {twa} · {speed}"
+  "plan.wind_steady": "Wind {min} kn · TWA {twa} · {speed}",
+  "ensemble.downloading": "Weather scenarios: downloading {done}/{total} ({percent}%). Options will appear on their own.",
+  "ensemble.ready": "Options computed on {members} weather scenarios (NOAA GEFS).",
+  "ensemble.unavailable": "Weather scenarios unavailable for now: route computed on the game's weather only.",
+  "option.name.north": "North option",
+  "option.name.east": "East option",
+  "option.name.consensus": "Common route",
+  "option.kind.consensus": "Every scenario goes the same way",
+  "option.kind_short.consensus": "Consensus",
+  "direction.north": "north",
+  "direction.east": "east",
+  "direction.consensus": "this route",
+  "advice.consensus": "{count} of {total} scenarios go the same way: follow this route for the next {hours} h."
 }
