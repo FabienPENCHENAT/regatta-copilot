@@ -2,6 +2,73 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D33 — Option names, probabilities, confidence, arrival gap, advice (step 4, 2026-10-31)
+- **Probability** = members of the option ÷ members routed (31; a member that cannot be routed is dropped).
+  The GFS route never counts (D1). Recommended option = the most probable.
+- **Id** from the option's **side of the consensus track** (start → median +48 h position of all members):
+  cross-track gap of its representative route at +48 h + 2 × the gap at +24 h (same scale as the grouping,
+  D32), positive to the right. The most central option is `direct` if its side is within 60 nm. The others,
+  outermost first, take the compass name closest to their side of the consensus heading (westward course:
+  right = `north`, left = `south`); a taken name falls to the next closest (45° steps), the heading's own
+  direction first (`west`), no suffix. A single option is `consensus` / kind `consensus`.
+  First version (rejected after the first real run): compass direction of the +48 h offset from the median
+  position, named by probability; it called "east" an option that went south early on a westward course.
+- **Kind**: `shortest` for the option whose +48 h position is closest (cross-track) to the great circle
+  from the leg anchor to the next mark most members are heading for at +48 h; the others `positioning`.
+  `coastal` is not produced.
+- **Confidence** of a plan step = share of the option's members within the zone radius (3 + 0.9 × hour nm)
+  of the representative position at that hour.
+- **`eta_delta_h`** (approximation): arrival = hours sailed + distance to go at +120 h ÷ the route's own mean
+  speed; gap to the earliest. Weather after +120 h is ignored.
+- **Advice**: `advice.consensus {count, total, hours: 48}` for one option, else
+  `advice.head_direction {option, count, total, hours: 48}`.
+- i18n keys for these ids and kinds (`option.name.*`, `direction.*`, `option.kind*.consensus`,
+  `advice.consensus`) and the `ensemble.*` status texts were added on the frontend side in parallel (main,
+  commit 39adffc).
+
+## D32 — Grouping member routes into options (step 4, 2026-10-31)
+- Distance between two member routes = max(gap at +48 h, 2 × gap at +24 h): doubling the 24 h gap puts both
+  horizons on the same scale (routes diverge about linearly), so routes that split early then cross are apart.
+- Average-linkage agglomeration while the mean gap between two groups is ≤ 70 nm (middle of the 60–80 nm
+  brief). Deterministic, ties to the lowest index. A group of one member joins its nearest group (a lone member
+  is noise, not a scenario worth a card); then the smallest group merges into its nearest until ≤ 4 options.
+  Rejected: k-means (needs k, random init), DBSCAN (leaves "noise" members outside every option).
+- Each option shows its **medoid** member route (smallest total distance to the others): a real, sailable
+  route with consistent legs, unlike an average of positions.
+- `game_route` = the option holding the member nearest to the GFS route (same distance).
+
+## D31 — 31 member routes in parallel processes (step 4, 2026-10-31)
+`EnsembleRoutePlanner` uses a `ProcessPoolExecutor` with the **spawn** context (fork is unsafe inside the
+threaded web server), cpu − 1 workers. Each worker builds the race, polar and land raster once
+(`initialize`), then decodes its member's GRIB files from the cache and routes it (no wind field is pickled);
+only the `Route` comes back. The GFS route (the game's) runs in the main process meanwhile, as before
+(downloaded on demand). Same request for every member: position, owned sails, manoeuvre overrides, 120 h.
+A new pool per request (≈ 1–2 s of start-up) keeps the code simple; a persistent pool would need per-boat
+state.
+Measured on the dev Mac (10 cores: 4 performance + 6 efficiency), Class40 from the start, 120 h: one member
+alone 4.4 s, but ≈ 14 s each when 9 run at once (6 workers: same total); members 52 s, GFS route 15 s in
+parallel, `POST /api/route` 53 s in all (target < 60 s met, barely). Profiling: 63 % of a route is the
+land sampling of `ObstacleChecker._any_sample` (large temporary arrays, memory-bound, so processes slow each
+other). Next lever, not done (outside step 4): a coarse "distance to land" raster to skip the sampling of
+segments far from any coast.
+
+## D30 — GEFS download in the background, once per run (step 4, 2026-10-31)
+- NOMADS grib filter `filter_gefs_atmos_0p50a.pl`, `pgrb2ap5`, members `gec00` + `gep01..30`, UGRD/VGRD 10 m,
+  0–60°N / 80°W–10°E (66 KB per file, measured). 3-hourly lead times bracketing the window
+  [max(race start, now), +120 h] **plus 12 h**, so that the window sliding with time does not force a new
+  download at every request. From the race start with the 06z run: 46 leads × 31 = 1 426 files ≈ 94 MB.
+- The last lead time of every member is fetched first: an incomplete run fails within the first requests and
+  the previous run is tried (newest due run = cycle + 5 h, then 2 older ones). A run found incomplete, or a
+  network failure, is retried after 10 min.
+- Sequential requests, at most 2 per second. Measured on the 2026-10-31 06z run: 1 426 files, 93 MB in
+  14 min 48 s (≈ 1.6 files/s; NOMADS answers in ≈ 0.5–0.7 s).
+  Cache `var/weather/gefs-YYYYMMDDHH/fFFF-<member>.grib2`, resumable file by file.
+- Never inside a request: `POST /api/route` calls `EnsembleDownloadJob.ensure`, which answers with the newest
+  complete run on disk (or none → GFS-only result) and starts a background thread when a newer run is due.
+  `GET /api/ensemble/status` exposes the state; `python -m sailrouter ensemble-download` does the same in the
+  foreground. A lock file (`var/weather/<run>.downloading`, stale after 120 s) stops the server and the CLI
+  from downloading the same run twice.
+
 ## D29 — Polar-only routing, editable manoeuvre times, leg-based route plan, all Rhum boats (user, 2026-10-31)
 - The user wants directions, not a full game simulation: the site routes on owned sails and each boat's polar
   speeds only. Foils, polished hull and pro winch are never applied (`BoatOptionsIn` has `sails` only; the CLI

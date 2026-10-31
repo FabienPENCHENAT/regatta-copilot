@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Sequence
 from pathlib import Path
 
 from sailrouter.weather.model_run import ModelRun
@@ -22,6 +23,10 @@ class ForecastStore:
 
     def has(self, run: ModelRun, lead_h: int, member: str = "") -> bool:
         return self.path(run, lead_h, member).is_file()
+
+    def missing(self, run: ModelRun, lead_hours: Sequence[int], members: Sequence[str]) -> list[tuple[int, str]]:
+        """(lead, member) pairs not on disk yet, lead by lead."""
+        return [(lead, member) for lead in lead_hours for member in members if not self.has(run, lead, member)]
 
     def write(self, run: ModelRun, lead_h: int, content: bytes, member: str = "") -> Path:
         target = self.path(run, lead_h, member)

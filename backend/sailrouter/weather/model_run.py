@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 @dataclass(frozen=True)
 class ModelRun:
-    """One forecast run of a model: `gfs` (deterministic) or, later, `gefs`, at a cycle time (00/06/12/18 UTC)."""
+    """One forecast run of a model: `gfs` (deterministic) or `gefs` (ensemble), at a cycle time (00/06/12/18 UTC)."""
 
     model: str
     cycle: datetime

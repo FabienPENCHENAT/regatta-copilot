@@ -1,6 +1,6 @@
 # Architecture
 
-Status: backend core built in step 3 (one GFS member, CLI); `ensemble` and `api` planned. Classes are created as the steps progress. Keep this page in sync with the code:
+Status: backend complete for steps 3–4 (GFS + 31 GEFS members, options, API, CLI). Classes are created as the steps progress. Keep this page in sync with the code:
 when a class is added, renamed or split, update the table.
 
 ## Repository layout
@@ -23,9 +23,11 @@ routeur-voile/
 ## Layers
 
 ```
-api        HTTP only: request parsing, response schemas, wiring
+api · cli  HTTP / command line only: request parsing, response JSON, wiring
  │
-ensemble   31 member routes → zones, confidence, consensus heading/sail, advice
+service    runs a request: GFS route, 31 GEFS member routes (process pool), background GEFS download
+ │
+ensemble   31 member routes → options, probabilities, confidence, advice
  │
 routing    isochrone engine for ONE wind field
  │
@@ -39,21 +41,22 @@ receives them as constructor arguments.
 
 ## Packages and classes
 
-Backend status: `domain`, `course`, `weather` (deterministic GFS), `polar`, `geography`, `routing` and the CLI
-exist (step 3). `ensemble`, `api` and the GEFS members are still planned (steps 4–5).
+Backend status: every package below exists. `service` sits between `api`/`cli` and the engine (it wires
+objects and runs the process pool); `ensemble` only depends on `routing` and `domain`.
 
 Commands (from the repo root):
 ```
 /opt/homebrew/bin/python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt -e backend
 .venv/bin/python -m pytest backend          # tests, no network
 .venv/bin/python -m sailrouter route --position "48°43'48\"N 001°54'00\"W" --hours 120
+.venv/bin/python -m sailrouter ensemble-download   # GEFS run for the race window (≈ 15 min the first time)
 ```
 
 ### `domain` — pure value objects, no I/O
 | Class | Responsibility |
 |---|---|
 | `GeoPoint` | Latitude/longitude pair, longitude normalised to [-180, 180). |
-| `GreatCircle` | Distance, initial bearing and destination point on the sphere (vectorised, nm). |
+| `GreatCircle` | Distance, initial bearing, destination point and signed cross-track distance on the sphere (vectorised, nm). |
 | `SegmentIntersector` | Planar segment–segment intersection in (lon, lat), vectorised (gates, lines, zones). |
 | `PositionParser` | Turns user text (`46°12'30"N 012°34'10"W`, `46.21, -12.57`, ...) into a `GeoPoint`. Twin of `frontend/src/form/position-parser.js`. |
 | `Mark`, `ExclusionZone`, `RaceBoat`, `Race` | Course definition: ordered marks (gate/line/point/island), finish line, forbidden zones (polygon or line), boats with polar and start line. |
@@ -71,14 +74,18 @@ Commands (from the repo root):
 | `LeadTimePlan` | Which lead times exist (GFS: hourly to f120, 3-hourly to f384; GEFS: 3-hourly) and which cover a window. |
 | `WeatherArea` | Download box (0–60°N, 80°W–10°E). |
 | `GfsQueryBuilder` | NOMADS grib-filter query (script + params) for one GFS 0.25° lead time, 10 m U/V only. |
-| `NomadsClient` | Downloads one grib-filter file over HTTP/1.1, ≤ 1 request/s, retries with backoff; 404/HTML → `DataNotAvailable`. |
+| `NomadsClient` | Downloads one grib-filter file over HTTP/1.1, ≤ 1 request/s (GEFS: 2/s), retries with backoff; 404/HTML → `DataNotAvailable`. |
 | `GfsRunDownloader` | Puts the missing lead times of a run into the store; fetches the last one first as a completeness probe. |
-| `ForecastStore` | On-disk cache of raw GRIB files, `var/weather/<run key>/fFFF.grib2`, written atomically. |
+| `ForecastStore` | On-disk cache of raw GRIB files, `var/weather/<run key>/fFFF.grib2` (GEFS: `fFFF-<member>.grib2`), written atomically; lists missing files. |
 | `GribDecoder` | GRIB2 file → `WindGrid` (ecCodes). |
 | `WindGrid` | U/V (m/s) on a regular lat/lon grid at one valid time. |
 | `WindField` | Wind of ONE forecast: bilinear in space, linear in time on U/V → TWS (kn), TWD (deg). Vectorised. |
 | `GfsWindSource` | The `WindField` of the latest complete GFS run covering a window (falls back to older runs). |
-| `GefsWindSource`, `EnsembleForecast` | Planned (step 4): one `WindField` per GEFS member, same `WindField` class, `GefsQueryBuilder` with a member number. |
+| `GefsQueryBuilder` | NOMADS grib-filter query for one GEFS 0.5° member (`c00`, `p01`..`p30`, `GEFS_MEMBERS`) and lead time. |
+| `GefsRunDownloader` | Puts every member × lead time of a run in the store; last lead of every member first (completeness probe); progress counts cached files. |
+| `GefsRunCatalog` | Candidate GEFS runs (latest due, then 2 older), lead times covering a window (3-hourly to f240), files on disk, newest complete run. |
+| `GefsMemberLoader` | Cached GRIB files of one member → its `WindField` (no download). |
+| `RunDownloadLock` | `var/weather/<run>.downloading` file (pid, touched per file, stale after 120 s): one download per run across processes. |
 
 ### `polar` — boat performance
 | Class | Responsibility |
@@ -114,45 +121,55 @@ Commands (from the repo root):
 | `IsochroneRouter` | Runs the steps: wind → best sail/speed → maneuver penalty → destination → drop obstacles → marks → prune. |
 | `RouteLegSplitter` | Cuts a route into legs with the same orders (heading within 10°, sail, tack) for the route plan. |
 | `RouteTracer` | Picks the best final point (marks passed, then distance to go) and walks parents back → `Route`. |
-| `Route`, `RoutePoint` | Ordered points (time, position, and heading/TWA/TWS/sail/speed of the leg starting there). |
+| `Route`, `RoutePoint` | Ordered points (time, position, and heading/TWA/TWS/sail/speed of the leg starting there); `position_at(hours)` interpolates. |
 
-### `cli` — command line (wiring for step 3, until `api` exists)
+### `cli` — command line
 | Module | Responsibility |
 |---|---|
-| `main.py` | `python -m sailrouter route ...`: argument parsing, exit codes. |
-| `route_command.py` (`RouteCommand`) | Builds every object (the only place that knows all layers) and runs one route → `RouteReport`. |
-| `route_report.py`, `project_paths.py` | Result of one run; where races, land, polars and `var/` live. |
+| `main.py` | `python -m sailrouter route ...` and `ensemble-download`: argument parsing, exit codes. |
+| `ensemble_download_command.py` (`EnsembleDownloadCommand`) | Downloads the latest complete GEFS run for a race window in the foreground, with progress. |
 | `route_summary_printer.py`, `position_formatter.py` | Text summary at +4/8/12/16/24/48 h in the game's position format. |
 | `route_file_writer.py` | `var/routes/<name>.json` (plan + every point + path) and `<name>.geojson` (LineString + horizon points). |
 
 ### `ensemble` — route options and their probabilities
-The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in place for the weather in
-2 days"), each with its **probability of being the best** and a **route plan at +4/8/12/16/24/48 h**.
+The user gets **1 to 4 route options** (e.g. "direct = shortest", "west = get in place for the weather in
+2 days"), each with its **probability** (share of the GEFS members whose route goes that way) and a **route
+plan**. Pure computation on `Route` objects (decisions D30–D33).
 | Class | Responsibility |
 |---|---|
-| `EnsembleRouter` | Runs `IsochroneRouter` for each of the 31 GEFS members + the deterministic GFS (process pool), reports progress. |
-| `RouteOptionClusterer` | Groups the member routes into options by where they are at +24 h and +48 h. |
-| `OptionLabeler` | Names each option: direction (`west`, `south`, `direct`) and kind (`shortest`, `positioning`, `coastal`). |
-| `OptionProbabilityEstimator` | Share of members whose best route belongs to the option; ETA gap to the best option. |
-| `OptionTimelineBuilder` | For one option: target position (zone centre + radius), heading, sail, TWA, TWS, speed at each horizon. |
-| `ConfidenceGrader` | Share of the option's members inside the target zone → `high` / `medium` / `low`. |
-| `ConsensusBuilder` | Circular median heading and majority sail of the option's members at a given time. |
-| `AdviceWriter` | Rule-based advice as **i18n key + parameters** (never text), e.g. `advice.head_direction {option, count, total, hours}`. |
+| `RouteDistanceMatrix` | Pairwise gap between routes: max(gap at +48 h, 2 × gap at +24 h), nm. |
+| `RouteOptionClusterer` | Average-linkage groups (≤ 70 nm), lone members merged into the nearest group, at most 4 groups, largest first. |
+| `MedoidPicker` | The member route that represents a group (smallest total distance to the others). |
+| `OptionLabeler` | Option id from its side of the consensus track (+48 h gap + 2 × +24 h gap): most central = `direct` (≤ 60 nm), others outermost first get the compass name of their side (`north`/`south` on a westward course, then `west`/`east`), unique; kind `shortest` (closest to the great circle to the next mark) / `positioning`; one option = `consensus`. |
+| `ConfidenceGrader` | Step confidence: share of the option's members within the zone radius (3 + 0.9 × hour nm) of the representative. |
+| `EtaGapEstimator` | Arrival gap vs the best option: hours sailed + distance to go ÷ the route's mean speed. |
+| `AdviceWriter` | Advice as **i18n key + parameters** (never text): `advice.consensus` or `advice.head_direction`. |
+| `EnsembleSynthesizer` | Runs the above: member routes + game route → `EnsembleSynthesis` (`RouteOption`s, member → option, advice); flags the option holding the GFS route. |
+| `RouteOption`, `EnsembleSynthesis` | Value objects of the result. |
 
 ### `service` — application layer shared by the CLI and the API
 | Class | Responsibility |
 |---|---|
-| `RoutePlanner` | Builds every object for one routing run (the only place that knows all engine layers) and returns a `RouteReport`; also provides the GFS wind for the map. |
-| `RouteReport`, `ProjectPaths` | Result of one run; where data and caches live. |
+| `RoutePlanner` | Routes one boat on the deterministic GFS (the game's weather) → `RouteReport`; also provides the GFS wind for the map. |
+| `RouterBuilder` | Boat models (polar, owned sails, manoeuvre overrides), land + zones obstacles, `IsochroneRouter` for a wind field. |
+| `EnsembleRoutePlanner` | Routes the 31 members in a spawned `ProcessPoolExecutor` (cpu − 1 workers) while the GFS route runs in-process, then `EnsembleSynthesizer` → `EnsembleReport`. |
+| `member_routing_worker` (module) | `MemberRoutingSpec`; per-process `initialize` (race, polar, land raster once) and `route_member` (decode one member, route it). |
+| `EnsembleDownloadJob` | One GEFS download at a time in a background thread: `ensure(window)` returns the newest run on disk and starts a newer one; `status()`; `download()` for the CLI; failed runs retried after 10 min. |
+| `EnsembleStatus` | `ready` / `downloading` / `unavailable`, run, done/total files, member count. |
+| `build_ensemble_job` (`ensemble_job_factory.py`) | Wires the job (NOMADS client at ≤ 2 requests/s). |
+| `RouteReport`, `EnsembleReport`, `ProjectPaths` | Results of one run; where data and caches live. |
 
 ### `api` — FastAPI
 | Module | Responsibility |
 |---|---|
-| `app_factory.py` | Builds the app: routers under `/api`, frontend files at `/`. |
+| `app_factory.py` | Builds the app: routers under `/api`, frontend files at `/`, one shared `EnsembleDownloadJob`. |
 | `routes_races.py` | Race list, race file, boat polar. |
-| `routes_routing.py` | `POST /api/route` (runs `RoutePlanner`), `GET /api/wind`. |
+| `routes_routing.py` | `POST /api/route` (ensemble when the GEFS run is on disk, else GFS only), `GET /api/ensemble/status`, `GET /api/wind`. |
 | `schemas.py` | Request models; converts settings to `BoatOptions`. |
-| `route_result_builder.py` | `RouteReport` → result JSON (hourly path, plan steps, nulls while no ensemble). |
+| `route_json_writer.py` (`RouteJsonWriter`) | One `Route` → `now`, `steps`, `legs`, hourly `path`, full track. |
+| `route_result_builder.py` | `RouteReport` → GFS-only result (one `gfs` option, nulls). |
+| `ensemble_result_builder.py` | `EnsembleReport` → result with options, probabilities, confidence, `members`. |
+| `ensemble_status_json.py` | `EnsembleStatus` → the `ensemble` JSON object. |
 | `wind_grid_exporter.py` | `WindField` → leaflet-velocity grids for the map. |
 
 ### `frontend` — no build step, native ES modules
@@ -186,22 +203,15 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 
 The response shape is documented in [api-contract.md](api-contract.md).
 
-### `api`
-| Module | Responsibility |
-|---|---|
-| `app_factory.py` | Builds the FastAPI app and wires all objects (the only place that knows every layer). |
-| `routes_*.py` | One module per endpoint group (races, routing, weather status). |
-| `schemas.py` | Pydantic request/response models. |
-
 ## Main data flow
 
 ```
-user: race + boat + position text
-  → PositionParser → GeoPoint
-  → RaceCatalog → Race (next mark from position)
-  → ForecastStore → EnsembleForecast (downloaded once per GEFS run)
-  → EnsembleRouter → 31 GEFS routes + 1 GFS route
-  → RouteOptionClusterer → OptionLabeler → OptionProbabilityEstimator
-  → OptionTimelineBuilder (+ ConfidenceGrader, ConsensusBuilder) → AdviceWriter
-  → JSON → frontend (now panel, option cards, route plan, map; text translated client-side)
+user: race + boat + position + owned sails + manoeuvre times
+  → POST /api/route → RaceCatalog → window = [max(race start, now), +120 h]
+  → EnsembleDownloadJob.ensure(window): GEFS run on disk? (else download in background, answer with GFS only)
+  → EnsembleRoutePlanner: 31 × (GefsMemberLoader → IsochroneRouter → RouteTracer) in worker processes
+                          + RoutePlanner on the deterministic GFS (the game's route) in-process
+  → EnsembleSynthesizer: RouteDistanceMatrix → RouteOptionClusterer → MedoidPicker → OptionLabeler
+                         → probabilities, ConfidenceGrader, EtaGapEstimator, AdviceWriter
+  → EnsembleResultBuilder → JSON → frontend (text translated client-side)
 ```
