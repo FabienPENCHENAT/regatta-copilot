@@ -1,0 +1,9 @@
+{"type": "FeatureCollection", "features": [
+ {"type": "Feature", "properties": {"note": "square island 48.0-48.2N 3.2-3.0W with a lake 48.08-48.12N 3.12-3.08W"},
+  "geometry": {"type": "Polygon", "coordinates": [
+   [[-3.2, 48.0], [-3.0, 48.0], [-3.0, 48.2], [-3.2, 48.2], [-3.2, 48.0]],
+   [[-3.12, 48.08], [-3.12, 48.12], [-3.08, 48.12], [-3.08, 48.08], [-3.12, 48.08]]]}},
+ {"type": "Feature", "properties": {"note": "self-intersecting bow tie, repaired by make_valid"},
+  "geometry": {"type": "Polygon", "coordinates": [
+   [[-2.6, 48.0], [-2.4, 48.2], [-2.4, 48.0], [-2.6, 48.2], [-2.6, 48.0]]]}}
+]}
