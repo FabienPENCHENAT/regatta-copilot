@@ -1,8 +1,7 @@
 // The route options as compact selectable cards: a small ring with the chance of being the best,
-// the option name, and one short line (type, arrival gap). Full details in the tooltip.
+// the option name, and one short line (type, number of scenarios). Full details in the tooltip.
 
 import { createTermTip } from "./term-tip.js";
-import { formatNumber } from "./display-format.js";
 import { element } from "../dom.js";
 
 const RING_RADIUS = 21;
@@ -37,7 +36,7 @@ export class OptionList {
     if (option.id === result.recommended_option) name.append(element("span", "badge", t("option.recommended")));
     if (option.game_route) name.append(element("span", "badge badge-soft", t("option.game_badge")));
 
-    const facts = element("span", "option-facts", `${t(`option.kind_short.${option.kind}`)} · ${this.#eta(option)}`);
+    const facts = element("span", "option-facts", `${t(`option.kind_short.${option.kind}`)} · ${this.#support(result, option)}`);
     button.title = option.probability === null
       ? `${t(`option.kind.${option.kind}`)} — ${t("option.ring_pending")}`
       : `${t(`option.kind.${option.kind}`)} — ${t("option.members", { count: option.member_count, total: result.weather.member_count })}`;
@@ -49,10 +48,11 @@ export class OptionList {
     return item;
   }
 
-  #eta(option) {
-    if (option.eta_delta_h === 0) return this.translator.t("option.eta_short_best");
-    const hours = formatNumber(option.eta_delta_h, this.translator.lang, Number.isInteger(option.eta_delta_h) ? 0 : 1);
-    return this.translator.t("option.eta_short", { hours });
+  // How many scenarios back the option: the grouping the advice relies on. (The arrival gap is not shown:
+  // each option is measured in its own weather, so the figure would not be comparable.)
+  #support(result, option) {
+    if (option.probability === null) return this.translator.t("option.game_forecast_only");
+    return this.translator.t("option.members_short", { count: option.member_count, total: result.weather.member_count });
   }
 
   // percent null: no probability yet (single forecast): an empty ring with a dash.

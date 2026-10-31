@@ -72,3 +72,14 @@ Comment le lire :
 - Au plus **4 options**.
 - Le calcul avec les 31 scénarios prend environ 50 secondes : la page attend pendant ce temps.
 - Rien n'a été vérifié dans le jeu lui-même.
+
+
+## Mise à jour : résultats gardés jusqu'à la prochaine météo (31/10)
+
+Entre deux prévisions, rien ne change. Le site garde donc chaque résultat calculé. Si tu rouvres le site avec la
+même position, le même bateau, les mêmes voiles et les mêmes temps de manœuvre, la réponse est immédiate
+(0,02 s au lieu de 50 s). Dès qu'une nouvelle prévision est disponible, ou que tu changes de position ou de
+réglage, le site recalcule une fois, puis garde ce nouveau résultat.
+
+Les cartes d'options n'affichent plus le « +X h à l'arrivée », qui n'était pas comparable d'une option à l'autre.
+Elles indiquent le nombre de scénarios qui vont dans ce sens : c'est sur ce regroupement que repose le conseil.

@@ -167,6 +167,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `routes_routing.py` | `POST /api/route` (ensemble when the GEFS run is on disk, else GFS only), `GET /api/ensemble/status`, `GET /api/wind`. |
 | `schemas.py` | Request models; converts settings to `BoatOptions`. |
 | `route_json_writer.py` (`RouteJsonWriter`) | One `Route` → `now`, `steps`, `legs`, hourly `path`, full track. |
+| `route_result_cache.py` | Stored results keyed by inputs + weather run ids (instant reopening until the next run). |
 | `route_result_builder.py` | `RouteReport` → GFS-only result (one `gfs` option, nulls). |
 | `ensemble_result_builder.py` | `EnsembleReport` → result with options, probabilities, confidence, `members`. |
 | `ensemble_status_json.py` | `EnsembleStatus` → the `ensemble` JSON object. |

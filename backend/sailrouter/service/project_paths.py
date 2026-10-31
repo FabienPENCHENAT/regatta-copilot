@@ -25,6 +25,10 @@ class ProjectPaths:
         return self.root / "var" / "weather"
 
     @property
+    def results_dir(self) -> Path:
+        return self.root / "var" / "results"
+
+    @property
     def routes_dir(self) -> Path:
         return self.root / "var" / "routes"
 

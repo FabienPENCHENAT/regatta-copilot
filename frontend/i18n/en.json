@@ -163,8 +163,6 @@
   "option.kind_short.positioning": "Weather positioning",
   "option.kind_short.shortest": "Shortest",
   "option.kind_short.coastal": "Close to the coast",
-  "option.eta_short_best": "first to finish",
-  "option.eta_short": "+{hours} h at the finish",
   "view.day": "24 h",
   "compass.n": "N",
   "compass.e": "E",
@@ -230,5 +228,7 @@
   "direction.north": "north",
   "direction.east": "east",
   "direction.consensus": "this route",
-  "advice.consensus": "{count} of {total} scenarios go the same way: follow this route for the next {hours} h."
+  "advice.consensus": "{count} of {total} scenarios go the same way: follow this route for the next {hours} h.",
+  "option.members_short": "{count} of {total} scenarios",
+  "option.game_forecast_only": "game weather only"
 }

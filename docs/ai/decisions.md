@@ -2,6 +2,16 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D34 — Results kept until the weather changes; most probable option stays recommended (user, 2026-10-31)
+- The user pointed out that nothing changes between two forecast runs. Weather files were already cached per run;
+  now computed results are too (`api/RouteResultCache`, `var/results/`), keyed by race, boat, position (4 dp),
+  owned sails, manoeuvre times, start rounded to 30 min, expected GFS run and GEFS run. Same inputs → stored
+  result (53 s → 0.02 s measured); a new run → new key → one fresh computation. A result made on an older GFS
+  run than expected (fallback) expires after 30 min. Files older than 2 days are deleted.
+- Recommendation stays "the most probable option" (largest group of scenarios): the user prefers the option most
+  scenarios agree on, knowing it is updated at each run. The arrival gap (`eta_delta_h`) is no longer shown on the
+  cards (each option is measured in its own weather, not comparable); cards show "n of 31 scenarios" instead.
+
 ## D33 — Option names, probabilities, confidence, arrival gap, advice (step 4, 2026-10-31)
 - **Probability** = members of the option ÷ members routed (31; a member that cannot be routed is dropped).
   The GFS route never counts (D1). Recommended option = the most probable.

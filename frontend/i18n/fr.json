@@ -163,8 +163,6 @@
   "option.kind_short.positioning": "Placement météo",
   "option.kind_short.shortest": "La plus courte",
   "option.kind_short.coastal": "Près des côtes",
-  "option.eta_short_best": "arrivée en tête",
-  "option.eta_short": "+{hours} h à l'arrivée",
   "view.day": "24 h",
   "compass.n": "N",
   "compass.e": "E",
@@ -230,5 +228,7 @@
   "direction.north": "le nord",
   "direction.east": "l'est",
   "direction.consensus": "cette route",
-  "advice.consensus": "{count} scénarios sur {total} vont dans le même sens : suis cette route les {hours} prochaines heures."
+  "advice.consensus": "{count} scénarios sur {total} vont dans le même sens : suis cette route les {hours} prochaines heures.",
+  "option.members_short": "{count} scénarios sur {total}",
+  "option.game_forecast_only": "météo du jeu seule"
 }
