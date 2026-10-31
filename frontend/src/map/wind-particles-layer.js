@@ -22,7 +22,7 @@ export class WindParticlesLayer {
       minVelocity: 0,
       maxVelocity: WIND_MAX_MS,
       velocityScale: 0.007, // calm drift: the chart stays readable under the routes
-      particleMultiplier: 1 / 320, // sparse particles (was 1 / 140)
+      particleMultiplier: 1 / 640, // sparse particles (was 1 / 140, then 1 / 320)
       lineWidth: 2,
       opacity: 0.95,
       colorScale: WIND_COLOR_TOKENS.map((token) => this.color(token)),
