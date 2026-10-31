@@ -15,6 +15,11 @@ class LeadTimePlan:
         self._coarse_step = coarse_step_h
         self._last = last_h
 
+    @classmethod
+    def gefs(cls) -> LeadTimePlan:
+        """GEFS 0.5° (`pgrb2a`): 3-hourly from f000 to f240."""
+        return cls(hourly_until_h=0, coarse_step_h=3, last_h=240)
+
     def all_lead_hours(self) -> list[int]:
         hourly = list(range(0, self._hourly_until + 1))
         coarse_start = self._hourly_until + self._coarse_step

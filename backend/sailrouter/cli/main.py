@@ -7,6 +7,7 @@ from pathlib import Path
 
 from sailrouter.service.project_paths import REPO_ROOT, ProjectPaths
 from sailrouter.service.route_planner import RoutePlanner
+from sailrouter.cli.ensemble_download_command import EnsembleDownloadCommand
 from sailrouter.cli.route_file_writer import RouteFileWriter
 from sailrouter.cli.route_summary_printer import RouteSummaryPrinter
 from sailrouter.domain.position_parser import PositionParser
@@ -14,7 +15,7 @@ from sailrouter.polar.boat_options import BoatOptions
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="python -m sailrouter", description="VR routing advisor (GFS).")
+    parser = argparse.ArgumentParser(prog="python -m sailrouter", description="VR routing advisor (GFS/GEFS).")
     commands = parser.add_subparsers(dest="command", required=True)
     route = commands.add_parser("route", help="route one boat on the latest deterministic GFS run")
     route.add_argument("--race", default="route-du-rhum-2026", help="race id (file name in races/)")
@@ -29,11 +30,20 @@ def build_parser() -> argparse.ArgumentParser:
                             'e.g. "foil" or "Code0,LightGnk,foil"')
     route.add_argument("--name", default=None, help="output file name in var/routes/ (no extension)")
     route.add_argument("--root", type=Path, default=REPO_ROOT, help=argparse.SUPPRESS)
+    download = commands.add_parser("ensemble-download",
+                                   help="download the latest complete GEFS run (31 members) for the routing window")
+    download.add_argument("--race", default="route-du-rhum-2026", help="race id (file name in races/)")
+    download.add_argument("--hours", type=float, default=120.0, help="routing horizon in hours (default 120)")
+    download.add_argument("--start", default=None, help="UTC start, ISO 8601 (default: race start, or now if later)")
+    download.add_argument("--root", type=Path, default=REPO_ROOT, help=argparse.SUPPRESS)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "ensemble-download":
+        return EnsembleDownloadCommand(ProjectPaths(args.root), sys.stdout).run(
+            args.race, _parse_start(args.start) if args.start else None, args.hours)
     position = PositionParser().parse(args.position)
     if position is None:
         print(f"Position not understood: {args.position!r}", file=sys.stderr)
