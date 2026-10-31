@@ -194,10 +194,10 @@
   "race.status_start_days": "Start in {d} d {h} h",
   "race.status_racing": "Racing for {d} d {h} h",
   "race.status_finished": "Race over",
-  "settings.base_sails": "The Jib and the Spi are always on board. Tick each optional sail you own in the game: the computation will only use those. Foils, polished hull and pro winch are not taken into account: the route gives the direction, you recompute as you go.",
+  "settings.base_sails": "The Jib and the Spi are always on board. Tick the options you have in the game: the computation only uses those, like the game.",
   "sail.not_owned": "Option not owned",
   "settings.sails": "Sails",
-  "settings.maneuver_note": "Pre-filled with the game's values (standard winch) for this boat. Light wind: 10 knots or less, strong wind: 30 knots or more. Set 0 to ignore a manoeuvre.",
+  "settings.maneuver_note": "Pre-filled with the game's values for this boat (standard or pro winch depending on your equipment). Light wind: 10 knots or less, strong wind: 30 knots or more. Set 0 to ignore a manoeuvre.",
   "form.compute_error": "The computation failed: {reason}",
   "option.name.gfs": "Game weather route",
   "option.kind.game": "Computed on the GFS forecast, the game's",
@@ -230,5 +230,9 @@
   "direction.consensus": "this route",
   "advice.consensus": "{count} of {total} scenarios go the same way: follow this route for the next {hours} h.",
   "option.members_short": "{count} of {total} scenarios",
-  "option.game_forecast_only": "game weather only"
+  "option.game_forecast_only": "game weather only",
+  "settings.equipment": "Equipment",
+  "settings.foils": "Foils",
+  "settings.hull": "Polished hull",
+  "settings.winch": "Pro winch"
 }

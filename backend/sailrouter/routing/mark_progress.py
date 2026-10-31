@@ -10,6 +10,7 @@ from sailrouter.domain.great_circle import GreatCircle
 from sailrouter.domain.race import Race
 from sailrouter.domain.segment_intersector import SegmentIntersector
 from sailrouter.routing.course_leg import CourseLeg
+from sailrouter.routing.next_mark_finder import NextMarkFinder
 
 NM_PER_DEG_LAT = 60.0
 
@@ -38,10 +39,11 @@ class MarkProgress:
     def from_race(
         cls, race: Race, start: GeoPoint, first_mark_id: str | None = None, waypoint_radius_nm: float = 2.0
     ) -> MarkProgress:
-        """Legs from `start` to the finish. `first_mark_id` skips the marks before it (already passed)."""
+        """Legs from `start` to the finish. `first_mark_id` skips the marks before it (already passed); when it is
+        not given, marks already crossed are detected from the start position (`NextMarkFinder`)."""
         marks = (*race.marks, race.finish)
-        if first_mark_id is not None:
-            marks = marks[marks.index(race.mark(first_mark_id)):]
+        first_mark_id = first_mark_id or NextMarkFinder().first_ahead(race, start)
+        marks = marks[[mark.id for mark in marks].index(first_mark_id):]
         legs: list[CourseLeg] = []
         anchor = start
         for mark in marks:

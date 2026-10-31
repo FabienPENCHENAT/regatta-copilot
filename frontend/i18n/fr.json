@@ -194,10 +194,10 @@
   "race.status_start_days": "Départ dans {d} j {h} h",
   "race.status_racing": "En course depuis {d} j {h} h",
   "race.status_finished": "Course terminée",
-  "settings.base_sails": "Le Jib et le Spi sont toujours à bord. Coche chaque voile optionnelle que tu as dans le jeu : le calcul n'utilisera que celles-là. Foils, coque polie et winch pro ne sont pas pris en compte : la route donne la direction, tu recalcules en route.",
+  "settings.base_sails": "Le Jib et le Spi sont toujours à bord. Coche les options que tu as dans le jeu : le calcul ne prend que celles-là, comme le jeu.",
   "sail.not_owned": "Option non équipée",
   "settings.sails": "Voiles",
-  "settings.maneuver_note": "Pré-rempli avec les valeurs du jeu (sans winch pro) pour ce bateau. Vent faible : 10 nœuds ou moins, vent fort : 30 nœuds ou plus. Mets 0 pour ignorer une manœuvre.",
+  "settings.maneuver_note": "Pré-rempli avec les valeurs du jeu pour ce bateau (standard ou winch pro selon ton équipement). Vent faible : 10 nœuds ou moins, vent fort : 30 nœuds ou plus. Mets 0 pour ignorer une manœuvre.",
   "form.compute_error": "Le calcul a échoué : {reason}",
   "option.name.gfs": "Route météo du jeu",
   "option.kind.game": "Calculée sur la prévision GFS, celle du jeu",
@@ -230,5 +230,9 @@
   "direction.consensus": "cette route",
   "advice.consensus": "{count} scénarios sur {total} vont dans le même sens : suis cette route les {hours} prochaines heures.",
   "option.members_short": "{count} scénarios sur {total}",
-  "option.game_forecast_only": "météo du jeu seule"
+  "option.game_forecast_only": "météo du jeu seule",
+  "settings.equipment": "Équipement",
+  "settings.foils": "Foils",
+  "settings.hull": "Coque polie",
+  "settings.winch": "Winch pro"
 }

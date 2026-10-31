@@ -2,6 +2,18 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D38 — Passed marks detected from the position (bug found 2026-10-31)
+Routing from mid-Atlantic (45°N 12°W) sailed back towards the Fréhel gate (3 800 nm to go): the next mark was
+only skipped with an explicit `--next-mark`. `routing/NextMarkFinder` now finds the first mark ahead: a gate or
+line is passed when the position lies beyond it in its crossing direction by more than 2 nm; point and island
+marks always count as ahead (to refine near Guadeloupe). Used by `MarkProgress.from_race` when no mark is given.
+
+## D37 — All VR options back in the settings (user, 2026-10-31)
+The user wants the site as close to the game as possible: foils, polished hull and pro winch are settings again
+(off by default) and applied by the engine as in the game (foil bonus per boat polar). Manoeuvre times are
+pre-filled for the owned winch level (std or pro) and overrides are saved per boat and winch level. The cache key
+includes the equipment. Supersedes the "polar only" part of D29.
+
 ## D36 — At most 3 options (user, 2026-10-31)
 A 4th option around 16–19 % was noise for the user. `RouteOptionClusterer(max_options=3)`: the smallest group
 joins its nearest group, so its scenarios still count (probabilities still sum to 100 %). Stored results were

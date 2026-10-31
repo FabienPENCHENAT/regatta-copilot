@@ -101,7 +101,9 @@ def _cache_inputs(request: RouteRequest, start: datetime, gfs_key: str, gefs_key
     return {
         "race": request.race_id, "boat": request.boat_id,
         "position": [round(request.position.lat, 4), round(request.position.lon, 4)],
-        "sails": sorted(request.options.sails), "maneuvers": {k: v.model_dump() for k, v in request.maneuvers.items()},
+        "sails": sorted(request.options.sails), "equipment": [request.options.foil, request.options.hull,
+                                                              request.options.pro_winch],
+        "maneuvers": {k: v.model_dump() for k, v in request.maneuvers.items()},
         "start": rounded.isoformat(), "gfs": gfs_key, "gefs": gefs_key,
     }
 

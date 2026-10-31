@@ -1,6 +1,7 @@
 // Editable manoeuvre times: for a tack, a gybe and a sail change, how long the boat slows down in light and
-// strong wind and the speed it keeps meanwhile. Pre-filled from the boat's VR polar (standard winch); the
-// player's own values are saved per boat and sent with each computation. "Game values" resets them.
+// strong wind and the speed it keeps meanwhile. Pre-filled from the boat's VR polar for the winch level owned
+// (standard or pro); the player's own values are saved per boat and winch level and sent with each
+// computation. "Game values" resets them.
 
 import { element } from "../dom.js";
 
@@ -18,7 +19,7 @@ const FIELDS = [
 export class ManeuverTimes {
   #gameValues = null;
   #values = null;
-  #boatId = null;
+  #storageKey = null;
 
   constructor(container, { translator, preferences, onChange }) {
     this.container = container;
@@ -32,10 +33,11 @@ export class ManeuverTimes {
     return this.#values ?? {};
   }
 
-  load(boatId, winch) {
-    this.#boatId = boatId;
-    this.#gameValues = winch ? gameValues(winch) : null;
-    const saved = this.preferences.read().maneuvers?.[boatId];
+  load(boatId, winch, proWinch) {
+    const level = proWinch ? "pro" : "std";
+    this.#storageKey = `${boatId}:${level}`;
+    this.#gameValues = winch ? gameValues(winch, level) : null;
+    const saved = this.preferences.read().maneuvers?.[this.#storageKey];
     this.#values = saved ?? structuredClone(this.#gameValues);
     this.render();
   }
@@ -79,16 +81,16 @@ export class ManeuverTimes {
 
   #save(isReset = false) {
     const all = { ...this.preferences.read().maneuvers };
-    if (isReset) delete all[this.#boatId];
-    else all[this.#boatId] = this.#values;
+    if (isReset) delete all[this.#storageKey];
+    else all[this.#storageKey] = this.#values;
     this.preferences.update({ maneuvers: all });
     this.onChange(this.values);
   }
 }
 
-function gameValues(winch) {
+function gameValues(winch, level) {
   return Object.fromEntries(MANEUVERS.map(({ key }) => {
-    const { lw, hw } = winch[key].std;
+    const { lw, hw } = winch[key][level];
     return [key, { light_min: lw.timer / 60, strong_min: hw.timer / 60, speed_percent: Math.round(lw.ratio * 100) }];
   }));
 }

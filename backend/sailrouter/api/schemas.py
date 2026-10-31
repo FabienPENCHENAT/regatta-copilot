@@ -12,16 +12,17 @@ class PositionIn(BaseModel):
 
 
 class BoatOptionsIn(BaseModel):
-    """Owned optional sails, as sent by the settings dialog. Unknown sail names are ignored.
-
-    The site routes on sails and polar speeds only: foils, polished hull and pro winch are never applied
-    (the player's choice: the advice gives directions, the player recomputes as the boat goes)."""
+    """VR options owned by the player, as sent by the settings dialog: optional sails (unknown names are
+    ignored), foils, polished hull, pro winch. Everything off by default (the bare boat: Jib and Spi)."""
 
     sails: list[str] = []
+    foil: bool = False
+    hull: bool = False
+    pro_winch: bool = False
 
     def to_options(self) -> BoatOptions:
         owned = frozenset(sail for sail in self.sails if sail in OPTIONAL_SAILS)
-        return BoatOptions(sails=owned, foil=False, hull=False, pro_winch=False)
+        return BoatOptions(sails=owned, foil=self.foil, hull=self.hull, pro_winch=self.pro_winch)
 
 
 class ManeuverIn(BaseModel):

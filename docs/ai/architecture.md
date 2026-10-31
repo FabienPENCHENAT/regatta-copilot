@@ -119,6 +119,7 @@ Commands (from the repo root):
 | `MarkProgress` | Legs of the race from a position; detects passing (gate crossed westward, waypoint within 2 nm); distance to go. |
 | `IsochronePruner` | Keeps the most advanced leg, then the farthest point from the leg anchor per 0.5° sector. |
 | `IsochroneRouter` | Runs the steps: wind → best sail/speed → maneuver penalty → destination → drop obstacles → marks → prune. |
+| `NextMarkFinder` | First mark still ahead of a position (gates/lines crossed are skipped). |
 | `RouteLegSplitter` | Cuts a route into legs with the same orders (heading within 10°, sail, tack) for the route plan. |
 | `RouteTracer` | Picks the best final point (marks passed, then distance to go) and walks parents back → `Route`. |
 | `Route`, `RoutePoint` | Ordered points (time, position, and heading/TWA/TWS/sail/speed of the leg starting there); `position_at(hours)` interpolates. |

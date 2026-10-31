@@ -34,10 +34,11 @@ def test_unknown_race_and_unknown_boat_are_refused(client):
     assert bad.status_code in (400, 404)
 
 
-def test_owned_sails_from_the_settings_become_boat_options_without_equipment():
+def test_settings_become_boat_options_with_everything_off_by_default():
     options = BoatOptionsIn(sails=["Code0", "Magic"]).to_options()
     assert options.allows_sail("Code0") and not options.allows_sail("LightGnk")
     assert not (options.foil or options.hull or options.pro_winch)
+    assert BoatOptionsIn(foil=True, pro_winch=True).to_options().pro_winch
 
 
 def test_result_has_an_hourly_path_and_the_plan_hours_the_route_covers():
