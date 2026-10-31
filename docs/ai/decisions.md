@@ -2,6 +2,50 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D19 — Backend installed in editable mode, CLI before the API (2026-10-31)
+`backend/pyproject.toml` (setuptools, pytest config) + `backend/requirements.txt` (numpy, eccodes, shapely, pytest).
+`pip install -e backend` makes `python -m sailrouter` work from any folder; the CLI finds the repo through the
+package path, so a non-editable install is not supported. The CLI (`sailrouter/cli/`) is the wiring point until
+`api/app_factory.py` exists. FastAPI/uvicorn are not installed yet.
+
+## D18 — Maneuver and speed model V1 (2026-10-31)
+Loss per maneuver = `timer × (1 − ratio)` seconds from the polar `winch` block (pro winch by default), timer and
+ratio interpolated linearly between `lws` (10 kn) and `hws` (30 kn): Class40 pro tack/gybe 54–90 s, sail change
+72–108 s. Tack = TWA sign change with |TWA₁|+|TWA₂| < 180°, gybe otherwise. A tack/gybe with a sail change costs
+the larger of the two (assumption: VR timers overlap). No penalty on the first step (current sail and tack
+unknown). Foil ramps (TWA and TWS) are multiplied. VR's auto-sail tolerance (1.014) is ignored: the router always
+takes the fastest sail. None of this was checked in the game.
+
+## D17 — Mark passing V1 (2026-10-31)
+Gates and lines (Fréhel gate, finish) count when a step segment crosses them in the right direction (westward,
+northward). `point` marks (Tête à l'Anglais, Basse-Terre buoy, Pointe-à-Pitre buoy) are waypoints reached within
+2 nm; the side they are left to is not checked. `island` marks (Les Saintes) are skipped; the land mask keeps the
+boat off them. `--next-mark` skips marks already passed (no automatic detection from the position yet).
+Once a point passes a mark, points that have not are dropped (costs at most one step).
+
+## D16 — Pruning around the leg anchor, not the next mark (2026-10-31)
+The brief said "best point per angular sector around the current target". Seen from Guadeloupe, the bay of
+Saint-Brieuc and the Channel lie in the same direction as the open sea, so keeping the point closest to the target
+per sector keeps points deep in bays and loses the ones that can round Brittany. Sectors (0.5°) are therefore
+taken around the leg anchor (start, or last mark passed) and the farthest point is kept: the true time envelope.
+Result: ≈ 700 points per front, 120 h routed in ≈ 4.5 s.
+
+## D15 — Land: 0.005° raster built from the Natural Earth 1:10m chart data (2026-10-31)
+The router reuses `frontend/map-data/land.geojson` (≈ 400 m simplification). It is rasterised at 0.005° (≈ 550 m ×
+370 m at 48°N) over the weather area: the Fréhel gate (1 nm wide, 470 m from the cape) stays open, Cap Fréhel is
+land. Built at each run in ≈ 0.35 s with a numpy scanline fill (bit-packed, 27 MB), so no cache. A 0.08° coarse
+raster, dilated by one cell, skips the fine check away from coasts. Outside the area counts as land. Exclusion
+zones are checked exactly (planar segment tests), not rasterised. Known limit: a 1:10m coastline misses small
+rocks and harbour details; VR uses its own (unknown) land mask.
+
+## D14 — GFS lead times: hourly to f120, 3-hourly after, raw GRIB cache (2026-10-31)
+The deterministic GFS 0.25° is hourly up to f120 on NOMADS, then 3-hourly. The router downloads exactly the lead
+times covering the routing window (race start tomorrow: run 06z + 30 h to + 150 h = 102 files, 26 MB, ≈ 100 s
+the first time at 1 request/s, then 0.2 s from cache). `ForecastStore` keeps the raw GRIB files
+(`var/weather/gfs-YYYYMMDDHH/fFFF.grib2`) instead of a decoded `.npz`: decoding takes 0.2 s and partial
+downloads resume file by file. A run is assumed complete 5 h after its cycle; the newest run's last lead time is
+fetched first and, if NOMADS answers 404 ("data file is not present"), the previous run is used.
+
 ## D13 — Race file built from the official sailing instructions (2026-10-31)
 `races/route-du-rhum-2026.json` was extracted from the SI PDF (amendments 1 and 2 included): start segments per
 class (§9.3), Fréhel gate, marks and sides (annex 3), finish (§10.1), 22 forbidden zones and 2 vigilance zones

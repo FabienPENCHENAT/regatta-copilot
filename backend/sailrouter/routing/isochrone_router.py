@@ -1,0 +1,90 @@
+from __future__ import annotations
+
+from datetime import datetime
+
+import numpy as np
+
+from sailrouter.domain.geo_point import GeoPoint
+from sailrouter.domain.great_circle import GreatCircle
+from sailrouter.geography.obstacle_checker import ObstacleChecker
+from sailrouter.polar.maneuver_penalty import ManeuverPenalty
+from sailrouter.polar.speed_model import SpeedModel
+from sailrouter.routing.heading_fan import HeadingFan
+from sailrouter.routing.isochrone import Isochrone
+from sailrouter.routing.isochrone_pruner import IsochronePruner
+from sailrouter.routing.mark_progress import MarkProgress
+from sailrouter.routing.time_schedule import TimeSchedule
+from sailrouter.weather.wind_field import WindField
+
+
+class RoutingError(RuntimeError):
+    """The router cannot go on (start on land, every heading blocked...)."""
+
+
+class IsochroneRouter:
+    """Runs the isochrone method for ONE wind field.
+
+    Each step, vectorised over front points × headings: wind at the parent (start of the step) → best sail
+    and speed → maneuver penalty against the parent's TWA and sail → destination → drop segments that cross
+    land or a forbidden zone → mark progress → prune. Stops at the horizon or when a point finishes.
+    """
+
+    def __init__(
+        self,
+        wind: WindField,
+        speed_model: SpeedModel,
+        penalty: ManeuverPenalty,
+        obstacles: ObstacleChecker,
+        fan: HeadingFan,
+        pruner: IsochronePruner,
+    ) -> None:
+        self._wind = wind
+        self._speed = speed_model
+        self._penalty = penalty
+        self._obstacles = obstacles
+        self._fan = fan
+        self._pruner = pruner
+
+    def run(self, start: GeoPoint, schedule: TimeSchedule, progress: MarkProgress) -> list[Isochrone]:
+        if self._obstacles.blocked([start.lat_deg], [start.lon_deg], [start.lat_deg], [start.lon_deg])[0]:
+            raise RoutingError(f"start position {start} is on land, in a forbidden zone or outside the area")
+        times = schedule.times()
+        fronts = [Isochrone.origin(times[0], start.lat_deg, start.lon_deg)]
+        for begin, end in zip(times, times[1:]):
+            front = self._step(fronts[-1], begin, end, progress)
+            if len(front) == 0:
+                raise RoutingError(f"no reachable position at {end.isoformat()}: every heading is blocked")
+            fronts.append(front)
+            if front.leg.max() >= progress.finished_leg:
+                break
+        return fronts
+
+    def _step(self, front: Isochrone, begin: datetime, end: datetime, progress: MarkProgress) -> Isochrone:
+        step_s = (end - begin).total_seconds()
+        tws, twd = self._wind.wind_at(front.lat_deg, front.lon_deg, begin.timestamp())
+        headings = self._fan.headings_deg[None, :]
+        twa = (twd[:, None] - headings + 180.0) % 360.0 - 180.0
+        tws_grid = np.broadcast_to(tws[:, None], twa.shape)
+        sail, speed = self._speed.best(tws_grid, twa)
+        lost_s = self._penalty.loss_s(front.twa_deg[:, None], front.sail[:, None], twa, sail, tws_grid)
+        distance_nm = speed * np.maximum(step_s - lost_s, 0.0) / 3600.0
+        parent = np.broadcast_to(np.arange(len(front))[:, None], twa.shape).ravel()
+        lat0, lon0 = front.lat_deg[parent], front.lon_deg[parent]
+        heading = np.broadcast_to(headings, twa.shape).ravel()
+        lat1, lon1 = GreatCircle.destination(lat0, lon0, heading, distance_nm.ravel())
+        moving = distance_nm.ravel() > 0
+        free = moving & ~self._obstacles.blocked(lat0, lon0, lat1, lon1)
+        leg = progress.advance(front.leg[parent], lat0, lon0, lat1, lon1)
+        candidates = Isochrone(
+            time=end,
+            lat_deg=lat1[free],
+            lon_deg=lon1[free],
+            parent=parent[free],
+            heading_deg=heading[free],
+            twa_deg=twa.ravel()[free],
+            tws_kn=tws_grid.ravel()[free],
+            sail=sail.ravel()[free],
+            speed_kn=speed.ravel()[free],
+            leg=leg[free],
+        )
+        return self._pruner.prune(candidates, progress)

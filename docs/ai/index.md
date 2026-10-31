@@ -32,7 +32,7 @@ First race: Route du Rhum 2026, Class40 (VR race 844, start 2026-11-01 12:02 UTC
 |---|---|
 | 1. Data verification | done (see [../founder/etape-1-donnees.md](../founder/etape-1-donnees.md)) |
 | 2. Static UI mock-up (FR/EN) | done, waiting for user validation (see [../founder/etape-2-maquette.md](../founder/etape-2-maquette.md)) |
-| 3. Routing POC, one member, CLI | todo |
+| 3. Routing POC, one member, CLI | done: deterministic GFS, Class40, Route du Rhum, `python -m sailrouter route` (see [../founder/etape-3-poc.md](../founder/etape-3-poc.md), decisions D14–D19) |
 | 4. Ensemble + robust synthesis | todo |
 | 5. Wire UI, tests, README FR/EN | todo |
 

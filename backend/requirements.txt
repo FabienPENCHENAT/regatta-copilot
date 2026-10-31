@@ -1,0 +1,4 @@
+numpy>=2.0
+eccodes>=2.40
+shapely>=2.1
+pytest>=8.0

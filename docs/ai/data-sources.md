@@ -67,7 +67,10 @@ start and in Guadeloupe.
 ## GFS deterministic (the game's weather, for the map)
 
 NOMADS filter `filter_gfs_0p25.pl`, `dir=/gfs.YYYYMMDD/HH/atmos`, `file=gfs.tHHz.pgrb2.0p25.fFFF`, hourly to
-f120. Area 0–60°N / 80°W–10°E: ≈ 280 KB per lead time. The 06z run of 2026-10-31 was complete at 13:30 UTC;
+f120 (3-hourly after). Area 0–60°N / 80°W–10°E: ≈ 280 KB per lead time. Response grid: 361 × 241 points, first
+point 0°N / 280°E, 0.25°, `jScansPositively=1` (south to north), messages `10u` and `10v`. A lead time that is not
+published yet answers **HTTP 404** with an HTML page "data file is not present". Used by the router (step 3,
+decision D14). The 06z run of 2026-10-31 was complete at 13:30 UTC;
 the 12z run was not yet.
 
 ## Reference repositories
