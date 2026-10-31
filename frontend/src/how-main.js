@@ -10,7 +10,7 @@ const saved = preferences.read();
 if (saved.theme) document.documentElement.dataset.theme = saved.theme;
 
 const translator = new Translator();
-const page = new HowPage(document.getElementById("how-sections"), translator);
+const page = new HowPage(document.getElementById("run-timeline"), translator);
 const picker = new LanguagePicker(document.getElementById("lang-picker"), (lang) => show(lang));
 
 async function show(lang) {
