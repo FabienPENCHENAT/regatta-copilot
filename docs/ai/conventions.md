@@ -14,7 +14,7 @@
 ## Dependencies between layers
 
 See [architecture.md](architecture.md). Dependencies only point **downwards**:
-`api → ensemble → routing → (weather, polar, geography) → domain`.
+`api / cli → service → ensemble → routing → (weather, polar, geography) → domain`.
 - `domain` imports nothing from the project.
 - `weather`, `polar`, `geography` never import each other.
 - Only `api` knows about HTTP/FastAPI. Only `weather` knows about GRIB/NOMADS.
