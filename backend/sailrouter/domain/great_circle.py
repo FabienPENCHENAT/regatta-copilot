@@ -31,6 +31,16 @@ class GreatCircle:
         return np.degrees(np.arctan2(y, x)) % 360.0
 
     @staticmethod
+    def cross_track_nm(
+        lat1: ArrayLike, lon1: ArrayLike, lat2: ArrayLike, lon2: ArrayLike, lat: ArrayLike, lon: ArrayLike
+    ) -> NDArray:
+        """Signed distance from point (lat, lon) to the great circle 1 → 2 (positive = right of the course)."""
+        d13 = GreatCircle.distance_nm(lat1, lon1, lat, lon) / EARTH_RADIUS_NM
+        theta13 = np.radians(GreatCircle.bearing_deg(lat1, lon1, lat, lon))
+        theta12 = np.radians(GreatCircle.bearing_deg(lat1, lon1, lat2, lon2))
+        return np.arcsin(np.sin(d13) * np.sin(theta13 - theta12)) * EARTH_RADIUS_NM
+
+    @staticmethod
     def destination(
         lat: ArrayLike, lon: ArrayLike, bearing_deg: ArrayLike, distance_nm: ArrayLike
     ) -> tuple[NDArray, NDArray]:

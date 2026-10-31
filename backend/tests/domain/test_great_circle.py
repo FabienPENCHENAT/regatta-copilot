@@ -4,6 +4,13 @@ import pytest
 from sailrouter.domain.great_circle import GreatCircle
 
 
+def test_cross_track_is_signed_positive_right_of_the_course():
+    # course due north along 10°W; one degree of longitude near the equator is ≈ 60 nm
+    assert GreatCircle.cross_track_nm(0.0, -10.0, 10.0, -10.0, 5.0, -9.0) == pytest.approx(59.8, abs=0.3)
+    assert GreatCircle.cross_track_nm(0.0, -10.0, 10.0, -10.0, 5.0, -11.0) == pytest.approx(-59.8, abs=0.3)
+    assert GreatCircle.cross_track_nm(0.0, -10.0, 10.0, -10.0, 5.0, -10.0) == pytest.approx(0.0, abs=1e-6)
+
+
 def test_one_degree_of_latitude_is_sixty_nautical_miles():
     assert GreatCircle.distance_nm(45.0, -10.0, 46.0, -10.0) == pytest.approx(60.04, abs=0.05)
 
