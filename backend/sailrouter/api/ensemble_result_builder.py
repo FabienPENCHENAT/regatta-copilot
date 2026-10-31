@@ -40,8 +40,7 @@ class EnsembleResultBuilder:
                 {"member": member, "option": synthesis.member_options[member],
                  "path": self._writer.hourly_path(route, MEMBER_PATH_DECIMALS),
                  # drawn: every route point, so the thin lines go round zones like the routes really do
-                 "line": [[round(p.lat_deg, MEMBER_PATH_DECIMALS), round(p.lon_deg, MEMBER_PATH_DECIMALS)]
-                          for p in route.points]}
+                 "line": [[round(p.lat_deg, 4), round(p.lon_deg, 4)] for p in route.points]}
                 for member, route in report.member_routes.items()
             ],
             "ideal_route": self._writer.track(game.route),
