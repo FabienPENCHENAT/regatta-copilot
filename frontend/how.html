@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routeur Voile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/app.css">
+<script type="module" src="src/how-main.js"></script>
+</head>
+<body class="how-body">
+<header class="how-bar">
+  <a class="how-back" href="index.html">
+    <svg class="rail-logo" viewBox="0 0 40 40" aria-hidden="true">
+      <path class="facet main-a" d="M19 3 L19 33 L26 21 Z"/>
+      <path class="facet main-b" d="M19 3 L26 21 L34 33 Z"/>
+      <path class="facet main-c" d="M19 33 L26 21 L34 33 Z"/>
+      <path class="facet jib-a" d="M16 9 L16 33 L11 25 Z"/>
+      <path class="facet jib-b" d="M16 9 L11 25 L5 33 Z"/>
+      <path class="facet jib-c" d="M16 33 L11 25 L5 33 Z"/>
+    </svg>
+    <span data-i18n="how.back"></span>
+  </a>
+  <div id="lang-picker" class="lang-picker how-lang" role="group" data-i18n-attr="aria-label:lang.label"></div>
+</header>
+
+<main class="how-page">
+  <h1 class="how-title" data-i18n="how.title"></h1>
+  <p class="how-intro" data-i18n="how.intro"></p>
+  <!-- Isochrones drawn as fronts spreading from the boat towards a mark. -->
+  <svg class="how-figure" viewBox="0 0 640 200" aria-hidden="true">
+    <path class="iso" d="M60 100 m-30 0 a30 30 0 1 0 60 0 a30 30 0 1 0 -60 0"/>
+    <path class="iso" d="M40 100 C40 40 140 30 170 70 C190 100 180 150 140 165 C90 180 40 150 40 100Z"/>
+    <path class="iso" d="M30 100 C30 20 220 10 270 70 C300 110 270 175 200 185 C110 195 30 170 30 100Z"/>
+    <path class="iso" d="M22 100 C22 5 320 0 380 70 C420 120 370 190 270 196 C150 200 22 180 22 100Z"/>
+    <path class="route" d="M60 100 C130 90 200 80 270 72 C330 66 400 72 470 82 C520 90 560 96 590 100"/>
+    <circle class="boat" cx="60" cy="100" r="7"/>
+    <circle class="mark" cx="590" cy="100" r="9"/>
+  </svg>
+  <div id="how-sections" class="how-sections"></div>
+</main>
+</body>
+</html>

@@ -62,8 +62,8 @@ export class RouteLayer {
     const level = confidenceLevel(step.confidence);
     const label = this.translator.t("map.zone", { h: step.hour, confidence: this.translator.t(`confidence.${level}`) });
     L.circle([step.lat, step.lon], {
-      radius: step.zone_radius_nm * NM_IN_METERS, color: this.color(`--conf-${level}`), weight: 1, opacity: 0.6,
-      fillColor: this.color(`--conf-${level}`), fillOpacity: 0.08, interactive: false,
+      radius: step.zone_radius_nm * NM_IN_METERS, color: this.color(`--zone-${level}`), weight: 1, opacity: 0.7,
+      fillColor: this.color(`--zone-${level}`), fillOpacity: 0.1, interactive: false,
     }).addTo(this.#routes);
     const glow = L.divIcon({ className: `zone-glow ${level}`, html: "<span></span>", iconSize: [44, 44] });
     L.marker([step.lat, step.lon], { icon: glow, keyboard: false }).bindTooltip(label).addTo(this.#routes);

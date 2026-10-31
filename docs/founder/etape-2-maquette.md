@@ -106,6 +106,20 @@ Inspirée de ta capture « tableau de bord » :
 - **Lancer le site en local** : `./run.sh` à la racine du projet, puis ouvrir http://localhost:8000. Le script
   affiche aussi l'adresse à ouvrir sur ton téléphone (même Wi-Fi).
 
+## Version 6 : harmonisation (31/10, soir)
+
+- **Adresse du site : http://localhost:8000** (lancé par `./run.sh`). L'aperçu sur claude.ai n'est plus mis à jour.
+- **Couleurs** : tout part du bloc « À régler maintenant ». Les options sont en bleu, menthe et violet. La confiance
+  ne s'affiche plus en feu tricolore, mais par l'intensité du bleu (barres) ou du blanc (points sur la carte).
+- **Scintillement corrigé** : il venait de l'effet verre au-dessus des particules de vent animées. Les panneaux
+  sont désormais opaques.
+- **Écriture** : police Geist, plus moderne. La phrase « Ta route au large… » est supprimée.
+- **Options** : une ligne compacte chacune. Le détail apparaît au survol.
+- **Tuiles** : chiffre en grand, unité en petit. La vitesse a sa propre tuile foncée.
+- **Logo** : grand-voile et foc à facettes. **Réglages** : nouvelle icône en curseurs.
+- **Nouvelle page « Comment ça marche »** (icône « i ») : d'où viennent les données, quand la météo se met à jour,
+  comment une route est calculée, comment naissent les options et leurs probabilités, et les limites de l'outil.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

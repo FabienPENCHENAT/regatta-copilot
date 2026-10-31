@@ -2,6 +2,18 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D23 — Harmonised look, "How it works" page (user feedback, 2026-10-31)
+- Palette built on the "set this now" tiles the user loves: options blue / mint / violet (no red-yellow-green);
+  confidence is the intensity of one blue (bars) and of white (glowing map zones), not a traffic light.
+- Panels are near-opaque without backdrop blur: the blur over the animated wind particles caused a colour
+  shimmer the user noticed on the option cards.
+- Font: Geist + Geist Mono (modern); the italic serif and the tagline are gone; sea names in spaced capitals.
+- Option cards: one compact row each (small ring, name, one short line; details in the tooltip).
+- Tiles: big number + small unit; speed tile in dark ink.
+- Logo: faceted mainsail + jib (the minimal jib was not liked). Settings icon: sliders (the cog looked broken).
+- `how.html`: a page explaining data sources, refresh times, the isochrone method, options and limits (FR/EN).
+- The user now uses the local site (`./run.sh`, http://localhost:8000); the claude.ai preview is no longer updated.
+
 ## D22 — Hosting deferred; local site with `./run.sh` (user choice, 2026-10-31)
 The user wants "a real site" but chose to stay local until the real engine is wired: `./run.sh` serves the
 frontend on port 8000 and prints the LAN address for the phone. It will start FastAPI in step 5. Candidate free
