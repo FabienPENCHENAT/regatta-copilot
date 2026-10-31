@@ -1,6 +1,6 @@
 # Architecture
 
-Status: **planned** (step 1). Classes are created as the steps progress. Keep this page in sync with the code:
+Status: backend core built in step 3 (one GFS member, CLI); `ensemble` and `api` planned. Classes are created as the steps progress. Keep this page in sync with the code:
 when a class is added, renamed or split, update the table.
 
 ## Repository layout
@@ -39,57 +39,90 @@ receives them as constructor arguments.
 
 ## Packages and classes
 
+Backend status: `domain`, `course`, `weather` (deterministic GFS), `polar`, `geography`, `routing` and the CLI
+exist (step 3). `ensemble`, `api` and the GEFS members are still planned (steps 4–5).
+
+Commands (from the repo root):
+```
+/opt/homebrew/bin/python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt -e backend
+.venv/bin/python -m pytest backend          # tests, no network
+.venv/bin/python -m sailrouter route --position "48°43'48\"N 001°54'00\"W" --hours 120
+```
+
 ### `domain` — pure value objects, no I/O
 | Class | Responsibility |
 |---|---|
-| `GeoPoint` | Latitude/longitude pair, normalised. |
-| `GreatCircle` | Distance, initial bearing and destination point on the sphere (vectorised). |
-| `PositionParser` | Turns user text (`46°12'30"N 012°34'10"W`, `46.21, -12.57`, ...) into a `GeoPoint`. |
-| `Mark`, `ExclusionZone`, `Race` | Course definition: ordered marks with passing side, finish, forbidden zones, allowed classes. |
+| `GeoPoint` | Latitude/longitude pair, longitude normalised to [-180, 180). |
+| `GreatCircle` | Distance, initial bearing and destination point on the sphere (vectorised, nm). |
+| `SegmentIntersector` | Planar segment–segment intersection in (lon, lat), vectorised (gates, lines, zones). |
+| `PositionParser` | Turns user text (`46°12'30"N 012°34'10"W`, `46.21, -12.57`, ...) into a `GeoPoint`. Twin of `frontend/src/form/position-parser.js`. |
+| `Mark`, `ExclusionZone`, `RaceBoat`, `Race` | Course definition: ordered marks (gate/line/point/island), finish line, forbidden zones (polygon or line), boats with polar and start line. |
 
 ### `course` — loading races
 | Class | Responsibility |
 |---|---|
-| `RaceCatalog` | Lists and loads `races/*.json` into `Race` objects; validates the file. |
+| `RaceCatalog` | Lists and loads `races/*.json` into `Race` objects; raises `RaceFileError` on a bad file. |
 
 ### `weather` — everything GFS/GEFS
 | Class | Responsibility |
 |---|---|
-| `GfsRunClock` | Which run (00/06/12/18 UTC) is the latest complete one; when the next is expected. |
-| `NomadsClient` | Builds NOMADS grib-filter URLs and downloads one file, throttled, with retries. |
-| `GefsRunDownloader` | Downloads all members × lead times of a run through `NomadsClient`. |
-| `GribDecoder` | GRIB2 bytes → U/V arrays + grid (ecCodes). |
-| `ForecastStore` | On-disk cache of decoded runs (`var/weather/<run>.npz`), one download per run. |
-| `WindField` | Wind for one member: bilinear in space, linear in time → TWS (kn), TWD (deg). Vectorised. |
-| `EnsembleForecast` | The 31 `WindField`s of one run + run metadata. |
+| `ModelRun` | One run: model (`gfs`, later `gefs`) + cycle time; `key` names the cache folder. |
+| `GfsRunClock` | Which run (00/06/12/18 UTC) should be complete (cycle + 5 h); previous run; when the next is expected. |
+| `LeadTimePlan` | Which lead times exist (GFS: hourly to f120, 3-hourly to f384; GEFS: 3-hourly) and which cover a window. |
+| `WeatherArea` | Download box (0–60°N, 80°W–10°E). |
+| `GfsQueryBuilder` | NOMADS grib-filter query (script + params) for one GFS 0.25° lead time, 10 m U/V only. |
+| `NomadsClient` | Downloads one grib-filter file over HTTP/1.1, ≤ 1 request/s, retries with backoff; 404/HTML → `DataNotAvailable`. |
+| `GfsRunDownloader` | Puts the missing lead times of a run into the store; fetches the last one first as a completeness probe. |
+| `ForecastStore` | On-disk cache of raw GRIB files, `var/weather/<run key>/fFFF.grib2`, written atomically. |
+| `GribDecoder` | GRIB2 file → `WindGrid` (ecCodes). |
+| `WindGrid` | U/V (m/s) on a regular lat/lon grid at one valid time. |
+| `WindField` | Wind of ONE forecast: bilinear in space, linear in time on U/V → TWS (kn), TWD (deg). Vectorised. |
+| `GfsWindSource` | The `WindField` of the latest complete GFS run covering a window (falls back to older runs). |
+| `GefsWindSource`, `EnsembleForecast` | Planned (step 4): one `WindField` per GEFS member, same `WindField` class, `GefsQueryBuilder` with a member number. |
 
 ### `polar` — boat performance
 | Class | Responsibility |
 |---|---|
-| `VrPolarParser` | Raw VR `Meta_GetPolar` JSON → `BoatPolar`. |
-| `BoatPolar` | Speed tables per sail; bilinear lookup (TWS, TWA). |
-| `BoatOptions` | Which options the player owns (sail packs, foils, hull, pro winch). |
+| `VrPolarParser` | Raw VR `Meta_GetPolar` JSON → `VrPolar`. |
+| `VrPolar` | Everything a VR polar file holds: `BoatPolar`, `FoilBonus`, hull ratio, `WinchTimings`. |
+| `BoatPolar` | Speed tables per sail; bilinear lookup (TWS, \|TWA\|) for all sails at once. |
+| `FoilBonus` | Foil speed factor (×1.04 in TWA 80–160 / TWS 16–35, linear merge ramps, ramps multiplied). |
+| `WinchTimings`, `ManeuverTiming` | VR `winch` block: timer and speed ratio per maneuver, std/pro, light/heavy wind. |
+| `BoatOptions` | Which options the player owns (light/heavy/reach sail packs, foils, hull, pro winch). All on by default. |
 | `SpeedModel` | Polar × options → best allowed sail and boat speed for many (TWS, TWA) at once. |
-| `ManeuverPenalty` | Time lost on tack, gybe, sail change (V1: fixed, configurable; later: wind and energy). |
+| `ManeuverPenalty` | Seconds lost on tack, gybe, sail change between two states: `timer × (1 − ratio)`, 10–30 kn interpolation, overridable. |
 
 ### `geography` — where the boat may not go
 | Class | Responsibility |
 |---|---|
-| `CoastlineLoader` | Reads the simplified coastline into polygons. |
-| `LandMask` | Fast raster lookup "is this point on land or in a forbidden zone?". |
-| `ObstacleChecker` | Whether a segment between two points crosses land or a forbidden zone. |
+| `CoastlineLoader` | Reads `frontend/map-data/land.geojson` into valid (`make_valid`), oriented polygons. |
+| `RasterGrid` | Regular lat/lon raster geometry: point → cell. |
+| `PolygonRasterizer` | Polygons → bit-packed raster (scanline, non-zero winding, pure numpy, ≈ 0.35 s at 0.005°). |
+| `LandMask` | "Is this point on land?" on the packed raster (outside = land) + coarse dilated "may be near land" raster. |
+| `ZoneCrossingDetector` | Whether segments enter an exclusion zone (polygon: end inside or border crossed from outside; line: touched). |
+| `ObstacleChecker` | Whether segments cross land or a zone: coarse sampling first, fine sampling near coasts only. |
 
 ### `routing` — one wind field, one route
 | Class | Responsibility |
 |---|---|
-| `TimeSchedule` | Step durations: 1 h until T+24 h, 3 h beyond. |
+| `TimeSchedule` | Isochrone times: 1 h steps until T+24 h, 3 h beyond, last step cut at the horizon. |
 | `HeadingFan` | Candidate headings (every 5°) from each front point. |
-| `Isochrone` | One front: points, parent indices, sail, heading, time. |
-| `IsochronePruner` | Keeps the best point per angular sector around the next mark. |
-| `MarkProgress` | Which mark is next for each point; detects mark passing on the correct side. |
-| `IsochroneRouter` | Runs the steps: expand → apply speed and penalties → drop obstacles → prune. |
-| `RouteTracer` | Walks parents back from the best final point → `Route`. |
-| `Route` | Ordered `RoutePoint`s (time, position, heading, TWA, TWS, sail, speed). |
+| `Isochrone` | One front: positions, parent indices, and the arriving segment's heading, TWA, TWS, sail, speed, leg. |
+| `CourseLeg` | One leg: anchor (start / previous mark), target, gate line + crossing direction or waypoint radius. |
+| `MarkProgress` | Legs of the race from a position; detects passing (gate crossed westward, waypoint within 2 nm); distance to go. |
+| `IsochronePruner` | Keeps the most advanced leg, then the farthest point from the leg anchor per 0.5° sector. |
+| `IsochroneRouter` | Runs the steps: wind → best sail/speed → maneuver penalty → destination → drop obstacles → marks → prune. |
+| `RouteTracer` | Picks the best final point (marks passed, then distance to go) and walks parents back → `Route`. |
+| `Route`, `RoutePoint` | Ordered points (time, position, and heading/TWA/TWS/sail/speed of the leg starting there). |
+
+### `cli` — command line (wiring for step 3, until `api` exists)
+| Module | Responsibility |
+|---|---|
+| `main.py` | `python -m sailrouter route ...`: argument parsing, exit codes. |
+| `route_command.py` (`RouteCommand`) | Builds every object (the only place that knows all layers) and runs one route → `RouteReport`. |
+| `route_report.py`, `project_paths.py` | Result of one run; where races, land, polars and `var/` live. |
+| `route_summary_printer.py`, `position_formatter.py` | Text summary at +4/8/12/16/24/48 h in the game's position format. |
+| `route_file_writer.py` | `var/routes/<name>.json` (plan + every point + path) and `<name>.geojson` (LineString + horizon points). |
 
 ### `ensemble` — route options and their probabilities
 The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in place for the weather in

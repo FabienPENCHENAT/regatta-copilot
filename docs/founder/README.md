@@ -7,4 +7,5 @@ manipulations côté jeu. La documentation technique, pour l'IA et les développ
 |---|---|
 | [etape-1-donnees.md](etape-1-donnees.md) | Résultat de l'étape 1 : météo, polaires, parcours, dépôts existants |
 | [etape-2-maquette.md](etape-2-maquette.md) | Résultat de l'étape 2 : la maquette de l'écran et comment la lire |
+| [etape-3-poc.md](etape-3-poc.md) | Résultat de l'étape 3 : premier calcul de route en ligne de commande, et ses limites |
 | [extraire-polaire-vr.md](extraire-polaire-vr.md) | Récupérer toi-même la polaire du jeu, pas à pas |
