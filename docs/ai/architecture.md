@@ -168,7 +168,7 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/chart-basemap.js` | Nautical-chart background from `map-data/` (depth bands, land, coastline). No tile server. |
 | `map/graticule-layer.js`, `map/sea-labels.js` | Degree grid with edge labels; italic sea names (i18n). |
 | `map/course-layer.js` | Race course: start line of the chosen boat, gates, marks (IALA colours), finish, forbidden and vigilance zones. |
-| `map/route-layer.js` | Ideal track to the finish (visual only), member routes, selected option, target zones, boat at the selected hour. |
+| `map/route-layer.js` | Computed track, member routes, selected option with numbered leg markers (same numbers as the plan), boat at the selected hour. |
 | `map/wind-grid.js` | Bilinear wind lookup on a leaflet-velocity grid. |
 | `map/wind-particles-layer.js`, `map/wind-barbs-layer.js` | Wind as animated particles (leaflet-velocity) or as meteorological barbs (canvas). |
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
@@ -178,6 +178,7 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
 | `results/option-list.js` | Option cards with a probability ring. |
+| `results/plan-legs.js` | The legs shown in both the plan and the map (next 48 h), and the leg at a given hour. |
 | `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, wind, duration) over 48 h; a leg selects its hour on the map. |
 | `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |
 | `api/api-client.js`, `api/route-computation.js` | Calls the backend; one computation = route then map wind. |

@@ -13,6 +13,8 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   heading change ≥ 10° from the leg's first heading. Result field `options[].legs`.
 - Polars for IMOCA (`mono/imoca_60_foils`, updated 2026-04-29), Ocean Fifty, Ultim BP XI and Vintage Multi
   (Happy) added from vro.civis.net; every Rhum boat now computes. Changing boat reloads its polar and recomputes.
+- Map markers follow the route plan: one numbered point per leg start (same numbers as the plan rows, shared
+  list from `results/plan-legs.js`); the hourly target-zone glows are gone until the ensemble brings confidence.
 
 ## D28 — Site wired to the engine; options per sail; VR manoeuvre times (user feedback, 2026-10-31)
 - The user may own sails individually (not by pack): `BoatOptions(sails=frozenset, foil, hull, pro_winch)`;

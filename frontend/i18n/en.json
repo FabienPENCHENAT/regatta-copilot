@@ -70,7 +70,7 @@
   "map.zone": "Target area in {h} h ({confidence})",
   "map.legend_option": "Selected option",
   "map.legend_members": "The 31 scenarios",
-  "map.legend_zones": "Target areas",
+  "map.legend_zones": "Change of orders (route plan number)",
   "settings.title": "Settings",
   "settings.penalties": "Manoeuvre times",
   "settings.tack": "Tack",

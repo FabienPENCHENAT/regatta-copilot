@@ -34,7 +34,7 @@ class App {
     this.preferences = new PreferencesStore();
     this.translator = new Translator();
     this.languagePicker = new LanguagePicker(byId("lang-picker"), (lang) => this.changeLanguage(lang));
-    this.map = new RouteMap(byId("map"), this.translator);
+    this.map = new RouteMap(byId("map"), this.translator, { onSelectHour: (hour) => this.update({ hour }) });
     this.mapControls = new MapControls(byId("map-controls"), this.translator, {
       onSelectView: (view) => this.update({ view }),
       onSelectHour: (hour) => this.update({ hour }),
@@ -157,7 +157,7 @@ class App {
     this.nowPanel.render(result, option, this.settings.ownedSails());
     this.optionList.render(result, option.id);
     this.routePlan.render(result, option, hour);
-    this.map.showResult(result, option);
+    this.map.showResult(result, option, hour);
     if (fitMap) this.map.fitView(result, view, measureMapInsets());
     this.map.showBoat(option, hour, (step ?? option.now).heading_deg);
     this.#renderWind(hour, windMode, view);

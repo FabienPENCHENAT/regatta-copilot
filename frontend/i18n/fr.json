@@ -70,7 +70,7 @@
   "map.zone": "Zone à viser dans {h} h ({confidence})",
   "map.legend_option": "Option choisie",
   "map.legend_members": "Les 31 scénarios",
-  "map.legend_zones": "Zones à viser",
+  "map.legend_zones": "Changement d'ordre (n° de la feuille de route)",
   "settings.title": "Réglages",
   "settings.penalties": "Temps de manœuvre",
   "settings.tack": "Virement",

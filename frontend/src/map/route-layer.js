@@ -1,9 +1,9 @@
-// Routes of a result: the 31 scenarios (thin), the selected option (thick), its target areas
-// coloured by confidence, and the boat drawn where it should be at the selected hour.
+// Routes of a result: the computed track, the scenario routes (thin), the selected option (thick) with a
+// numbered point at each change of orders (same numbers as the route plan), and the boat at the selected hour.
 
-import { confidenceLevel } from "../results/display-format.js";
+import { formatHeading } from "../results/display-format.js";
+import { legAt, planLegs } from "../results/plan-legs.js";
 
-const NM_IN_METERS = 1852;
 const BOAT_SVG = `<svg viewBox="-12 -12 24 24" width="28" height="28" aria-hidden="true">
   <path d="M0 -10 C5 -4 5 4 3.5 9 L-3.5 9 C-5 4 -5 -4 0 -10 Z"/></svg>`;
 
@@ -11,14 +11,15 @@ export class RouteLayer {
   #routes;
   #boat;
 
-  constructor(map, translator, colors) {
+  constructor(map, translator, colors, onSelectHour) {
     this.translator = translator;
     this.color = colors;
+    this.onSelectHour = onSelectHour;
     this.#routes = L.layerGroup().addTo(map);
     this.#boat = L.layerGroup().addTo(map);
   }
 
-  render(result, option) {
+  render(result, option, hour) {
     this.#routes.clearLayers();
     this.#idealRoute(result.ideal_route);
     const routeIndex = new Map(result.options.map((o, i) => [o.id, i + 1]));
@@ -27,9 +28,24 @@ export class RouteLayer {
         color: this.color(`--route-${routeIndex.get(member.option)}`), weight: 1.4, opacity: 0.4, interactive: false,
       }).addTo(this.#routes);
     }
-    option.steps.forEach((step) => this.#zone(step));
     L.polyline(option.path, { color: this.color(`--route-${routeIndex.get(option.id)}`), weight: 5, opacity: 0.95 })
       .addTo(this.#routes);
+    this.#legMarkers(option, hour);
+  }
+
+  #legMarkers(option, hour) {
+    const legs = planLegs(option);
+    const current = legAt(legs, hour);
+    legs.forEach((leg, index) => {
+      const icon = L.divIcon({
+        className: `leg-marker${leg === current ? " current" : ""}`, html: `<span>${index + 1}</span>`, iconSize: [24, 24],
+      });
+      const label = `${index + 1} · ${formatHeading(leg.heading_deg)} · ${this.translator.t(`sail.${leg.sail}`)}`;
+      L.marker([leg.lat, leg.lon], { icon, keyboard: false, zIndexOffset: leg === current ? 500 : 0 })
+        .bindTooltip(label)
+        .on("click", () => this.onSelectHour(Math.floor(leg.start_hour)))
+        .addTo(this.#routes);
+    });
   }
 
   // The option path holds one point per hour from the start.
@@ -60,17 +76,4 @@ export class RouteLayer {
       .addTo(this.#routes);
   }
 
-  // Target area: a faint circle of the zone size plus a glowing dot coloured by confidence.
-  #zone(step) {
-    const level = confidenceLevel(step.confidence) ?? "high";
-    const label = step.confidence === null
-      ? this.translator.t("map.zone_simple", { h: step.hour })
-      : this.translator.t("map.zone", { h: step.hour, confidence: this.translator.t(`confidence.${level}`) });
-    L.circle([step.lat, step.lon], {
-      radius: step.zone_radius_nm * NM_IN_METERS, color: this.color(`--zone-${level}`), weight: 1, opacity: 0.7,
-      fillColor: this.color(`--zone-${level}`), fillOpacity: 0.1, interactive: false,
-    }).addTo(this.#routes);
-    const glow = L.divIcon({ className: `zone-glow ${level}`, html: "<span></span>", iconSize: [44, 44] });
-    L.marker([step.lat, step.lon], { icon: glow, keyboard: false }).bindTooltip(label).addTo(this.#routes);
-  }
 }

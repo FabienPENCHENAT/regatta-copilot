@@ -1,10 +1,9 @@
 // Route plan of the selected option as a list of orders: each leg keeps one heading and one sail until the
-// next change (heading, sail, tack or gybe). Shows the next 48 h; tapping a leg shows its start on the map.
+// next change (heading, sail, tack or gybe). Numbered like the points on the map; tapping a leg shows it there.
 
 import { describeTwa, formatCoordinates, formatHeading, formatKnots, formatLocalTime, formatNumber } from "./display-format.js";
+import { legAt, planLegs } from "./plan-legs.js";
 import { element } from "../dom.js";
-
-const PLAN_HORIZON_H = 48;
 
 export class RoutePlanList {
   constructor(container, translator, onSelectHour) {
@@ -18,14 +17,14 @@ export class RoutePlanList {
     const head = element("div", "panel-head");
     head.append(element("h2", "panel-title", t("timeline.title", { option: t(`option.name.${option.id}`) })),
       element("span", "panel-subtitle", t("timeline.caption")));
-    const legs = option.legs.filter((leg) => leg.start_hour < PLAN_HORIZON_H);
-    const current = legs.findLast((leg) => leg.start_hour <= selectedHour);
+    const legs = planLegs(option);
+    const current = legAt(legs, selectedHour);
     const list = element("ol", "plan-list");
-    legs.forEach((leg) => list.append(this.#leg(result, leg, leg === current)));
+    legs.forEach((leg, index) => list.append(this.#leg(result, leg, index + 1, leg === current)));
     this.container.replaceChildren(head, list);
   }
 
-  #leg(result, leg, selected) {
+  #leg(result, leg, number, selected) {
     const t = (key, params) => this.translator.t(key, params);
     const lang = this.translator.lang;
     const twa = describeTwa(leg.twa_deg);
@@ -37,6 +36,7 @@ export class RoutePlanList {
 
     const when = element("span", "plan-when");
     when.append(
+      element("span", "plan-number", String(number)),
       element("span", "plan-hours", leg.start_hour === 0 ? t("wind.time_start") : t("wind.time_plus", { h: formatNumber(leg.start_hour, lang, 0) })),
       element("span", "plan-time", formatLocalTime(result.computed_at, leg.start_hour, lang)),
     );

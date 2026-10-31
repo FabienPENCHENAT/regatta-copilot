@@ -17,7 +17,7 @@ const VIEW_HOURS = { day: 24, near: 48 }; // member paths hold one point per hou
 export class RouteMap {
   #map;
 
-  constructor(container, translator) {
+  constructor(container, translator, { onSelectHour }) {
     // No zoom buttons: panels cover the corners; wheel, pinch and double-click zoom instead.
     this.#map = L.map(container, { zoomSnap: 0.5, minZoom: 3, maxZoom: 11, zoomControl: false });
     this.#map.setView([47, -5], 6);
@@ -26,7 +26,7 @@ export class RouteMap {
     this.graticule = new GraticuleLayer(this.#map, color);
     this.seaLabels = new SeaLabels(this.#map, translator);
     this.course = new CourseLayer(this.#map, translator, color);
-    this.routes = new RouteLayer(this.#map, translator, color);
+    this.routes = new RouteLayer(this.#map, translator, color, onSelectHour);
     this.particles = new WindParticlesLayer(this.#map, color);
     this.barbs = new WindBarbsLayer(this.#map, color);
   }
@@ -41,8 +41,8 @@ export class RouteMap {
     this.course.render(race, boatId);
   }
 
-  showResult(result, option) {
-    this.routes.render(result, option);
+  showResult(result, option, hour) {
+    this.routes.render(result, option, hour);
   }
 
   // "day" / "near": all scenario routes over the next 24 h / 48 h; "race": the whole ideal track to the finish.
