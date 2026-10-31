@@ -14,6 +14,7 @@ from sailrouter.geography.obstacle_checker import ObstacleChecker
 from sailrouter.geography.polygon_rasterizer import PolygonRasterizer
 from sailrouter.geography.raster_grid import RasterGrid
 from sailrouter.geography.zone_crossing_detector import ZoneCrossingDetector
+from sailrouter.geography.zone_margin import ZoneMargin
 from sailrouter.polar.boat_options import BoatOptions
 from sailrouter.polar.maneuver_penalty import ManeuverPenalty
 from sailrouter.polar.speed_model import SpeedModel
@@ -28,6 +29,7 @@ from sailrouter.weather.wind_field import WindField
 
 WEATHER_AREA = WeatherArea(south_deg=0.0, north_deg=60.0, west_deg=-80.0, east_deg=10.0)
 LAND_RESOLUTION_DEG = 0.005  # ≈ 550 m × 370 m at 48°N: keeps the 1 nm wide Fréhel gate open
+ZONE_MARGIN_NM = 1.0  # same safety margin around the race's exclusion zones (D53)
 COAST_MARGIN_NM = 1.0  # routes keep this far from Natural Earth's coast, which differs from the game's (D46)
 
 
@@ -52,7 +54,11 @@ class RouterBuilder:
         widened = GateCorridors(COAST_MARGIN_NM).open(grid, self._widened_land(grid, packed), packed,
                                                       [*race.marks, race.finish])
         margin = LandMask(grid, widened)
-        return ObstacleChecker(LandMask(grid, packed), ZoneCrossingDetector(race.exclusion_zones), margin)
+        # The widened zones may not be entered; the original ones stay, so a boat inside a margin still never
+        # crosses the zone itself (a forbidden line becomes a corridor whose middle remains uncrossable).
+        widened = ZoneMargin(ZONE_MARGIN_NM).widen(race.exclusion_zones, [*race.marks, race.finish])
+        zones = [*race.exclusion_zones, *(w for w, z in zip(widened, race.exclusion_zones) if w is not z)]
+        return ObstacleChecker(LandMask(grid, packed), ZoneCrossingDetector(zones), margin)
 
     def _widened_land(self, grid: RasterGrid, packed: np.ndarray) -> np.ndarray:
         """The land raster widened by the coast margin, kept on disk (a few seconds to build, then shared by the

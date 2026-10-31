@@ -24,7 +24,7 @@ export class RouteLayer {
     this.#idealRoute(result.ideal_route);
     const routeIndex = new Map(result.options.map((o, i) => [o.id, i + 1]));
     for (const member of result.members) {
-      L.polyline(member.path, {
+      L.polyline(member.line ?? member.path, {
         color: this.color(`--route-${routeIndex.get(member.option)}`), weight: 1.4, opacity: 0.4, interactive: false,
       }).addTo(this.#routes);
     }

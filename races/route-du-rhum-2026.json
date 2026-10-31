@@ -185,7 +185,7 @@
    "note": "Landfall buoy position official (SI), rounded to port: line from the buoy eastward, crossed northward (the buoy stays on the boat's port side)."
   }
  ],
- "course_note": "No Cap Fréhel gate in the game (none on the VR chart, unlike the real race SI): straight to Guadeloupe, rounded leaving it to port (SI annex 3).",
+ "course_note": "No Cap Fréhel gate in the game (none on the VR chart, unlike the real race SI): straight to Guadeloupe, rounded leaving it to port (SI annex 3). The spectator-boat limit line of the real race (\"plaisanciers\", crossing the game's start line) is not in the game either: removed.",
  "finish": {
   "line": [
    [
@@ -201,39 +201,6 @@
   "status": "official"
  },
  "exclusion_zones": [
-  {
-   "id": "plaisanciers",
-   "name": "Plaisanciers",
-   "kind": "spectators",
-   "shape": "line",
-   "points": [
-    [
-     48.683333,
-     -2.391667
-    ],
-    [
-     48.695,
-     -2.333333
-    ],
-    [
-     48.680583,
-     -2.326833
-    ],
-    [
-     48.684833,
-     -2.314833
-    ],
-    [
-     48.714167,
-     -1.970333
-    ],
-    [
-     48.731667,
-     -1.835
-    ]
-   ],
-   "note": "Boundary line closed by the coast (start area). Treated as a line that must not be crossed."
-  },
   {
    "id": "wind_farm_saint_brieuc",
    "name": "Parc éolien de Saint-Brieuc",

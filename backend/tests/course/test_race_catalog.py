@@ -19,8 +19,8 @@ def test_loads_the_route_du_rhum():
     assert gate.points[0].lat_deg == pytest.approx(16.380833)  # [lat, lon] order
     assert race.finish.kind == "line" and race.finish.cross == "northward"
     shapes = {zone.shape for zone in race.exclusion_zones}
-    assert shapes == {"polygon", "line"}
-    assert len(race.exclusion_zones) == 22
+    assert shapes == {"polygon"}  # the spectator line of the real race is not in the game
+    assert len(race.exclusion_zones) == 21
 
 
 def test_lists_race_ids():

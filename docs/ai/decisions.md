@@ -2,6 +2,17 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D53 — 1 nm margin around exclusion zones; scenario lines drawn through every point (user, 2026-10-31)
+- User: zones must keep the same 1 nm safety margin as the coast. `geography/ZoneMargin` buffers every zone
+  (local flat projection, shapely, 4 segments per quarter circle): polygons grow, a forbidden line becomes a
+  corridor. Zones whose widened shape would touch a course gate/line keep their shape (Guadeloupe stadium and
+  AGOA zones, near the finish). The ORIGINAL zones are kept too, so a boat starting inside a margin can leave
+  it but never cross the zone itself. No measurable cost per member.
+- What looked like crossings: the 31 thin scenario lines were drawn hourly and cut through the Saint-Brieuc
+  wind farm (12/31) while their routes go round it. Members now carry `line` (every point), which the map draws.
+- The real race's spectator line ("plaisanciers"), crossing the game's start line and absent from the game
+  chart, is removed from the race file (21 zones).
+
 ## D52 — The game's course: no Cap Fréhel gate, start line west of Saint-Malo (user, 2026-10-31)
 - Game screenshot (IMOCA, start): the boat sits at ≈ 48°43.1'N 002°08.6'W, the north end of a ≈ 1.5 nm
   north–south start line (grey bar to a green buoy); Cap Fréhel is on screen with NO gate or buoy. The real
