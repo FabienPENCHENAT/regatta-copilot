@@ -128,5 +128,13 @@
   "view.near": "48 h",
   "view.race": "Course entière",
   "map.ideal_route": "Tracé idéal jusqu'à l'arrivée (≈ {distance} milles)",
-  "map.legend_ideal": "Tracé idéal jusqu'à l'arrivée"
+  "map.legend_ideal": "Tracé idéal jusqu'à l'arrivée",
+  "form.greeting": "Bonne route, skipper",
+  "rail.label": "Panneaux",
+  "rail.route": "Ma course",
+  "rail.plan": "Feuille de route",
+  "rail.options": "Options et réglages du moment",
+  "settings.close": "Fermer les réglages",
+  "option.ring_caption": "de chances",
+  "map.legend_title": "Légende et sources"
 }

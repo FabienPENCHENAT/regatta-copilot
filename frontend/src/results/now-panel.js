@@ -1,7 +1,8 @@
-// "Set this now": heading, sail and wind for the recommended option, plus the advice sentence.
+// "Set this now" for the recommended option: colour tiles for heading and sail (what you type in the game),
+// plain tiles for wind and speed, then the advice sentence.
 
 import { describeTwa, formatHeading, formatKnots } from "./display-format.js";
-import { labelWithTip } from "./term-tip.js";
+import { createTermTip } from "./term-tip.js";
 import { element } from "../dom.js";
 
 export class NowPanel {
@@ -13,32 +14,30 @@ export class NowPanel {
   render(result) {
     const t = (key, params) => this.translator.t(key, params);
     const option = result.options.find((o) => o.id === result.recommended_option);
-    const first = option.now;
-    const twa = describeTwa(first.twa_deg);
+    const now = option.now;
+    const twa = describeTwa(now.twa_deg);
 
-    const title = element("h2", "now-title", t("now.title"));
-    const subtitle = element("p", "now-subtitle", t("now.for_option", { option: t(`option.name.${option.id}`) }));
-    const figures = element("dl", "now-figures");
-    figures.append(
-      figure(labelWithTip(this.translator, "label.heading", "tip.heading"), formatHeading(first.heading_deg), "heading"),
-      figure(t("label.sail"), t(`sail.${first.sail}`), "big"),
-      figure(labelWithTip(this.translator, "label.twa", "tip.twa"), `${twa.angle} ${t(twa.tackKey)}`),
-      figure(labelWithTip(this.translator, "label.tws", "tip.tws"), formatKnots(first.tws_kn, this.translator)),
-      figure(t("label.speed"), formatKnots(first.speed_kn, this.translator)),
+    const head = element("div", "panel-head");
+    head.append(element("h2", "panel-title", t("now.title")),
+      element("span", "panel-subtitle", t("now.for_option", { option: t(`option.name.${option.id}`) })));
+    const tiles = element("div", "tiles");
+    tiles.append(
+      this.#tile("tile-heading", t("label.heading"), formatHeading(now.heading_deg), "tip.heading"),
+      this.#tile("tile-sail", t("label.sail"), t(`sail.${now.sail}`)),
+      this.#tile("tile-plain", t("label.tws"), formatKnots(now.tws_kn, this.translator), "tip.tws",
+        `${t("label.twa")} ${twa.angle} ${t(twa.tackKey)}`),
+      this.#tile("tile-plain", t("label.speed"), formatKnots(now.speed_kn, this.translator)),
     );
-    const advice = element("p", "now-advice", t(result.advice.key, this.#adviceParams(result.advice.params)));
-    this.container.replaceChildren(title, subtitle, figures, advice);
+    const advice = element("p", "advice", t(result.advice.key, { ...result.advice.params, direction: { key: `direction.${result.advice.params.option}` } }));
+    this.container.replaceChildren(head, tiles, advice);
   }
 
-  #adviceParams(params) {
-    return { ...params, direction: { key: `direction.${params.option}` } };
+  #tile(className, label, value, tipKey = null, detail = "") {
+    const tile = element("div", `tile ${className}`);
+    const labelRow = element("span", "tile-label", label);
+    if (tipKey) labelRow.append(createTermTip(this.translator, tipKey));
+    tile.append(labelRow, element("span", "tile-value", value));
+    if (detail) tile.append(element("span", "tile-detail", detail));
+    return tile;
   }
-}
-
-function figure(label, value, size = "") {
-  const wrapper = element("div", `now-figure ${size}`.trim());
-  const dt = element("dt");
-  dt.append(label);
-  wrapper.append(dt, element("dd", "", value));
-  return wrapper;
 }

@@ -78,6 +78,23 @@ marine avec le vent, un style plus marin, et un point de départ au bon endroit.
   bleu océan, lagon turquoise, corail, soleil, sable. La nuit, c'est l'océan profond.
 - Le tracé recommandé est désormais corail, comme le bouton principal et le bateau.
 
+## Version 4 : la carte au centre (31/10)
+
+Inspirée de ta capture « tableau de bord » :
+- **La carte occupe tout l'écran.** Les panneaux flottent dessus, en verre dépoli. Mer bleu-gris, terre claire,
+  noms des mers en italique.
+- **Barre d'icônes à gauche** (en bas sur téléphone) : chaque icône affiche ou masque un panneau pour libérer la
+  carte. La roue dentée ouvre les réglages, en fenêtre.
+- **En haut à gauche** : « Bonne route, skipper » et la saisie (course, bateau, position).
+- **En haut à droite** : les contrôles de la carte (48 h ou course entière, heure, vent animé ou barbules), la
+  légende repliable, puis la feuille de route en liste compacte avec une barre de confiance colorée par étape.
+- **En bas** : « À régler maintenant » en tuiles (cap en bleu, voile en vert, vent et vitesse en blanc) et les
+  options avec un anneau de probabilité.
+- **Sur la carte** : les zones à viser deviennent des points lumineux qui pulsent doucement, en vert, orange ou
+  rouge selon la confiance.
+- Sur téléphone, la carte occupe la moitié haute et les panneaux défilent par-dessus.
+- Le style « manga » et le fond portulan de la version 3 ont été retirés.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

@@ -120,9 +120,10 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `map/wind-grid.js` | Bilinear wind lookup on a leaflet-velocity grid. |
 | `map/wind-particles-layer.js`, `map/wind-barbs-layer.js` | Wind as animated particles (leaflet-velocity) or as meteorological barbs (canvas). |
 | `map/map-controls.js`, `map/map-style.js` | View (48 h / whole race), hour chips, particles/barbs toggle, knots legend; pane stack and theme colours. |
-| `results/now-panel.js` | "Set this now": heading, sail, TWA, TWS, speed + advice sentence. |
-| `results/option-list.js` | Option cards with probability. |
-| `results/timeline-table.js` | Route plan table (cards on phones). |
+| `layout/panel-rail.js`, `layout/map-insets.js` | Icon rail that shows/hides the floating panels and opens settings; measures the screen area the panels cover so the map frames routes in the free space. |
+| `results/now-panel.js` | "Set this now": colour tiles (heading, sail) and plain tiles (wind, speed) + advice sentence. |
+| `results/option-list.js` | Option cards with a probability ring. |
+| `results/route-plan-list.js` | Route plan as a compact list with confidence bars; a step selects the hour on the map. |
 | `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |
 | `api/mock-api.js` | Mock-up stand-in; replaced by an `ApiClient` with the same interface in step 5. |
 

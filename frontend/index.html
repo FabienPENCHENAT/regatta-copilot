@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Dela+Gothic+One&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500&family=Libre+Caslon+Text:ital@1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&family=Libre+Caslon+Text:ital@1&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="styles/app.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -15,51 +15,39 @@
 <script type="module" src="src/main.js"></script>
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <svg class="brand-rose" viewBox="-50 -50 100 100" aria-hidden="true">
-        <circle r="46" class="rose-ring"/>
-        <circle r="38" class="rose-ring thin"/>
-        <path class="rose-point" d="M0 -46 L7 -7 L0 0 Z M0 46 L-7 7 L0 0 Z M46 0 L7 7 L0 0 Z M-46 0 L-7 -7 L0 0 Z"/>
-        <path class="rose-point light" d="M0 -46 L-7 -7 L0 0 Z M0 46 L7 7 L0 0 Z M46 0 L7 -7 L0 0 Z M-46 0 L-7 7 L0 0 Z"/>
-        <path class="rose-point minor" d="M28 -28 L4 -4 L0 0 Z M-28 28 L-4 4 L0 0 Z M28 28 L4 4 L0 0 Z M-28 -28 L-4 -4 L0 0 Z"/>
-      </svg>
-      <div class="brand-text">
-        <span class="brand-name" data-i18n="app.title"></span>
-        <span class="brand-tagline" data-i18n="app.tagline"></span>
-      </div>
-    </div>
+<!-- The chart is the page: every panel floats over it. -->
+<div id="map" class="map" data-i18n-attr="aria-label:map.title" role="region"></div>
+
+<nav class="rail" data-i18n-attr="aria-label:rail.label">
+  <svg class="rail-logo" viewBox="-50 -50 100 100" aria-hidden="true">
+    <circle r="46" class="rose-ring"/>
+    <path class="rose-point" d="M0 -46 L8 -8 L0 0 Z M0 46 L-8 8 L0 0 Z M46 0 L8 8 L0 0 Z M-46 0 L-8 -8 L0 0 Z"/>
+    <path class="rose-point light" d="M0 -46 L-8 -8 L0 0 Z M0 46 L8 8 L0 0 Z M46 0 L8 -8 L0 0 Z M-46 0 L-8 8 L0 0 Z"/>
+  </svg>
+  <div class="rail-group">
+    <button type="button" class="rail-button" data-panel="route-form" data-i18n-attr="aria-label:rail.route;title:rail.route">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/></svg>
+    </button>
+    <button type="button" class="rail-button" data-panel="plan" data-i18n-attr="aria-label:rail.plan;title:rail.plan">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></svg>
+    </button>
+    <button type="button" class="rail-button" data-panel="dock" data-i18n-attr="aria-label:rail.options;title:rail.options">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V12M12 12 5 4M12 12l7-8M5 4v4M5 4h4M19 4v4M19 4h-4"/></svg>
+    </button>
+  </div>
+  <div class="rail-group rail-bottom">
+    <button type="button" id="settings-open" class="rail-button" data-i18n-attr="aria-label:settings.title;title:settings.title">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+    </button>
     <div id="lang-picker" class="lang-picker" role="group" data-i18n-attr="aria-label:lang.label"></div>
   </div>
-  <!-- Line-art waves with curling crests and spray, drifting slowly (static with reduced motion). -->
-  <div class="wave-band" aria-hidden="true">
-    <svg class="wave-track" height="64" preserveAspectRatio="none">
-      <defs>
-        <pattern id="wave-back" width="180" height="64" patternUnits="userSpaceOnUse">
-          <path class="wave-back" d="M0 34 Q45 16 90 34 T180 34 V64 H0 Z"/>
-        </pattern>
-        <pattern id="wave-front" width="180" height="64" patternUnits="userSpaceOnUse">
-          <path class="wave-front" d="M0 46 C20 46 30 26 52 24 C70 22 78 36 66 40 C58 43 53 35 60 32 C70 28 82 46 104 48 C128 50 150 44 180 46 V64 H0 Z"/>
-          <path class="wave-crest" d="M0 46 C20 46 30 26 52 24 C70 22 78 36 66 40 C58 43 53 35 60 32 C70 28 82 46 104 48 C128 50 150 44 180 46"/>
-          <circle class="spray" cx="46" cy="16" r="2.2"/>
-          <circle class="spray" cx="57" cy="11" r="1.6"/>
-          <circle class="spray" cx="38" cy="12" r="1.3"/>
-          <circle class="spray" cx="66" cy="17" r="1.2"/>
-          <circle class="spray" cx="51" cy="5" r="1"/>
-        </pattern>
-      </defs>
-      <rect class="wave-layer back" width="100%" height="64" fill="url(#wave-back)"/>
-      <rect class="wave-layer front" width="100%" height="64" fill="url(#wave-front)"/>
-    </svg>
-  </div>
-</header>
+</nav>
 
-<p class="mock-banner" data-i18n="mock.banner"></p>
-
-<main class="layout">
-  <form id="route-form" class="card form-card" novalidate>
-    <h1 class="form-title" data-i18n="form.title"></h1>
+<main class="overlay">
+  <form id="route-form" class="glass panel form-panel" novalidate>
+    <p class="greeting" data-i18n="form.greeting"></p>
+    <h1 class="race-title" data-i18n="race.route-du-rhum-2026"></h1>
+    <p class="tagline" data-i18n="app.tagline"></p>
     <div class="form-row">
       <label class="field">
         <span class="field-label" data-i18n="form.race"></span>
@@ -79,63 +67,64 @@
     <button id="submit" class="submit" type="submit"></button>
   </form>
 
-  <section id="now-panel" class="card now-panel" aria-live="polite"></section>
+  <div class="tools">
+    <div id="map-controls" class="glass map-controls"></div>
+    <details class="glass legend-panel">
+      <summary data-i18n="map.legend_title"></summary>
+      <ul class="map-legend">
+        <li><span class="legend-ideal"></span><span data-i18n="map.legend_ideal"></span></li>
+        <li><span class="legend-line thick"></span><span data-i18n="map.legend_option"></span></li>
+        <li><span class="legend-line thin"></span><span data-i18n="map.legend_members"></span></li>
+        <li><span class="legend-zone"></span><span data-i18n="map.legend_zones"></span></li>
+        <li><span class="legend-restricted"></span><span data-i18n="map.legend_course"></span></li>
+      </ul>
+      <p id="wind-source" class="fine-print"></p>
+      <p id="weather-status" class="fine-print"></p>
+      <p class="fine-print mock-note" data-i18n="mock.banner"></p>
+      <p class="fine-print" data-i18n="disclaimer"></p>
+      <p class="fine-print" data-i18n="credits"></p>
+    </details>
+    <section id="plan" class="glass panel plan-panel"></section>
+  </div>
 
-  <section class="map-section" data-i18n-attr="aria-label:map.title">
-    <div class="map-frame">
-      <div id="map" class="map"></div>
-    </div>
-    <div id="map-controls" class="map-controls"></div>
-    <ul class="map-legend">
-      <li><span class="legend-ideal"></span><span data-i18n="map.legend_ideal"></span></li>
-      <li><span class="legend-line thick"></span><span data-i18n="map.legend_option"></span></li>
-      <li><span class="legend-line thin"></span><span data-i18n="map.legend_members"></span></li>
-      <li><span class="legend-zone"></span><span data-i18n="map.legend_zones"></span></li>
-      <li><span class="legend-restricted"></span><span data-i18n="map.legend_course"></span></li>
-    </ul>
-    <p id="wind-source" class="weather-status"></p>
-    <p id="weather-status" class="weather-status"></p>
-  </section>
-
-  <section id="options" class="options"></section>
-
-  <section id="timeline" class="timeline-section"></section>
-
-  <details class="card settings">
-    <summary data-i18n="settings.title"></summary>
-    <div class="settings-body">
-      <fieldset>
-        <legend data-i18n="settings.boat_options"></legend>
-        <label class="check"><input id="opt-foils" type="checkbox" checked><span data-i18n="settings.foils"></span></label>
-        <label class="check"><input id="opt-heavy" type="checkbox" checked><span data-i18n="settings.heavy"></span></label>
-        <label class="check"><input id="opt-light" type="checkbox" checked><span data-i18n="settings.light"></span></label>
-        <label class="check"><input id="opt-reach" type="checkbox" checked><span data-i18n="settings.reach"></span></label>
-        <label class="check"><input id="opt-winch" type="checkbox" checked><span data-i18n="settings.winch"></span></label>
-        <label class="check"><input id="opt-hull" type="checkbox" checked><span data-i18n="settings.hull"></span></label>
-      </fieldset>
-      <fieldset>
-        <legend data-i18n="settings.penalties"></legend>
-        <div class="penalties">
-          <label class="field"><span class="field-label" data-i18n="settings.tack"></span><input id="pen-tack" type="number" min="0" step="0.5" value="3"></label>
-          <label class="field"><span class="field-label" data-i18n="settings.gybe"></span><input id="pen-gybe" type="number" min="0" step="0.5" value="3"></label>
-          <label class="field"><span class="field-label" data-i18n="settings.sail_change"></span><input id="pen-sail" type="number" min="0" step="0.5" value="4"></label>
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend data-i18n="settings.polar"></legend>
-        <p class="polar-note" data-i18n="settings.polar_current"></p>
-        <label class="field">
-          <span class="field-label" data-i18n="settings.polar_import"></span>
-          <input id="polar-file" type="file" accept="application/json,.json">
-        </label>
-      </fieldset>
-    </div>
-  </details>
+  <div id="dock" class="dock">
+    <section id="now-panel" class="glass panel now-panel" aria-live="polite"></section>
+    <section id="options" class="options"></section>
+  </div>
 </main>
 
-<footer class="footer">
-  <p data-i18n="disclaimer"></p>
-  <p data-i18n="credits"></p>
-</footer>
+<dialog id="settings" class="glass settings">
+  <form method="dialog" class="settings-head">
+    <h2 class="panel-title" data-i18n="settings.title"></h2>
+    <button class="close-button" data-i18n-attr="aria-label:settings.close">×</button>
+  </form>
+  <div class="settings-body">
+    <fieldset>
+      <legend data-i18n="settings.boat_options"></legend>
+      <label class="check"><input id="opt-foils" type="checkbox" checked><span data-i18n="settings.foils"></span></label>
+      <label class="check"><input id="opt-heavy" type="checkbox" checked><span data-i18n="settings.heavy"></span></label>
+      <label class="check"><input id="opt-light" type="checkbox" checked><span data-i18n="settings.light"></span></label>
+      <label class="check"><input id="opt-reach" type="checkbox" checked><span data-i18n="settings.reach"></span></label>
+      <label class="check"><input id="opt-winch" type="checkbox" checked><span data-i18n="settings.winch"></span></label>
+      <label class="check"><input id="opt-hull" type="checkbox" checked><span data-i18n="settings.hull"></span></label>
+    </fieldset>
+    <fieldset>
+      <legend data-i18n="settings.penalties"></legend>
+      <div class="penalties">
+        <label class="field"><span class="field-label" data-i18n="settings.tack"></span><input id="pen-tack" type="number" min="0" step="0.5" value="3"></label>
+        <label class="field"><span class="field-label" data-i18n="settings.gybe"></span><input id="pen-gybe" type="number" min="0" step="0.5" value="3"></label>
+        <label class="field"><span class="field-label" data-i18n="settings.sail_change"></span><input id="pen-sail" type="number" min="0" step="0.5" value="4"></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend data-i18n="settings.polar"></legend>
+      <p class="fine-print" data-i18n="settings.polar_current"></p>
+      <label class="field">
+        <span class="field-label" data-i18n="settings.polar_import"></span>
+        <input id="polar-file" type="file" accept="application/json,.json">
+      </label>
+    </fieldset>
+  </div>
+</dialog>
 </body>
 </html>

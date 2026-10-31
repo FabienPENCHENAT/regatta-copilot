@@ -46,25 +46,26 @@ export class RouteLayer {
       .addTo(this.#boat);
   }
 
-  // Whole track to the finish, for the eye only: a highlighter stroke under a dashed ink line.
+  // Whole track to the finish, for the eye only: a soft halo under a dashed line.
   #idealRoute(ideal) {
     if (!ideal) return;
     const label = this.translator.t("map.ideal_route", { distance: Math.round(ideal.distance_nm).toLocaleString(this.translator.lang) });
-    L.polyline(ideal.path, { color: this.color("--highlighter"), weight: 9, opacity: 0.7, interactive: false })
+    L.polyline(ideal.path, { color: this.color("--ideal-halo"), weight: 8, opacity: 0.55, interactive: false })
       .addTo(this.#routes);
-    L.polyline(ideal.path, { color: this.color("--ink"), weight: 2, dashArray: "8 6" })
+    L.polyline(ideal.path, { color: this.color("--ideal-line"), weight: 2, dashArray: "8 6" })
       .bindTooltip(label, { sticky: true })
       .addTo(this.#routes);
   }
 
+  // Target area: a faint circle of the zone size plus a glowing dot coloured by confidence.
   #zone(step) {
     const level = confidenceLevel(step.confidence);
     const label = this.translator.t("map.zone", { h: step.hour, confidence: this.translator.t(`confidence.${level}`) });
     L.circle([step.lat, step.lon], {
-      radius: step.zone_radius_nm * NM_IN_METERS, color: this.color(`--conf-${level}`), weight: 2,
-      fillColor: this.color(`--conf-${level}`), fillOpacity: 0.12,
-    })
-      .bindTooltip(label)
-      .addTo(this.#routes);
+      radius: step.zone_radius_nm * NM_IN_METERS, color: this.color(`--conf-${level}`), weight: 1, opacity: 0.6,
+      fillColor: this.color(`--conf-${level}`), fillOpacity: 0.08, interactive: false,
+    }).addTo(this.#routes);
+    const glow = L.divIcon({ className: `zone-glow ${level}`, html: "<span></span>", iconSize: [44, 44] });
+    L.marker([step.lat, step.lon], { icon: glow, keyboard: false }).bindTooltip(label).addTo(this.#routes);
   }
 }

@@ -10,7 +10,9 @@ import { RouteMap } from "./map/route-map.js";
 import { MapControls } from "./map/map-controls.js";
 import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
-import { TimelineTable } from "./results/timeline-table.js";
+import { RoutePlanList } from "./results/route-plan-list.js";
+import { PanelRail } from "./layout/panel-rail.js";
+import { measureMapInsets } from "./layout/map-insets.js";
 import { formatUtcHour } from "./results/display-format.js";
 import { MockApi } from "./api/mock-api.js";
 
@@ -35,7 +37,12 @@ class App {
     });
     this.nowPanel = new NowPanel(byId("now-panel"), this.translator);
     this.optionList = new OptionList(byId("options"), this.translator, (optionId) => this.update({ optionId }));
-    this.timeline = new TimelineTable(byId("timeline"), this.translator, (hour) => this.update({ hour }));
+    this.routePlan = new RoutePlanList(byId("plan"), this.translator, (hour) => this.update({ hour }));
+    this.rail = new PanelRail(document.querySelector(".rail"), {
+      settingsButton: byId("settings-open"),
+      settingsDialog: byId("settings"),
+      onLayoutChange: () => this.#fitMap(),
+    });
     this.form = this.#createForm();
   }
 
@@ -111,15 +118,19 @@ class App {
     const step = option.steps.find((s) => s.hour === hour);
     this.nowPanel.render(result);
     this.optionList.render(result, option.id);
-    this.timeline.render(result, option, hour);
+    this.routePlan.render(result, option, hour);
     this.map.showResult(result, option);
-    if (fitMap) this.map.fitView(result, view);
+    if (fitMap) this.#fitMap();
     this.map.showBoat(option, hour, (step ?? option.now).heading_deg);
     this.#renderWind(hour, windMode, view);
     byId("weather-status").textContent = this.translator.t("weather.status", {
       run: formatUtcHour(result.weather.run),
       next: formatUtcHour(result.weather.next_run_expected),
     });
+  }
+
+  #fitMap() {
+    if (this.#result) this.map.fitView(this.#result, this.#state.view, measureMapInsets());
   }
 
   #renderWind(hour, windMode, view) {

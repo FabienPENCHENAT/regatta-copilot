@@ -128,5 +128,13 @@
   "view.near": "48 h",
   "view.race": "Whole race",
   "map.ideal_route": "Ideal track to the finish (≈ {distance} nautical miles)",
-  "map.legend_ideal": "Ideal track to the finish"
+  "map.legend_ideal": "Ideal track to the finish",
+  "form.greeting": "Fair winds, skipper",
+  "rail.label": "Panels",
+  "rail.route": "My race",
+  "rail.plan": "Route plan",
+  "rail.options": "Options and current settings",
+  "settings.close": "Close settings",
+  "option.ring_caption": "chance",
+  "map.legend_title": "Legend and sources"
 }

@@ -17,8 +17,8 @@ export class RouteMap {
   #map;
 
   constructor(container, translator) {
+    // No zoom buttons: panels cover the corners; wheel, pinch and double-click zoom instead.
     this.#map = L.map(container, { zoomSnap: 0.5, minZoom: 3, maxZoom: 11, zoomControl: false });
-    L.control.zoom({ position: "topright" }).addTo(this.#map);
     this.#map.setView([47, -5], 6);
     createPanes(this.#map);
     this.basemap = new ChartBasemap(this.#map, color);
@@ -45,9 +45,13 @@ export class RouteMap {
   }
 
   // "near": the next 48 h (all scenario routes); "race": the whole ideal track to the finish.
-  fitView(result, view) {
+  // insets = screen space covered by floating panels, in pixels, so the routes stay in the free area.
+  fitView(result, view, insets) {
     const points = view === "race" ? result.ideal_route.path : result.members.flatMap((m) => m.path);
-    this.#map.fitBounds(L.latLngBounds(points), { padding: [20, 20] });
+    this.#map.fitBounds(L.latLngBounds(points), {
+      paddingTopLeft: [insets.left + 24, insets.top + 24],
+      paddingBottomRight: [insets.right + 24, insets.bottom + 24],
+    });
   }
 
   showBoat(option, hour, heading) {
