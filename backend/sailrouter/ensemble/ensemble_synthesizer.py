@@ -40,9 +40,7 @@ class EnsembleSynthesizer:
         distances, game_row = all_distances[:-1, :-1], all_distances[-1, :-1]
         groups = self._clusterer.cluster(distances)
         representatives = [self._medoids.pick(group, distances) for group in groups]
-        late = self._distances.positions(routes, self._distances.late_h)
-        consensus = (float(np.median(late[:, 0])), float(np.median(late[:, 1])))
-        labels = self._labeler.label([tuple(late[r]) for r in representatives], consensus, self._course(routes, progress))
+        labels = self._labels(routes, representatives, progress)
         game_member = int(np.argmin(game_row))
         gaps = self._eta.gaps_h([routes[r] for r in representatives])
         options = tuple(
@@ -56,6 +54,15 @@ class EnsembleSynthesizer:
         member_options = {member: option.id for option in options for member in option.members}
         return EnsembleSynthesis(options, member_options, len(routes), AdviceWriter().advice(list(options), len(routes)))
 
+    def _labels(self, routes: list[Route], representatives: list[int], progress: MarkProgress) -> list[tuple[str, str]]:
+        early = self._distances.positions(routes, self._distances.early_h)
+        late = self._distances.positions(routes, self._distances.late_h)
+        origin = GeoPoint(routes[0].points[0].lat_deg, routes[0].points[0].lon_deg)
+        return self._labeler.label(
+            [tuple(early[r]) for r in representatives], [tuple(late[r]) for r in representatives],
+            _median(early), _median(late), origin, self._course(routes, progress),
+        )
+
     def _confidences(self, representative: Route, members: list[Route]) -> dict[int, float]:
         return {hour: self._confidence.confidence(representative, members, hour)
                 for hour in PLAN_HOURS if representative.covers(hour)}
@@ -65,3 +72,7 @@ class EnsembleSynthesizer:
         passed = [route.point_at(self._distances.late_h).marks_passed for route in routes]
         leg = progress.legs[min(int(np.median(passed)), len(progress.legs) - 1)]
         return leg.anchor, leg.target
+
+
+def _median(points: np.ndarray) -> tuple[float, float]:
+    return float(np.median(points[:, 0])), float(np.median(points[:, 1]))
