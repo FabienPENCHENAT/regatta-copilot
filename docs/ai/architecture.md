@@ -144,7 +144,9 @@ The user gets **2 to 4 route options** (e.g. "direct = shortest", "west = get in
 | `src/main.js` (`App`) | Creates and connects the components; holds the current result and selected option. |
 | `i18n/translator.js`, `i18n/language-picker.js` | Loads `i18n/<lang>.json`, translates keys; FR/EN toggle. |
 | `storage/preferences-store.js` | Last race, boat, language in localStorage. |
-| `form/position-parser.js`, `form/route-form.js` | Parses pasted positions; race/boat/position inputs and submit. |
+| `form/position-parser.js`, `form/route-form.js` | Parses pasted positions; race/boat/position inputs, submit, one-line summary when collapsed. |
+| `form/race-header.js`, `form/boat-picker.js` | From–to line with distance and live race status; boat class pills. |
+| `results/data-refresh.js` | Time of the next data update (run every 6 h, usable ~4.5 h later). |
 | `map/route-map.js` | Builds the Leaflet chart and its layers; the only map API the app uses. |
 | `map/chart-basemap.js` | Nautical-chart background from `map-data/` (depth bands, land, coastline). No tile server. |
 | `map/graticule-layer.js`, `map/sea-labels.js` | Degree grid with edge labels; italic sea names (i18n). |

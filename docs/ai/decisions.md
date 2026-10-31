@@ -2,11 +2,18 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D26 — Race card redesign and a lean legend (user feedback, 2026-10-31)
+The race card was "the least pretty block": the race name is now the title (and the race selector), followed by
+a Saint-Malo → Pointe-à-Pitre line with the official distance (3 542 nm, added to the race file), a live status
+pill (start countdown / time racing), boats as pills, a position field with a pin and a check mark, and a blue
+compute button. The legend keeps only the map symbols plus an always-visible "next data update" line (run every
+6 h, usable ~4.5 h later, shown in local time); credits and caveats live on the "How it works" page.
+
 ## D25 — Collapsible panels to free the chart (user request, 2026-10-31)
-After "Compute my route" the race form collapses to one summary line with an "Edit" button. The "set this now"
-panel slides down to its title and the whole right column (map tools, legend, route plan) slides right leaving a
-strip; a click on the strip or on the toggle brings them back. One reusable class, `PanelCollapser`; the CSS
-decides the collapsed look from `data-collapsed`. Options stay visible. On phones, panels scroll instead.
+After "Compute my route" the race form collapses to one summary line with an "Edit" button. The whole bottom dock
+("set this now" + options) slides down and the whole right column (map tools, legend, route plan) slides right,
+each leaving a strip; a click on the strip or on the round toggle brings them back. One reusable class, `PanelCollapser`; the CSS
+decides the collapsed look from `data-collapsed`. On phones, panels scroll instead.
 
 ## D24 — "Set this now" as instruments; panel toggles removed (user feedback, 2026-10-31)
 The rail buttons that hid panels confused the user ("the screen moves but nothing happens"): removed; the rail

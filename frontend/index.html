@@ -45,30 +45,35 @@
 
 <main class="overlay">
   <form id="route-form" class="glass panel form-panel" novalidate>
-    <p class="greeting" data-i18n="form.greeting"></p>
-    <h1 class="race-title" data-i18n="race.route-du-rhum-2026"></h1>
+    <h1 class="race-title">
+      <label class="race-picker">
+        <span class="visually-hidden" data-i18n="form.race"></span>
+        <select id="race" class="race-select"></select>
+      </label>
+    </h1>
+    <div id="race-header" class="race-header"></div>
     <div class="form-summary">
       <span id="form-summary-text" class="form-summary-text"></span>
       <button type="button" id="form-edit" class="text-button" data-i18n="form.edit"></button>
     </div>
     <div class="form-body">
-    <div class="form-row">
+      <fieldset class="field boat-field">
+        <legend class="field-label" data-i18n="form.boat"></legend>
+        <div id="boat-picker" class="boat-picker"></div>
+      </fieldset>
       <label class="field">
-        <span class="field-label" data-i18n="form.race"></span>
-        <select id="race"></select>
+        <span class="field-label" data-i18n="form.position"></span>
+        <span class="position-input">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+          <input id="position" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+                 aria-describedby="position-feedback" data-i18n-attr="placeholder:form.position_placeholder">
+        </span>
       </label>
-      <label class="field">
-        <span class="field-label" data-i18n="form.boat"></span>
-        <select id="boat"></select>
-      </label>
-    </div>
-    <label class="field">
-      <span class="field-label" data-i18n="form.position"></span>
-      <input id="position" type="text" inputmode="text" autocomplete="off" spellcheck="false"
-             aria-describedby="position-feedback" data-i18n-attr="placeholder:form.position_placeholder">
-    </label>
-    <p id="position-feedback" class="position-feedback" aria-live="polite"></p>
-    <button id="submit" class="submit" type="submit"></button>
+      <p id="position-feedback" class="position-feedback" aria-live="polite"></p>
+      <button id="submit" class="submit" type="submit">
+        <span class="submit-label"></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
     </div>
   </form>
 
@@ -77,31 +82,30 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
     </button>
     <div id="map-controls" class="glass map-controls"></div>
-    <details class="glass legend-panel">
-      <summary data-i18n="map.legend_title"></summary>
-      <ul class="map-legend">
-        <li><span class="legend-ideal"></span><span data-i18n="map.legend_ideal"></span></li>
-        <li><span class="legend-line thick"></span><span data-i18n="map.legend_option"></span></li>
-        <li><span class="legend-line thin"></span><span data-i18n="map.legend_members"></span></li>
-        <li><span class="legend-zone"></span><span data-i18n="map.legend_zones"></span></li>
-        <li><span class="legend-restricted"></span><span data-i18n="map.legend_course"></span></li>
-      </ul>
-      <p id="wind-source" class="fine-print"></p>
-      <p id="weather-status" class="fine-print"></p>
-      <p class="fine-print mock-note" data-i18n="mock.banner"></p>
-      <p class="fine-print" data-i18n="disclaimer"></p>
-      <p class="fine-print" data-i18n="credits"></p>
-    </details>
+    <div class="glass legend-panel">
+      <p class="refresh-line">
+        <span class="refresh-dot" aria-hidden="true"></span>
+        <span id="refresh-text"></span>
+      </p>
+      <details>
+        <summary data-i18n="map.legend_title"></summary>
+        <ul class="map-legend">
+          <li><span class="legend-ideal"></span><span data-i18n="map.legend_ideal"></span></li>
+          <li><span class="legend-line thick"></span><span data-i18n="map.legend_option"></span></li>
+          <li><span class="legend-line thin"></span><span data-i18n="map.legend_members"></span></li>
+          <li><span class="legend-zone"></span><span data-i18n="map.legend_zones"></span></li>
+          <li><span class="legend-restricted"></span><span data-i18n="map.legend_course"></span></li>
+        </ul>
+      </details>
+    </div>
     <section id="plan" class="glass panel plan-panel"></section>
   </div>
 
   <div id="dock" class="dock">
-    <section id="now-dock" class="glass panel now-panel">
-      <button type="button" id="now-toggle" class="collapse-toggle down">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
-      <div id="now-panel" aria-live="polite"></div>
-    </section>
+    <button type="button" id="dock-toggle" class="collapse-toggle bottom">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <section id="now-panel" class="glass panel now-panel" aria-live="polite"></section>
     <section id="options" class="options"></section>
   </div>
 </main>

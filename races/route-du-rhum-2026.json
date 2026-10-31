@@ -1,6 +1,10 @@
 {
  "id": "route-du-rhum-2026",
  "name": "Route du Rhum – Destination Guadeloupe 2026",
+ "start_port": "Saint-Malo",
+ "finish_port": "Pointe-à-Pitre",
+ "distance_nm": 3542,
+ "distance_note": "Official course distance quoted by Virtual Regatta (VR article, 2026-10-01).",
  "sources": [
   "Instructions de course 2026 intégrant les avenants 1 (09/10/2026) et 2 (18/10/2026), §9.3, §10.1, annexes 3 et 4. Skipper Drive linked from https://www.routedurhum.com/espace-skippers",
   "Virtual Regatta race ids and boats: third-party list https://vro.civis.net/LSV-Dash/api?context=api&context_type=races (retrieved 2026-10-31)"

@@ -143,6 +143,16 @@ Inspirée de ta capture « tableau de bord » :
   flèche sur son bord gauche. Une fine bande reste visible ; un clic dessus la ramène.
 - Les options restent toujours visibles.
 
+## Version 9 : bloc du bas repliable, nouveau bloc « course », légende allégée (31/10)
+
+- Tout le bloc du bas (« À régler maintenant » + options) se range vers le bas avec la flèche ronde, comme la
+  colonne de droite. Les deux rangés, on voit presque toute la carte.
+- Le bloc « Route du Rhum 2026 » est redessiné : nom de la course en titre, ligne Saint-Malo → Pointe-à-Pitre avec
+  la distance officielle (3 542 milles), pastille « Départ dans 22 h » (puis « En course depuis… »), bateaux en
+  pastilles, champ de position avec repère et coche verte, bouton bleu « Calculer ma route ».
+- La légende ne garde que les symboles de la carte et une ligne toujours visible : « Mise à jour des données vers
+  17:30 · dans 2 h 02 », à ton heure locale.
+
 ## Questions pour toi
 
 - L'ordre des blocs te convient-il (réglages tout de suite après la saisie, puis la carte) ?

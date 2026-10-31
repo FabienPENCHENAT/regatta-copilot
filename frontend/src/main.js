@@ -6,6 +6,7 @@ import { LanguagePicker } from "./i18n/language-picker.js";
 import { PreferencesStore } from "./storage/preferences-store.js";
 import { PositionParser } from "./form/position-parser.js";
 import { RouteForm } from "./form/route-form.js";
+import { RaceHeader } from "./form/race-header.js";
 import { RouteMap } from "./map/route-map.js";
 import { MapControls } from "./map/map-controls.js";
 import { NowPanel } from "./results/now-panel.js";
@@ -15,7 +16,7 @@ import { SettingsDialog } from "./layout/settings-dialog.js";
 import { PanelCollapser } from "./layout/panel-collapser.js";
 import { ThemeToggle } from "./layout/theme-toggle.js";
 import { measureMapInsets } from "./layout/map-insets.js";
-import { formatUtcHour } from "./results/display-format.js";
+import { describeNextRefresh } from "./results/data-refresh.js";
 import { MockApi } from "./api/mock-api.js";
 
 const SAMPLE_POSITION_TEXT = `48°43'48"N 001°54'00"W`; // Class40 start line, Saint-Malo
@@ -44,8 +45,8 @@ class App {
     this.formPanel = new PanelCollapser(byId("route-form"), {
       toggle: byId("form-edit"), translator: this.translator, labelToggle: false,
     });
-    this.nowDock = new PanelCollapser(byId("now-dock"), {
-      toggle: byId("now-toggle"), translator: this.translator, expandOnPanelClick: true,
+    this.dockPanel = new PanelCollapser(byId("dock"), {
+      toggle: byId("dock-toggle"), translator: this.translator, expandOnPanelClick: true,
     });
     this.toolsPanel = new PanelCollapser(byId("tools"), {
       toggle: byId("tools-toggle"), translator: this.translator, expandOnPanelClick: true,
@@ -56,6 +57,7 @@ class App {
       onChange: () => this.#redrawForTheme(),
     });
     this.form = this.#createForm();
+    this.raceHeader = new RaceHeader(byId("race-header"), this.translator);
   }
 
   async start() {
@@ -68,7 +70,8 @@ class App {
       this.map.loadBasemap({ depthsUrl: "map-data/depths.geojson", landUrl: "map-data/land.geojson" })]);
     this.#race = race;
     this.#wind = wind;
-    this.map.showCourse(race, byId("boat").value);
+    this.map.showCourse(race, this.form.boatId);
+    this.raceHeader.render(race);
     this.#showResult(await this.api.loadSample());
   }
 
@@ -78,7 +81,10 @@ class App {
     this.#translateStaticText();
     this.form.retranslate();
     this.map.retranslate();
-    if (this.#race) this.map.showCourse(this.#race, byId("boat").value);
+    if (this.#race) {
+      this.map.showCourse(this.#race, this.form.boatId);
+      this.raceHeader.render(this.#race);
+    }
     if (this.#result) this.#render({ fitMap: false });
   }
 
@@ -100,7 +106,7 @@ class App {
       {
         form: byId("route-form"),
         raceSelect: byId("race"),
-        boatSelect: byId("boat"),
+        boatPicker: byId("boat-picker"),
         positionInput: byId("position"),
         positionFeedback: byId("position-feedback"),
         submitButton: byId("submit"),
@@ -137,15 +143,12 @@ class App {
     if (fitMap) this.#fitMap();
     this.map.showBoat(option, hour, (step ?? option.now).heading_deg);
     this.#renderWind(hour, windMode, view);
-    byId("weather-status").textContent = this.translator.t("weather.status", {
-      run: formatUtcHour(result.weather.run),
-      next: formatUtcHour(result.weather.next_run_expected),
-    });
+    byId("refresh-text").textContent = describeNextRefresh(this.translator, result.weather.run);
   }
 
   #redrawForTheme() {
     this.map.refreshTheme();
-    if (this.#race) this.map.showCourse(this.#race, byId("boat").value);
+    if (this.#race) this.map.showCourse(this.#race, this.form.boatId);
     if (this.#result) this.#render({ fitMap: false });
   }
 
@@ -158,14 +161,13 @@ class App {
     const time = this.#wind.times.find((t) => t.hour === hour) ?? this.#wind.times[0];
     this.map.showWind(time.grid, windMode);
     this.mapControls.render({ view, hours, hour: time.hour, windMode });
-    byId("wind-source").textContent = this.translator.t("wind.source", { run: formatUtcHour(this.#wind.run) });
   }
 
   #translateStaticText() {
     this.translator.applyTo(document.body);
     this.languagePicker.render(this.translator.lang);
     this.themeToggle.render();
-    [this.formPanel, this.nowDock, this.toolsPanel].forEach((panel) => panel?.render());
+    [this.formPanel, this.dockPanel, this.toolsPanel].forEach((panel) => panel?.render());
     this.form.showIdle();
     document.title = this.translator.t("app.title");
   }

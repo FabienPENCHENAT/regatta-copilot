@@ -39,10 +39,6 @@ export function confidenceLevel(share) {
   return "low";
 }
 
-export function formatUtcHour(isoDate) {
-  return `${pad(new Date(isoDate).getUTCHours(), 2)}h`;
-}
-
 export function formatLocalTime(isoDate, hoursLater, lang) {
   const date = new Date(new Date(isoDate).getTime() + hoursLater * 3600 * 1000);
   return date.toLocaleString(lang, { weekday: "short", hour: "2-digit", minute: "2-digit" });
