@@ -12,6 +12,7 @@ from sailrouter.weather.nomads_client import DataNotAvailable
 
 log = logging.getLogger(__name__)
 Window = tuple[datetime, datetime]
+WAIT_SLICE_S = 30.0
 
 
 class GfsRunSource(Protocol):
@@ -99,7 +100,16 @@ class WeatherRefresher:
                 self.run_once()
             except Exception:  # noqa: BLE001 - the refresher must survive any failure and try again later
                 log.exception("weather refresh failed; next try in %s", self._interval)
-            self._stop.wait(self._interval.total_seconds())
+            self._wait_until(self._now() + self._interval)
+
+    def _wait_until(self, deadline: datetime) -> None:
+        """Short waits against the wall clock: macOS may delay one long timer by many minutes in an idle
+        background process (seen: a 10-min wait lasting 21 min), and a laptop may sleep."""
+        while not self._stop.is_set():
+            remaining_s = (deadline - self._now()).total_seconds()
+            if remaining_s <= 0:
+                return
+            self._stop.wait(min(remaining_s, WAIT_SLICE_S))
 
     def _download_gfs(self, start: datetime, end: datetime, now: datetime) -> ModelRun | None:
         try:
