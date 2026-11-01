@@ -1,4 +1,4 @@
-# Routeur Voile
+# Regatta Copilot (formerly "Routeur Voile")
 
 Read [docs/ai/index.md](docs/ai/index.md) first: it is the entry point for any AI agent working on this repo
 (purpose, architecture, conventions, decisions, data sources).

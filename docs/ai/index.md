@@ -5,10 +5,11 @@ re-exploration of the repo. The founder's own documentation, in French, lives in
 
 ## What the product is
 
-A web advisor for **Virtual Regatta Offshore** (VR). Given a pre-configured race, a boat class and the player's
-current position, it proposes **2 to 4 route options** (e.g. the shortest, or getting in place for the weather in
-2 days), each with its **probability of being the best**, and for each a **route plan at +4, 8, 12, 16, 24 and
-48 h**: target position, **heading**, **sail**, wind, confidence.
+**Regatta Copilot** (formerly "Routeur Voile"; repo folder and Python package `sailrouter` keep their names, the
+browser preferences key stays `routeur-voile.preferences` so saved settings survive). A web advisor for **Virtual Regatta Offshore** (VR). Given a pre-configured race, a boat class and the player's
+current position, it proposes **up to 3 route options** (e.g. the shortest, or getting in place for the weather in
+2 days), each with its **probability of being the best**, and for each a **route plan** (one line per order the game can hold:
+constant heading, sail), compared across the 31 weathers.
 
 Differentiator: the route is computed on each of the **31 GEFS ensemble members** (plus the deterministic GFS
 the game uses), and the options and probabilities come from how those routes group, not from one optimal route

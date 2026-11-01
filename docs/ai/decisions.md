@@ -2,6 +2,12 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D56 — Name "Regatta Copilot", MIT licence, public README (user, 2026-11-01)
+- English name chosen by the user (it advises, the player steers; "Virtual Regatta" itself kept out of the name,
+  a trademark). Displayed in the pages' titles, `app.title`, the API title, `run.sh`. Unchanged on purpose: repo
+  folder, Python package `sailrouter`, localStorage key `routeur-voile.preferences`.
+- MIT licence. README rewritten in English for GitHub, modelled on the user's agent-office README.
+
 ## D55 — Options compared in all 31 weathers, on distance to go through every mark (user, 2026-11-01)
 - User: the 10/31 option's line went further than the 16/31 one. Each option's line is its medoid member's
   route in THAT member's weather: lengths compare weathers, not placements; and going further or faster is

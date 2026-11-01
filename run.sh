@@ -13,7 +13,7 @@ if [ ! -x .venv/bin/uvicorn ]; then
 fi
 
 LAN_IP="$(ipconfig getifaddr en0 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}' || true)"
-echo "Routeur Voile: http://localhost:${PORT}"
+echo "Regatta Copilot: http://localhost:${PORT}"
 if [ -n "${LAN_IP}" ]; then
   echo "On your phone (same Wi-Fi): http://${LAN_IP}:${PORT}"
 fi

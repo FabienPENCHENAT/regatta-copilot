@@ -43,7 +43,7 @@ def create_app(paths: ProjectPaths | None = None, ensemble_job: EnsembleDownload
         yield
         refresher.stop()
 
-    app = FastAPI(title="Routeur Voile", docs_url="/api/docs", openapi_url="/api/openapi.json", lifespan=lifespan)
+    app = FastAPI(title="Regatta Copilot", docs_url="/api/docs", openapi_url="/api/openapi.json", lifespan=lifespan)
     app.include_router(races_router(paths))
     app.include_router(polars_router(paths))
     app.include_router(options_router(paths))

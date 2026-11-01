@@ -1,5 +1,5 @@
 {
-  "app.title": "Routeur Voile",
+  "app.title": "Regatta Copilot",
   "lang.label": "Language",
   "form.title": "My race",
   "form.race": "Race",
@@ -332,7 +332,7 @@
   "how.scenarios.caption": "The same start, 31 possible weathers: routes stay together for the first hours, then spread out. Colours are the options they make.",
   "how.scenarios.noaa.title": "Computed by NOAA",
   "how.scenarios.noaa.text": "1 control scenario (the best estimate of the current atmosphere) and 30 scenarios started from a slightly changed initial state, with slightly perturbed physics. Same model as the game's forecast, coarser (about 25 km instead of 13), 4 times a day. All are a priori equally likely.",
-  "how.scenarios.ours.tag": "Routeur Voile",
+  "how.scenarios.ours.tag": "Regatta Copilot",
   "how.scenarios.ours.title": "What we do with them",
   "how.scenarios.ours.text": "For each scenario, the best route with your polar, your options, the marks and the zones. These 31 routes give the options, their probabilities, their comparison and the route plan's confidence.",
   "how.scenarios.limits.tag": "Good to know",

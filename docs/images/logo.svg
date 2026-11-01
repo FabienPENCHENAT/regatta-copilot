@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="128" height="128">
+  <title>Regatta Copilot</title>
+  <path fill="#1d56c7" d="M19 3 L19 33 L26 21 Z"/>
+  <path fill="#6ea8ff" d="M19 3 L26 21 L34 33 Z"/>
+  <path fill="#3d7bfd" d="M19 33 L26 21 L34 33 Z"/>
+  <path fill="#0ca678" d="M16 9 L16 33 L11 25 Z"/>
+  <path fill="#63e6be" d="M16 9 L11 25 L5 33 Z"/>
+  <path fill="#20c997" d="M16 33 L11 25 L5 33 Z"/>
+</svg>
