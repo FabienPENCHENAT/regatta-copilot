@@ -12,7 +12,7 @@ const SAILS = [
   { id: "Code0", shape: "M7 3 C14 8 17 14 18 21 L7 21 Z" },
   { id: "LightGnk", shape: "M7 3 C20 6 22 15 17 21 L7 21 Z", light: true },
   { id: "HeavyGnk", shape: "M7 3 C20 6 22 15 17 21 L7 21 Z" },
-  { id: "Spi", shape: "M12 3 C22 6 22 17 17 21 L7 21 C2 17 2 6 12 3 Z" },
+  { id: "Spi", shape: "M7 2.5 C20 2.5 24.5 13 19 21 L8 21 C9 16 8.5 8 7 2.5 Z" }, // hoisted at the masthead, full, all forward of the mast
 ];
 
 export function createSailWardrobe(translator, selectedSail, ownedSails) {
