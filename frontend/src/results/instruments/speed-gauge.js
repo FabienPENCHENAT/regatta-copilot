@@ -3,7 +3,7 @@
 import { formatNumber } from "../display-format.js";
 import { element } from "../../dom.js";
 
-const SCALE_MAX_KN = 20; // the Class40 polar tops out near 18.6 kn
+const SCALE_MAX_KN = 30; // above the Class40 (18.6 kn) and IMOCA speeds; faster boats peg the needle at the end
 const RADIUS = 46;
 const ARC_LENGTH = Math.PI * RADIUS;
 
