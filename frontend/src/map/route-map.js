@@ -56,8 +56,8 @@ export class RouteMap {
     });
   }
 
-  showBoat(option, hour, heading) {
-    this.routes.showBoat(option, hour, heading);
+  showBoat(option, hour, heading, startIso) {
+    this.routes.showBoat(option, hour, heading, startIso);
   }
 
   showPosition(position) {

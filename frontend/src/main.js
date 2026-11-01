@@ -203,7 +203,7 @@ class App {
     this.routePlan.render(result, option, hour);
     this.map.showResult(result, option, hour);
     if (fitMap) this.map.fitView(result, view, measureMapInsets());
-    this.map.showBoat(option, Math.min(hour, option.path.length - 1), (leg ?? option.now).heading_deg);
+    this.map.showBoat(option, Math.min(hour, option.path.length - 1), (leg ?? option.now).heading_deg, result.computed_at);
     this.#renderWind(hour, windMode, view, option);
     byId("refresh-text").textContent = describeNextRefresh(this.translator, result.weather.run);
   }

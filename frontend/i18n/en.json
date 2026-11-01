@@ -81,7 +81,7 @@
   "unit.knots": "{value} kn",
   "unit.hours": "{value} h",
   "timeline.show_on_map": "Show this hour on the map",
-  "map.boat_at": "Expected position in {h} h",
+  "map.boat_at": "{option} at +{h} ({time}) · order {n} under way",
   "wind.time_label": "Time shown",
   "wind.time_start": "Start",
   "wind.time_plus": "+{h} h",
@@ -355,5 +355,6 @@
   "how.plan.straight": "One order = one straight line at a constant heading, as the game sails it. Its heading joins the start of the order to the start of the next, within 1.5 nm of the computed route.",
   "how.plan.safe": "No order line comes within 1 nm of a coast or an exclusion zone: following the plan keeps the same margin as the route.",
   "how.plan.cuts": "A sail change, a tack or a gybe always starts a new order. The current order's number pulses on the map.",
-  "how.plan.confidence": "An order's confidence is the share of the option's scenarios passing through the target area at that time: it drops with time."
+  "how.plan.confidence": "An order's confidence is the share of the option's scenarios passing through the target area at that time: it drops with time.",
+  "map.boat_at_plain": "{option} at +{h} ({time})"
 }

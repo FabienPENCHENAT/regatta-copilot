@@ -81,7 +81,7 @@
   "unit.knots": "{value} nd",
   "unit.hours": "{value} h",
   "timeline.show_on_map": "Voir cette heure sur la carte",
-  "map.boat_at": "Position prévue dans {h} h",
+  "map.boat_at": "{option} à +{h} ({time}) · ordre {n} en cours",
   "wind.time_label": "Heure affichée",
   "wind.time_start": "Départ",
   "wind.time_plus": "+{h} h",
@@ -355,5 +355,6 @@
   "how.plan.straight": "Un ordre = une ligne droite à cap fixe, comme le jeu la suit. Son cap relie le début de l'ordre au début du suivant, et il reste à moins de 1,5 mille de la route calculée.",
   "how.plan.safe": "Aucune ligne d'ordre n'approche à moins de 1 mille d'une côte ou d'une zone interdite : suivre la feuille de route garde la même marge que la route.",
   "how.plan.cuts": "Un changement de voile, un virement ou un empannage commencent toujours un nouvel ordre. Le numéro de l'ordre en cours pulse sur la carte.",
-  "how.plan.confidence": "La confiance d'un ordre est la part des scénarios de l'option qui passent dans la zone visée à cette heure-là : elle baisse avec le temps."
+  "how.plan.confidence": "La confiance d'un ordre est la part des scénarios de l'option qui passent dans la zone visée à cette heure-là : elle baisse avec le temps.",
+  "map.boat_at_plain": "{option} à +{h} ({time})"
 }

@@ -2,6 +2,14 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D57 — Boat label says option, time and order; plan follows the map (user, 2026-11-01)
+- After clicking order 7 of one option then switching option, the boat showed the other option at the same
+  time with only "position in 14 h 30 h" (double "h" bug). Switching options keeps the hour on purpose (compare
+  options at the same moment); the boat label now reads "Option Nord à +14 h 30 (lun. 03:32) · ordre 6 en
+  cours" and stays open when the boat is between two orders (on an order's point, that point's label shows).
+- Selecting an order from the map (or the time bar, or another option) scrolls the route plan to that order's
+  line (`RoutePlanList.#reveal`, only when the order changes, so a plain redraw keeps the player's scrolling).
+
 ## D56 — Name "Regatta Copilot", MIT licence, public README (user, 2026-11-01)
 - English name chosen by the user (it advises, the player steers; "Virtual Regatta" itself kept out of the name,
   a trademark). Displayed in the pages' titles, `app.title`, the API title, `run.sh`. Unchanged on purpose: repo

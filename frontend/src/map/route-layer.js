@@ -1,7 +1,7 @@
 // Routes of a result: the computed track, the scenario routes (thin), the selected option (thick) with a
 // numbered point at each change of orders (same numbers as the route plan), and the boat at the selected hour.
 
-import { formatHeading, formatHoursMinutes } from "../results/display-format.js";
+import { formatHeading, formatHoursMinutes, formatLocalTime } from "../results/display-format.js";
 import { legAt, planLegs } from "../results/plan-legs.js";
 
 const BOAT_SVG = `<svg viewBox="-12 -12 24 24" width="28" height="28" aria-hidden="true">
@@ -52,8 +52,9 @@ export class RouteLayer {
     });
   }
 
-  // At the start of an order the boat sits on its numbered point; otherwise between the hourly path points.
-  showBoat(option, hour, heading) {
+  // At the start of an order the boat sits on its numbered point (whose label says it all); otherwise it sits
+  // between the hourly path points and keeps its own label open: option, time, order being sailed.
+  showBoat(option, hour, heading, startIso) {
     this.#boat.clearLayers();
     const leg = option.legs.find((l) => l.start_hour === hour);
     const point = leg ? [leg.lat, leg.lon] : pathPointAt(option.path, hour);
@@ -62,9 +63,22 @@ export class RouteLayer {
       html: `<span style="transform: rotate(${heading}deg)">${BOAT_SVG}</span>`,
       iconSize: [28, 28],
     });
+    const between = hour > 0 && !leg;
     L.marker(point, { icon, keyboard: false })
-      .bindTooltip(hour === 0 ? this.translator.t("map.you") : this.translator.t("map.boat_at", { h: formatHoursMinutes(hour) }))
+      .bindTooltip(hour === 0 ? this.translator.t("map.you") : this.#boatLabel(option, hour, startIso), between
+        ? { permanent: true, direction: "bottom", offset: [0, 14], className: "boat-label" } : {})
       .addTo(this.#boat);
+  }
+
+  #boatLabel(option, hour, startIso) {
+    const t = (key, params) => this.translator.t(key, params);
+    const legs = planLegs(option);
+    const current = legAt(legs, hour);
+    const params = {
+      option: t(`option.name.${option.id}`), h: formatHoursMinutes(hour),
+      time: formatLocalTime(startIso, hour, this.translator.lang), n: legs.indexOf(current) + 1,
+    };
+    return current && hour < (legs.at(-1)?.end_hour ?? 0) ? t("map.boat_at", params) : t("map.boat_at_plain", params);
   }
 
   // Whole computed track on the game's weather, for the eye only: a thin, faint dashed line under the options.

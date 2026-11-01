@@ -6,6 +6,8 @@ import { legAt, planLegs } from "./plan-legs.js";
 import { element } from "../dom.js";
 
 export class RoutePlanList {
+  #shownLeg = null;
+
   constructor(container, translator, onSelectHour) {
     this.container = container;
     this.translator = translator;
@@ -22,6 +24,15 @@ export class RoutePlanList {
     const list = element("ol", "plan-list");
     legs.forEach((leg, index) => list.append(this.#leg(result, leg, index + 1, leg === current)));
     this.container.replaceChildren(head, list);
+    this.#reveal(list, legs.indexOf(current), `${option.id}:${current?.start_hour}`);
+  }
+
+  // When the order being sailed changes (a point clicked on the map, the time bar, another option), its line is
+  // scrolled into view; a plain redraw leaves the player's own scrolling alone.
+  #reveal(list, index, key) {
+    if (index < 0 || key === this.#shownLeg) return;
+    this.#shownLeg = key;
+    list.children[index]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   #leg(result, leg, number, selected) {
