@@ -73,6 +73,8 @@ lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe
 `"confidence": null`, `"members": []`, `advice = { "key": "advice.follow_game_route", "params": { "hours": 48 } }`.
 
 **Ensemble result**: 1 to 4 options, most probable first.
+- `outlook` (ensemble only): `[{ hours: 48|120, to_go_nm, gain_nm, worst_nm, ahead_share }]`: the option's
+  track sailed in each of the 31 weathers (D55); `gain_nm` / `worst_nm` vs the recommended option, positive = ahead.
 - `id`: `consensus` when there is a single option, else unique among `direct` (the most central option, on
   the members' consensus track), `north`, `south` (its side of that track on a westward course), then `west`,
   `east` when two options share a side (decision D33) → i18n `option.name.<id>`.

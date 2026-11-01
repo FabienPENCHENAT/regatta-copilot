@@ -1,8 +1,9 @@
 """Code run inside the worker processes that route the GEFS members in parallel.
 
 `initialize` builds, once per process, everything that does not depend on the member (race, polar, land
-raster); `route_member` then decodes one member's wind from the cache and routes it. Module-level functions
-because process pools can only call picklable, importable functions.
+raster); `route_member` then decodes one member's wind from the cache and routes it; `follow_tracks` sails the
+options' tracks in one member's wind (cross-evaluation). Module-level functions because process pools can only
+call picklable, importable functions.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from sailrouter.routing.mark_progress import MarkProgress
 from sailrouter.routing.route import Route
 from sailrouter.routing.route_tracer import RouteTracer
 from sailrouter.routing.time_schedule import TimeSchedule
+from sailrouter.routing.track_follower import TrackFollower
 from sailrouter.service.boat_polar_locator import BoatPolarLocator
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.router_builder import RouterBuilder
@@ -72,3 +74,15 @@ def route_member(member: str) -> tuple[str, Route | None]:
     except RoutingError:
         return member, None
     return member, RouteTracer(_state["speed_model"].sail_names).trace(fronts, _state["progress"])
+
+
+OUTLOOK_HOURS = (48.0, 120.0)
+
+
+def follow_tracks(member: str, tracks: list[list[tuple[float, float, int]]]) -> tuple[str, list[dict[float, float]]]:
+    """Distance to go at +48 h and at the end, for each option's track sailed in this member's wind."""
+    spec: MemberRoutingSpec = _state["spec"]
+    wind = _state["loader"].wind_field(spec.run, member, spec.lead_hours)
+    follower = TrackFollower(_state["speed_model"], _state["progress"])
+    hours = sorted({min(hour, spec.hours) for hour in OUTLOOK_HOURS})
+    return member, [follower.distances_to_go(track, wind, spec.start, hours) for track in tracks]

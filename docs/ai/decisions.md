@@ -2,6 +2,21 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D55 — Options compared in all 31 weathers, on distance to go through every mark (user, 2026-11-01)
+- User: the 10/31 option's line went further than the 16/31 one. Each option's line is its medoid member's
+  route in THAT member's weather: lengths compare weathers, not placements; and going further or faster is
+  worthless if it adds miles. The measure is the distance to go to the finish through every remaining mark
+  (`MarkProgress.distance_to_go_nm`: the Guadeloupe tour counted mark by mark, any course alike).
+- Cross-evaluation (`routing/TrackFollower`, run in the member workers after clustering, ≈ 1 s): each option's
+  track is sailed in every member's wind at best VMG towards the next track point (tacking or gybing when the
+  direct course is upwind or dead downwind; a straight-line follower collapsed to 2–3 kn dead downwind), best
+  allowed sail, no penalties; past the end of the track, towards the mark. Replaying a member's own track in its
+  own wind: −22 nm at +48 h, −100 nm at +120 h (the router holds the wind of each 3 h step), same for all options.
+- `ensemble/OptionOutlook` → `options[].outlook`: per hour (48, 120) mean distance to go, mean and worst gain
+  over the recommended option, share of scenarios ahead. Option cards: "+48 h : reste 2 694 milles · +5 j : …"
+  for the recommended one, "+48 h : −38 milles · +5 j : +56 milles" for the others; details in the tooltip.
+- The recommendation stays the most frequent option (user did not ask to change it).
+
 ## D54 — An order is a straight line the game can hold (user, 2026-10-31)
 - Game screenshot: holding the plan's "284° · Spi" for 11 h 30 heads straight into the coast, while our line
   curved. Cause: a new order only started when the heading drifted ≥ 10° from the order's FIRST heading, and the

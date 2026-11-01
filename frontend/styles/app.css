@@ -516,6 +516,9 @@ select, input[type="text"], input[type="number"] {
 .option-card[data-route="3"] { --route: var(--route-3); }
 .option-card:hover { box-shadow: var(--glass-shadow), 0 0 0 1px var(--line); }
 .option-card[aria-pressed="true"] { box-shadow: var(--glass-shadow), inset 0 0 0 2px var(--route); }
+.option-outlook { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.option-outlook .gain { color: var(--conf-high-ink); font-weight: 600; }
+.option-outlook .loss { color: #c2410c; font-weight: 600; }
 .ring { position: relative; width: 52px; height: 52px; display: grid; place-items: center; }
 .ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ring-track { fill: none; stroke: var(--line); stroke-width: 5; }

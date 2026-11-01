@@ -320,5 +320,11 @@
   "timebar.previous": "Previous change of orders",
   "timebar.next": "Next change of orders",
   "timebar.day": "+{d} d",
-  "view.five": "5 d"
+  "view.five": "5 d",
+  "option.outlook.days": "+{d} d",
+  "option.outlook.to_go": "{when}: {nm} nm to go",
+  "option.outlook.gain": "{when}: {nm} nm",
+  "option.outlook.tip_recommended": "Distance still to go to the finish, through every mark, averaged over the 31 weather scenarios.",
+  "option.outlook.tip_other": "Miles ahead (+) or behind (−) the recommended option, averaged over the 31 weather scenarios, as distance to go to the finish through every mark.",
+  "option.outlook.tip_row": "{when}: ahead in {ahead} of {total} scenarios, at worst {worst} nm"
 }

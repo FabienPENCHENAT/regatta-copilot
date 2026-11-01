@@ -1,5 +1,7 @@
 // The route options as compact selectable cards: a small ring with the chance of being the best,
-// the option name, and one short line (type, number of scenarios). Full details in the tooltip.
+// the option name, one short line (type, number of scenarios) and the outlook: each option's track sailed in all
+// 31 weathers, as distance still to go (recommended option) or miles gained or lost against it (others), at
+// +48 h and at the end. Full details in the tooltip.
 
 import { createTermTip } from "./term-tip.js";
 import { element } from "../dom.js";
@@ -43,6 +45,11 @@ export class OptionList {
 
     const text = element("span", "option-text");
     text.append(name, facts);
+    const outlook = this.#outlook(result, option);
+    if (outlook) {
+      text.append(outlook.line);
+      button.title += `\n${outlook.tip}`;
+    }
     button.append(this.#ring(option.probability === null ? null : Math.round(option.probability * 100)), text);
     item.append(button);
     return item;
@@ -53,6 +60,32 @@ export class OptionList {
   #support(result, option) {
     if (option.probability === null) return this.translator.t("option.game_forecast_only");
     return this.translator.t("option.members_short", { count: option.member_count, total: result.weather.member_count });
+  }
+
+  #outlook(result, option) {
+    if (!option.outlook?.length) return null;
+    const t = (key, params) => this.translator.t(key, params);
+    const lang = this.translator.lang;
+    const recommended = option.id === result.recommended_option;
+    const when = (hours) => (hours >= 72 ? t("option.outlook.days", { d: Math.round(hours / 24) }) : `+${hours} h`);
+    const miles = (value, sign) => value.toLocaleString(lang, { maximumFractionDigits: 0, signDisplay: sign });
+    const line = element("span", "option-outlook");
+    option.outlook.forEach((row, i) => {
+      if (i) line.append(" · ");
+      if (recommended) {
+        line.append(t("option.outlook.to_go", { when: when(row.hours), nm: miles(row.to_go_nm, "auto") }));
+        return;
+      }
+      const gain = element("span", row.gain_nm >= 0.5 ? "gain" : row.gain_nm <= -0.5 ? "loss" : "",
+        t("option.outlook.gain", { when: when(row.hours), nm: miles(row.gain_nm, "exceptZero") }));
+      line.append(gain);
+    });
+    const total = result.weather.member_count;
+    const tip = recommended ? t("option.outlook.tip_recommended") : [t("option.outlook.tip_other"),
+      ...option.outlook.map((row) => t("option.outlook.tip_row", {
+        when: when(row.hours), ahead: Math.round(row.ahead_share * total), total, worst: miles(row.worst_nm, "exceptZero"),
+      }))].join("\n");
+    return { line, tip };
   }
 
   // percent null: no probability yet (single forecast): an empty ring with a dash.

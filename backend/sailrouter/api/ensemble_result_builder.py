@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from sailrouter.api.ensemble_status_json import ensemble_status_json
 from sailrouter.api.route_json_writer import RouteJsonWriter, iso
-from sailrouter.routing.route_leg_splitter import RouteLegSplitter
+from sailrouter.ensemble.option_outlook import OptionOutlook
 from sailrouter.ensemble.route_option import RouteOption
+from sailrouter.routing.route_leg_splitter import RouteLegSplitter
 from sailrouter.service.ensemble_report import EnsembleReport
 from sailrouter.service.ensemble_status import EnsembleStatus
 
@@ -36,7 +37,8 @@ class EnsembleResultBuilder:
             "next_mark": {"id": game.next_mark_id, "auto": game.next_mark_auto},
             "recommended_option": synthesis.recommended.id,
             "advice": synthesis.advice,
-            "options": [self._option(option) for option in synthesis.options],
+            "options": [self._option(option, outlook)
+                        for option, outlook in zip(synthesis.options, self._outlooks(report))],
             "members": [
                 {"member": member, "option": synthesis.member_options[member],
                  "path": self._writer.hourly_path(route, MEMBER_PATH_DECIMALS),
@@ -47,7 +49,12 @@ class EnsembleResultBuilder:
             "ideal_route": self._writer.track(game.route),
         }
 
-    def _option(self, option: RouteOption) -> dict:
+    @staticmethod
+    def _outlooks(report: EnsembleReport) -> list[list[dict]]:
+        summaries = OptionOutlook().summarize(report.outlook)
+        return summaries + [[] for _ in range(len(report.synthesis.options) - len(summaries))]
+
+    def _option(self, option: RouteOption, outlook: list[dict]) -> dict:
         return {
             "id": option.id,
             "kind": option.kind,
@@ -57,5 +64,6 @@ class EnsembleResultBuilder:
             "eta_delta_h": round(option.eta_delta_h, 1),
             "representative_member": option.representative,
             "dtf_end_nm": round(option.route.distance_to_go_nm),
+            "outlook": outlook,  # this option's track in all 31 weathers, vs the recommended one (OptionOutlook)
             **self._writer.option_body(option.route, option.confidence_by_hour),
         }

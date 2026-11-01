@@ -320,5 +320,11 @@
   "timebar.previous": "Changement d'ordre précédent",
   "timebar.next": "Changement d'ordre suivant",
   "timebar.day": "+{d} j",
-  "view.five": "5 j"
+  "view.five": "5 j",
+  "option.outlook.days": "+{d} j",
+  "option.outlook.to_go": "{when} : reste {nm} milles",
+  "option.outlook.gain": "{when} : {nm} milles",
+  "option.outlook.tip_recommended": "Distance restante jusqu'à l'arrivée, en passant par toutes les marques, moyenne des 31 scénarios météo.",
+  "option.outlook.tip_other": "Milles d'avance (+) ou de retard (−) sur l'option conseillée, en moyenne sur les 31 scénarios météo, distance restante jusqu'à l'arrivée en passant par toutes les marques.",
+  "option.outlook.tip_row": "{when} : devant dans {ahead} scénarios sur {total}, au pire {worst} milles"
 }

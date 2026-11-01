@@ -62,10 +62,29 @@ class EnsembleRoutePlanner:
                     _abandon(pool)
                     raise ComputationSuperseded("a newer route request replaced this one")
             member_routes = {member: route for member, route in (f.result() for f in pending) if route is not None}
-        routed = perf_counter()
-        synthesis = EnsembleSynthesizer().synthesize(member_routes, game.route, game.progress)
-        timings = {"members": routed - began, "synthesis": perf_counter() - routed, "total": perf_counter() - began}
-        return EnsembleReport(game, gefs_run, member_routes, synthesis, timings)
+            routed = perf_counter()
+            synthesis = EnsembleSynthesizer().synthesize(member_routes, game.route, game.progress)
+            synthesized = perf_counter()
+            outlook = self._cross_evaluate(pool, synthesis, list(member_routes), stop_if)
+        timings = {"members": routed - began, "synthesis": synthesized - routed,
+                   "cross": perf_counter() - synthesized, "total": perf_counter() - began}
+        return EnsembleReport(game, gefs_run, member_routes, synthesis, timings, outlook)
+
+    @staticmethod
+    def _cross_evaluate(pool: ProcessPoolExecutor, synthesis, members: list[str],
+                        stop_if: Callable[[], bool]) -> list[dict[str, dict[float, float]]]:
+        """Every option's track sailed in every member's wind: outlook[option][member] = {hour: distance to go}."""
+        tracks = [[(p.lat_deg, p.lon_deg, p.marks_passed) for p in option.route.points] for option in synthesis.options]
+        pending = [pool.submit(member_routing_worker.follow_tracks, member, tracks) for member in members]
+        while wait(pending, timeout=POLL_S).not_done:
+            if stop_if():
+                _abandon(pool)
+                raise ComputationSuperseded("a newer route request replaced this one")
+        outlook: list[dict[str, dict[float, float]]] = [{} for _ in tracks]
+        for member, per_option in (future.result() for future in pending):
+            for index, distances in enumerate(per_option):
+                outlook[index][member] = distances
+        return outlook
 
 
 def _abandon(pool: ProcessPoolExecutor) -> None:
