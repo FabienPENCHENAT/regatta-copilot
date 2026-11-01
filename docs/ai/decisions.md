@@ -15,7 +15,11 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
 - `ensemble/OptionOutlook` → `options[].outlook`: per hour (48, 120) mean distance to go, mean and worst gain
   over the recommended option, share of scenarios ahead. Option cards: "+48 h : reste 2 694 milles · +5 j : …"
   for the recommended one, "+48 h : −38 milles · +5 j : +56 milles" for the others; details in the tooltip.
-- The recommendation stays the most frequent option (user did not ask to change it).
+- The recommendation stays the most frequent option (user's choice). Cards read in words (user found the
+  figures unclear): recommended "Il reste 2 663 milles à +48 h et 1 747 à +5 j (moyenne des 31 météos)", others
+  "Face à la conseillée : 32 milles derrière à +48 h, à égalité à +5 j"; gaps under 10 nm read "level"
+  (`EVEN_NM`, within the method's error). Badge "Meilleure en moyenne" on the option ≥ 10 nm ahead of the
+  recommended one on average at the last hour measured (+5 j), the furthest ahead if several.
 
 ## D54 — An order is a straight line the game can hold (user, 2026-10-31)
 - Game screenshot: holding the plan's "284° · Spi" for 11 h 30 heads straight into the coast, while our line
