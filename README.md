@@ -57,6 +57,12 @@ The first run creates a Python environment and installs the dependencies. Then o
 
 Open the **settings** (sliders icon on the left) and tick what you own in the game: sails one by one, foils, polished hull, pro winch. Manoeuvre times are pre-filled with the game's values and can be edited. Everything is off by default, like a bare boat in the game.
 
+Wondering whether an option is worth buying? The **Polar and options** page (sail icon on the left) draws your polar with and without it, and measures how many miles it is worth on your route with the current weather.
+
+<div align="center">
+<img src="docs/images/polar.png" alt="Polar and options page: the IMOCA polar at 12 knots, dashed with the player's settings and coloured by best sail with Code 0 ticked, up to 3.3 % faster at 108°" width="720">
+</div>
+
 ## How it works
 
 1. **Weather**: the game's forecast (NOAA GFS) and its 31 scenarios (NOAA GEFS) are downloaded and refreshed in the background every 10 minutes. Nothing is invented: the scenarios are computed by NOAA, Regatta Copilot only reads them.
