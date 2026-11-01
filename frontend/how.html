@@ -27,9 +27,10 @@
   <nav class="how-nav" data-i18n-attr="aria-label:how.nav">
     <a href="#flow" data-i18n="how.flow.title"></a>
     <a href="#data" data-i18n="how.data.title"></a>
-    <a href="#refresh" data-i18n="how.fresh.title"></a>
+    <a href="#scenarios" data-i18n="how.scenarios.title"></a>
     <a href="#method" data-i18n="how.route.title"></a>
     <a href="#options" data-i18n="how.options.title"></a>
+    <a href="#plan" data-i18n="how.plan.title"></a>
   </nav>
   <div id="lang-picker" class="lang-picker how-lang" role="group" data-i18n-attr="aria-label:lang.label"></div>
 </header>
@@ -96,6 +97,61 @@
     </div>
   </section>
 
+  <!-- The 31 GEFS scenarios: what they are, who computes them, what we do with them -->
+  <section id="scenarios" class="how-section">
+    <h2 class="how-h2" data-i18n="how.scenarios.title"></h2>
+    <p class="how-text" data-i18n="how.scenarios.lead"></p>
+    <svg class="how-figure how-fan" viewBox="0 0 640 220" aria-hidden="true">
+        <path d="M40 110 C200 102 380 91 600 16" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 103 380 93 600 36" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 104 380 95 600 29" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 103 380 92 600 -1" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 103 380 91 600 -2" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 101 380 88 600 -0" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 106 380 100 600 22" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 102 380 90 600 3" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 107 380 103 600 34" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 104 380 96 600 31" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 104 380 96 600 56" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 105 380 98 600 48" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 101 380 89 600 4" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 105 380 99 600 15" style="stroke: var(--route-1)"/>
+        <path d="M40 110 C200 109 380 108 600 90" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 110 380 110 600 119" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 108 380 105 600 113" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 107 380 102 600 83" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 110 380 111 600 121" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 110 380 109 600 99" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 109 380 107 600 107" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 112 380 115 600 128" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 109 380 108 600 94" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 112 380 115 600 112" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 110 380 110 600 124" style="stroke: var(--route-2)"/>
+        <path d="M40 110 C200 115 380 122 600 214" style="stroke: var(--route-3)"/>
+        <path d="M40 110 C200 116 380 124 600 180" style="stroke: var(--route-3)"/>
+        <path d="M40 110 C200 113 380 118 600 163" style="stroke: var(--route-3)"/>
+        <path d="M40 110 C200 114 380 119 600 156" style="stroke: var(--route-3)"/>
+        <path d="M40 110 C200 116 380 125 600 201" style="stroke: var(--route-3)"/>
+        <path d="M40 110 C200 115 380 123 600 208" style="stroke: var(--route-3)"/>
+      <circle class="boat" cx="40" cy="110" r="7"/>
+    </svg>
+    <p class="how-caption" data-i18n="how.scenarios.caption"></p>
+    <div class="how-cards">
+      <article class="how-card accent-blue">
+        <span class="how-tag">NOAA GEFS</span>
+        <h3 data-i18n="how.scenarios.noaa.title"></h3><p data-i18n="how.scenarios.noaa.text"></p>
+      </article>
+      <article class="how-card accent-mint">
+        <span class="how-tag" data-i18n="how.scenarios.ours.tag"></span>
+        <h3 data-i18n="how.scenarios.ours.title"></h3><p data-i18n="how.scenarios.ours.text"></p>
+      </article>
+      <article class="how-card accent-violet">
+        <span class="how-tag" data-i18n="how.scenarios.limits.tag"></span>
+        <h3 data-i18n="how.scenarios.limits.title"></h3><p data-i18n="how.scenarios.limits.text"></p>
+      </article>
+    </div>
+  </section>
+
   <!-- Weather refresh timeline -->
   <section id="refresh" class="how-section">
     <h2 class="how-h2" data-i18n="how.fresh.title"></h2>
@@ -130,21 +186,39 @@
     </div>
   </section>
 
-  <!-- From scenarios to options, with an example -->
+  <!-- From scenarios to options: grouping, probability, comparison in all 31 weathers -->
   <section id="options" class="how-section">
     <h2 class="how-h2" data-i18n="how.options.title"></h2>
     <p class="how-text" data-i18n="how.options.lead"></p>
+    <ol class="how-steps">
+      <li><h3 data-i18n="how.options.1.title"></h3><p data-i18n="how.options.1.text"></p></li>
+      <li><h3 data-i18n="how.options.2.title"></h3><p data-i18n="how.options.2.text"></p></li>
+      <li><h3 data-i18n="how.options.3.title"></h3><p data-i18n="how.options.3.text"></p></li>
+      <li><h3 data-i18n="how.options.4.title"></h3><p data-i18n="how.options.4.text"></p></li>
+    </ol>
     <div class="how-example" aria-hidden="true">
-      <div class="how-ring" style="--share: 52; --route: var(--route-1)"><span>52%</span><small data-i18n="option.name.west"></small></div>
-      <div class="how-ring" style="--share: 26; --route: var(--route-2)"><span>26%</span><small data-i18n="option.name.direct"></small></div>
-      <div class="how-ring" style="--share: 22; --route: var(--route-3)"><span>22%</span><small data-i18n="option.name.south"></small></div>
+      <div class="how-ring" style="--share: 45; --route: var(--route-1)"><span>45%</span><small data-i18n="option.name.south"></small></div>
+      <div class="how-ring" style="--share: 36; --route: var(--route-2)"><span>36%</span><small data-i18n="option.name.north"></small></div>
+      <div class="how-ring" style="--share: 19; --route: var(--route-3)"><span>19%</span><small data-i18n="option.name.direct"></small></div>
     </div>
     <dl class="how-terms">
-      <div><dt data-i18n="how.options.probability.title"></dt><dd data-i18n="how.options.probability.text"></dd></div>
       <div><dt data-i18n="how.options.recommended.title"></dt><dd data-i18n="how.options.recommended.text"></dd></div>
+      <div><dt data-i18n="how.options.best.title"></dt><dd data-i18n="how.options.best.text"></dd></div>
+      <div><dt data-i18n="how.options.versus.title"></dt><dd data-i18n="how.options.versus.text"></dd></div>
       <div><dt data-i18n="how.options.game.title"></dt><dd data-i18n="how.options.game.text"></dd></div>
-      <div><dt data-i18n="how.options.plan.title"></dt><dd data-i18n="how.options.plan.text"></dd></div>
     </dl>
+  </section>
+
+  <!-- Route plan: orders the game can hold -->
+  <section id="plan" class="how-section">
+    <h2 class="how-h2" data-i18n="how.plan.title"></h2>
+    <p class="how-text" data-i18n="how.plan.lead"></p>
+    <div class="how-callouts">
+      <p class="how-callout" data-i18n="how.plan.straight"></p>
+      <p class="how-callout" data-i18n="how.plan.safe"></p>
+      <p class="how-callout" data-i18n="how.plan.cuts"></p>
+      <p class="how-callout" data-i18n="how.plan.confidence"></p>
+    </div>
   </section>
 
   <!-- Settings and limits -->

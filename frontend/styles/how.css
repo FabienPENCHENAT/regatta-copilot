@@ -89,6 +89,7 @@
 .how-figure .route { fill: none; stroke: var(--route-1); stroke-width: 4; stroke-linecap: round; }
 .how-figure .boat { fill: #ffffff; stroke: var(--ideal-line); stroke-width: 2; }
 .how-figure .mark { fill: var(--tile-sail); stroke: #ffffff; stroke-width: 3; }
+.how-fan path { fill: none; stroke-width: 1.6; stroke-opacity: 0.75; }
 .how-caption { font-size: 0.8125rem; text-align: center; }
 .how-steps { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; counter-reset: step; }
 .how-steps li {
