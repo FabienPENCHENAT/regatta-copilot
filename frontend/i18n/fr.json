@@ -356,5 +356,6 @@
   "how.plan.safe": "Aucune ligne d'ordre n'approche à moins de 1 mille d'une côte ou d'une zone interdite : suivre la feuille de route garde la même marge que la route.",
   "how.plan.cuts": "Un changement de voile, un virement ou un empannage commencent toujours un nouvel ordre. Le numéro de l'ordre en cours pulse sur la carte.",
   "how.plan.confidence": "La confiance d'un ordre est la part des scénarios de l'option qui passent dans la zone visée à cette heure-là : elle baisse avec le temps.",
-  "map.boat_at_plain": "{option} à +{h} ({time})"
+  "map.boat_at_plain": "{option} à +{h} ({time})",
+  "unit.kmh_value": "{value} km/h"
 }

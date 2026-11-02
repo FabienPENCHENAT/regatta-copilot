@@ -488,6 +488,7 @@ select, input[type="text"], input[type="number"] {
 .speed-needle { stroke: var(--tile-heading); stroke-width: 3; stroke-linecap: round; }
 .speed-hub { fill: var(--tile-heading); }
 .speed-scale { fill: var(--muted); font: 500 8px var(--font-mono); text-anchor: middle; }
+.gauge-secondary { margin-top: -2px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .speed-gauge .gauge-value { margin-top: -6px; }
 @media (max-width: 720px) {
   .instruments { grid-template-columns: 1fr 1fr; }

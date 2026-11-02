@@ -356,5 +356,6 @@
   "how.plan.safe": "No order line comes within 1 nm of a coast or an exclusion zone: following the plan keeps the same margin as the route.",
   "how.plan.cuts": "A sail change, a tack or a gybe always starts a new order. The current order's number pulses on the map.",
   "how.plan.confidence": "An order's confidence is the share of the option's scenarios passing through the target area at that time: it drops with time.",
-  "map.boat_at_plain": "{option} at +{h} ({time})"
+  "map.boat_at_plain": "{option} at +{h} ({time})",
+  "unit.kmh_value": "{value} km/h"
 }
