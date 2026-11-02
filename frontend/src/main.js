@@ -44,6 +44,7 @@ class App {
     this.translator = new Translator();
     this.languagePicker = new LanguagePicker(byId("lang-picker"), (lang) => this.changeLanguage(lang));
     this.map = new RouteMap(byId("map"), this.translator, { onSelectHour: (hour) => this.update({ hour }) });
+    this.map.trackPointer(byId("cursor-coords"));
     this.mapControls = new MapControls(byId("map-controls"), this.translator, {
       onSelectView: (view) => this.update({ view }),
       onSelectHour: (hour) => this.update({ hour }),

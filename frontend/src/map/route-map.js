@@ -10,6 +10,7 @@ import { WindBarbsLayer } from "./wind-barbs-layer.js";
 import { WindGrid } from "./wind-grid.js";
 import { WindParticlesLayer } from "./wind-particles-layer.js";
 import { color, createPanes } from "./map-style.js";
+import { CursorCoordinates } from "./cursor-coordinates.js";
 
 export const WIND_MODES = ["particles", "barbs"];
 const VIEW_HOURS = { day: 24, near: 48, five: 120 }; // member paths hold one point per hour
@@ -29,6 +30,11 @@ export class RouteMap {
     this.routes = new RouteLayer(this.#map, translator, color, onSelectHour);
     this.particles = new WindParticlesLayer(this.#map, color);
     this.barbs = new WindBarbsLayer(this.#map, color);
+  }
+
+  // Shows the position under the mouse in `element` (top of the page).
+  trackPointer(element) {
+    this.pointer = new CursorCoordinates(this.#map, element);
   }
 
   async loadBasemap(urls) {
