@@ -14,7 +14,7 @@
 
 [Getting started](#getting-started) · [How it works](#how-it-works) · [Using it in the game](#using-it-in-the-game) · [FAQ](#faq) · [Technical docs](docs/ai/index.md)
 
-<img src="docs/images/app.png" alt="The chart: the recommended route with numbered orders, thin lines for the 31 scenarios, wind particles, and panels showing the settings to apply now, the three options and the route plan" width="800">
+<img src="docs/images/app.png" alt="The chart in mid-Atlantic: the recommended route with small numbered orders, the current one labelled with heading, sail and speed, thin lines for the 31 scenarios, wind particles, and panels showing the settings to apply now, the three options and the route plan with the expected speed of each order" width="800">
 
 </div>
 
@@ -27,10 +27,10 @@ A single "optimal" route changes every 6 hours with the forecast. Regatta Copilo
 - **The game's weather, read like the game**: NOAA GFS 0.25°, every 3 hours, interpolated in between, picked up 3 h 40 after each run as the game does.
 - **31 scenarios**: the NOAA GEFS ensemble, routed one by one with your boat's polar, then grouped into at most 3 options with their probability ("14 of 31 scenarios").
 - **Options compared fairly**: each option's route is sailed again in all 31 weathers and compared on distance to go to the finish through every mark, so a fast detour only counts if it gains ground. A **Best on average** badge flags the option that wins more often than the recommended one.
-- **A route plan you can type**: one line per order, a constant heading the game can hold, never within 1 nm of a coast or an exclusion zone.
+- **A route plan you can type**: one line per order, a constant heading the game can hold, never within 1 nm of a coast or an exclusion zone, with the speed to expect in knots and km/h (as the game shows it) to check you are on track.
 - **Your boat, not a generic one**: tick the sails and options you own (foils, polished hull, pro winch), set your manoeuvre times, import your own polar from the game.
 - **Polar and options page**: see what a sail or an option changes on your polar, and how many miles it is worth on the current weather.
-- **A real chart**: wind particles or barbs, a time bar over 5 days, numbered orders that pulse as you scrub through time, light and dark themes, French and English.
+- **A real chart**: wind particles or barbs, a time bar over 5 days, numbered orders that pulse as you scrub through time, the position under the mouse in the game's format, light and dark themes, French and English.
 
 ## Getting started
 
@@ -86,7 +86,7 @@ The full explanation, with diagrams, is on the site's **How it works** page.
 ## Using it in the game
 
 1. Copy your position from the game and type it in the race card (degrees, minutes, seconds), then **Compute my route**.
-2. Read **Set this now**: heading, sail, wind and speed for the selected option.
+2. Read **Set this now**: heading, sail, wind and expected speed (knots and km/h) for the selected option.
 3. Type the orders of the **route plan** into the game, one per line. Scrub the time bar to see where each order takes you.
 4. Recompute after each new forecast: the legend shows when the next one is due.
 
