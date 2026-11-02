@@ -362,7 +362,6 @@
   "map.boat_at_plain": "{option} à +{h} ({time})",
   "unit.kmh_value": "{value} km/h",
   "option.current.name": "Ta route en cours",
-  "option.current.origin": "{option} de {time}",
   "option.current.tip": "La suite de l'option que tu suivais, rejouée dans les 31 nouvelles météos.",
   "map.current_route": "Ta route en cours : {option} du calcul de {time}",
   "unit.nm": "{value} mi",
@@ -383,5 +382,7 @@
   "option.short.east_far": "Est très large",
   "option.short.west": "Ouest",
   "option.short.west_wide": "Ouest large",
-  "option.short.west_far": "Ouest très large"
+  "option.short.west_far": "Ouest très large",
+  "option.current.pick": "La voie que tu suivais, parmi celles du calcul de {time} (distance à ta position)",
+  "option.current.choice": "{option} · {nm} mi"
 }

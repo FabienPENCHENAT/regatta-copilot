@@ -16,6 +16,10 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   at the previous position (`RouteHistory`, browser storage; recomputing at the same position keeps that
   reference) and sends its remaining points as `current_route`. Not selectable: its orders are the previous
   ones. Drawn dotted on the map.
+- Correction (user): the recommended option no longer counts as "selected" by default (it won the tie for a
+  player sailing another one); only a clicked option does, else the nearest. A menu on the current-route row lists
+  every option of that computation with its distance from the position; picking one (`RouteHistory.follow`,
+  `followedId`) wins over the distance rule and recomputes. For positions entered before the routes part.
 - Display (user: "cleaner, less height"): the option cards became a compact table, one row per option, gaps
   in aligned columns (+48 h, +5 d, green ahead / red behind / "=" under 10 nm), kind and scenario count in the
   tooltip, "shortest" as a badge. About 200 px high instead of 520.

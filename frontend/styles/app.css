@@ -550,6 +550,14 @@ select, input[type="text"], input[type="number"] {
 .option-row.current-route { cursor: default; border-bottom: 1px solid var(--line); border-radius: 12px 12px 0 0; }
 .option-row.current-route:hover { background: transparent; }
 .current-route-mark { justify-self: center; width: 26px; border-top: 3px dotted var(--ink); opacity: 0.75; }
+.current-route-origin { display: flex; align-items: center; gap: 4px; }
+.current-route-picker {
+  appearance: none; flex-shrink: 0; width: calc(var(--chars, 12) * 1ch + 26px); min-width: 0; min-height: 0; padding: 1px 18px 1px 6px; border: 1px solid var(--line);
+  border-radius: 6px; color: var(--ink); font: inherit; font-weight: 600; line-height: 1.4; cursor: pointer;
+  background: var(--field) no-repeat right 5px center / 8px 5px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%239aaabb'/%3E%3C/svg%3E");
+}
+.current-route-picker option { background: var(--glass-strong); color: var(--ink); }
 .option-cell { justify-self: end; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .option-cell.distance { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
 .option-cell.level { color: var(--muted); }

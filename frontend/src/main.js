@@ -56,7 +56,10 @@ class App {
       onSelectMode: (windMode) => this.update({ windMode }),
     });
     this.nowPanel = new NowPanel(byId("now-panel"), this.translator);
-    this.optionList = new OptionList(byId("options"), this.translator, (optionId) => this.update({ optionId }));
+    this.optionList = new OptionList(byId("options"), this.translator, {
+      onSelect: (optionId) => this.update({ optionId }),
+      onFollow: (optionId) => this.#follow(optionId),
+    });
     this.routePlan = new RoutePlanList(byId("plan"), this.translator, (hour) => this.update({ hour }));
     this.settings = new SettingsPanel(byId("settings"), byId("settings-open"), {
       api: this.api,
@@ -142,7 +145,7 @@ class App {
       });
       if (requestNumber !== this.#latestRequest) return; // a newer request replaced this one
       this.#followed = followed ? { ...followed, position: request.position } : null;
-      this.history.remember(result, result.recommended_option);
+      this.history.remember(result, null); // the recommended option is shown first, not necessarily followed
       if (result.next_mark) this.nextMark.showDetected(result.next_mark.id);
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
@@ -156,6 +159,13 @@ class App {
       this.#showComputing(false);
       this.form.showError(this.translator.t("form.compute_error", { reason: error.message }));
     }
+  }
+
+  // The player corrects which option of the previous computation they have been following: compare again.
+  #follow(optionId) {
+    if (!this.#followed) return;
+    this.history.follow(this.#followed.position, optionId);
+    this.form.submit();
   }
 
   #showComputing(visible) {

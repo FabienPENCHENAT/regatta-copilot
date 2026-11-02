@@ -362,7 +362,6 @@
   "map.boat_at_plain": "{option} at +{h} ({time})",
   "unit.kmh_value": "{value} km/h",
   "option.current.name": "Your current route",
-  "option.current.origin": "{option} from {time}",
   "option.current.tip": "The rest of the option you were following, sailed in the 31 new weathers.",
   "map.current_route": "Your current route: {option} from the {time} computation",
   "unit.nm": "{value} nm",
@@ -383,5 +382,7 @@
   "option.short.east_far": "Far east",
   "option.short.west": "West",
   "option.short.west_wide": "Wide west",
-  "option.short.west_far": "Far west"
+  "option.short.west_far": "Far west",
+  "option.current.pick": "The route you were following, among those of the {time} computation (distance from your position)",
+  "option.current.choice": "{option} · {nm} nm"
 }

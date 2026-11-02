@@ -13,9 +13,22 @@ export class RouteHistory {
 
   // The computation to compare a new one with: the latest if the boat has moved since, else the one before.
   previousFor({ raceId, boatId, position }) {
+    const reference = this.#referenceFor(position);
+    return reference && reference.raceId === raceId && reference.boatId === boatId ? reference.entry : null;
+  }
+
+  // The player says which option of that computation they have been following.
+  follow(position, optionId) {
+    const history = this.preferences.read().routeHistory;
+    const reference = this.#referenceFor(position);
+    if (!reference) return;
+    this.preferences.update({ routeHistory: { ...history, [reference.slot]: { ...reference.entry, followedId: optionId } } });
+  }
+
+  #referenceFor(position) {
     const { latest, earlier } = this.preferences.read().routeHistory ?? {};
-    const reference = latest && moved(latest, position) ? latest : earlier;
-    return reference && reference.raceId === raceId && reference.boatId === boatId ? reference : null;
+    const [slot, entry] = latest && moved(latest, position) ? ["latest", latest] : ["earlier", earlier];
+    return entry ? { slot, entry, raceId: entry.raceId, boatId: entry.boatId } : null;
   }
 
   remember(result, selectedId) {
@@ -28,7 +41,7 @@ export class RouteHistory {
     this.preferences.update({ routeHistory: { latest: entry, earlier: latest && moved(latest, result.position) ? latest : earlier } });
   }
 
-  // The option the player looks at is the one they are likely to follow.
+  // The option the player clicked is the one they are likely to follow.
   select(optionId) {
     const history = this.preferences.read().routeHistory;
     if (!history?.latest) return;

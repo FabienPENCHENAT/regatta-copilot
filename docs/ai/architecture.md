@@ -210,7 +210,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial, side by side under a one-line title naming the option. |
 | `results/option-list.js` | Options as a compact table, one selectable row each (probability ring, name, badges) and the outlook in aligned columns (+48 h, +5 d): gap in nm with the reference; the "your current route" row first, with its distances to go, when it is the reference. Details in the row tooltip. |
 | `results/route-history.js` | Remembers in the browser the options of the latest computation and of the one from the previous position. |
-| `results/followed-route-finder.js` | Recognises the route followed since then: the previous option passing within 30 nm of the new position (the selected one wins a near tie), and the rest of it. |
+| `results/followed-route-finder.js` | Recognises the route followed since then: the previous option passing within 30 nm of the new position (the clicked one wins a near tie, the one picked in the menu always wins), the rest of it, and every option with its distance for the menu. |
 | `results/option-places.js` | Place in the list (north to south, west to east, direct in between) and colour slot (`--route-1..5`) of an option, from its id alone. |
 | `results/plan-legs.js` | The legs shown in both the plan and the map (next 48 h), and the leg at a given hour. |
 | `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, expected speed in kn and km/h, wind, duration) over 48 h; a leg selects its hour on the map. |

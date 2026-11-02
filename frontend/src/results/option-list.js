@@ -15,13 +15,15 @@ const EVEN_NM = 10; // outlook gaps below this are within the cross-evaluation's
 const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
 
 export class OptionList {
-  constructor(container, translator, onSelect) {
+  // onSelect(optionId): show an option; onFollow(optionId): the player says which previous option they follow.
+  constructor(container, translator, { onSelect, onFollow }) {
     this.container = container;
     this.translator = translator;
     this.onSelect = onSelect;
+    this.onFollow = onFollow;
   }
 
-  // followed: the route the player has been following ({ optionId, computedAt }), or null.
+  // followed: the route the player has been following ({ optionId, computedAt, choices }), or null.
   render(result, selectedId, followed) {
     const t = (key, params) => this.translator.t(key, params);
     const title = element("h2", "dock-title");
@@ -49,22 +51,39 @@ export class OptionList {
     return head;
   }
 
-  // Not selectable: its orders are those of the previous computation, already on the player's screen.
+  // Not selectable: its orders are those of the previous computation, already on the player's screen. A menu
+  // names the previous option it continues, to correct when the routes had not parted yet.
   #currentRow(result, followed) {
     const t = (key, params) => this.translator.t(key, params);
     const item = element("li");
     const row = element("div", "option-row current-route");
     row.title = t("option.current.tip");
+    const origin = element("span", "option-facts current-route-origin");
+    origin.append(this.#followPicker(followed));
     const text = element("span", "option-text");
-    text.append(
-      element("span", "option-name", t("option.current.name")),
-      element("span", "option-facts", t("option.current.origin", {
-        option: t(`option.short.${followed.optionId}`), time: formatLocalTime(followed.computedAt, 0, this.translator.lang),
-      })),
-    );
+    text.append(element("span", "option-name", t("option.current.name")), origin);
     row.append(element("span", "current-route-mark"), text, ...this.#distanceCells(result.current_route.outlook));
     item.append(row);
     return item;
+  }
+
+  #followPicker(followed) {
+    const picker = element("select", "current-route-picker");
+    const label = this.translator.t("option.current.pick", { time: formatLocalTime(followed.computedAt, 0, this.translator.lang) });
+    picker.setAttribute("aria-label", label);
+    picker.title = label;
+    for (const choice of followed.choices) {
+      const entry = element("option", "", this.translator.t("option.current.choice", {
+        option: this.translator.t(`option.short.${choice.optionId}`), nm: this.#miles(choice.distanceNm),
+      }));
+      entry.value = choice.optionId;
+      entry.selected = choice.optionId === followed.optionId;
+      picker.append(entry);
+    }
+    // Sized to the longest label: the browser leaves the padding and the arrow out of a styled menu's width.
+    picker.style.setProperty("--chars", String(Math.max(...[...picker.options].map((o) => o.text.length))));
+    picker.addEventListener("change", () => this.onFollow(picker.value));
+    return picker;
   }
 
   #row(result, option, selected, againstCurrent, columns) {
