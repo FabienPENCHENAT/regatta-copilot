@@ -47,8 +47,9 @@ export class RouteMap {
     this.course.render(race, boatId);
   }
 
-  showResult(result, option, hour) {
-    this.routes.render(result, option, hour);
+  // followed: the player's current route ({ optionId, computedAt, position, path }), drawn when it was compared.
+  showResult(result, option, hour, followed) {
+    this.routes.render(result, option, hour, result.current_route ? followed : null);
   }
 
   // "day" / "near": all scenario routes over the next 24 h / 48 h; "race": the whole ideal track to the finish.

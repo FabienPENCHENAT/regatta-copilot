@@ -38,6 +38,13 @@ class ManeuverIn(BaseModel):
         return ManeuverTiming(self.light_min * 60, ratio, self.strong_min * 60, ratio)
 
 
+class CurrentRouteIn(BaseModel):
+    """The rest of the route the player has been following (the option chosen at the previous computation),
+    from just after the position: [lat, lon] points, about one per hour."""
+
+    path: list[tuple[float, float]] = Field(min_length=1, max_length=200)
+
+
 class RouteRequest(BaseModel):
     race_id: str
     boat_id: str | None = None
@@ -45,6 +52,7 @@ class RouteRequest(BaseModel):
     options: BoatOptionsIn = BoatOptionsIn()
     maneuvers: dict[str, ManeuverIn] = {}  # keys: tack, gybe, sailChange; missing = the game's values
     next_mark: str | None = None  # id of the next mark to round; None = found from the position
+    current_route: CurrentRouteIn | None = None  # the options are then compared with it
 
     def maneuver_timings(self) -> dict[str, ManeuverTiming]:
         return {name: maneuver.to_timing() for name, maneuver in self.maneuvers.items()}

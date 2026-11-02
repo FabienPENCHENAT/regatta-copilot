@@ -198,6 +198,14 @@
   "option.kind_short.consensus": "Consensus",
   "direction.north": "le nord",
   "direction.east": "l'est",
+  "direction.north_wide": "le nord large",
+  "direction.north_far": "le nord très large",
+  "direction.south_wide": "le sud large",
+  "direction.south_far": "le sud très large",
+  "direction.east_wide": "l'est large",
+  "direction.east_far": "l'est très large",
+  "direction.west_wide": "l'ouest large",
+  "direction.west_far": "l'ouest très large",
   "direction.consensus": "cette route",
   "advice.consensus": "{count} scénarios sur {total} vont dans le même sens : suis cette route les {hours} prochaines heures.",
   "option.members_short": "{count} scénarios sur {total}",
@@ -367,5 +375,11 @@
   "how.plan.cuts": "Un changement de voile, un virement ou un empannage commencent toujours un nouvel ordre. Le numéro de l'ordre en cours pulse sur la carte.",
   "how.plan.confidence": "La confiance d'un ordre est la part des scénarios de l'option qui passent dans la zone visée à cette heure-là : elle baisse avec le temps.",
   "map.boat_at_plain": "{option} à +{h} ({time})",
-  "unit.kmh_value": "{value} km/h"
+  "unit.kmh_value": "{value} km/h",
+  "option.current.name": "Ta route en cours",
+  "option.current.origin": "{option} du calcul de {time}",
+  "option.current.tip": "La suite de l'option que tu suivais depuis le calcul précédent, à partir de ta position, rejouée dans les 31 nouvelles météos. Les autres options lui sont comparées : si aucune ne la bat nettement, tu peux garder ta route.",
+  "option.outlook.versus_current": "Face à ta route en cours :",
+  "option.outlook.tip_other_current": "La route de cette option rejouée dans les 31 scénarios météo, comparée à ta route en cours sur la distance restante jusqu'à l'arrivée (toutes les marques comprises). Moins de 10 milles d'écart = à égalité.",
+  "map.current_route": "Ta route en cours : {option} du calcul de {time}"
 }

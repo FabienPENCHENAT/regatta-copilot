@@ -21,3 +21,5 @@ class EnsembleReport:
     # Cross-evaluation: outlook[option index][member] = {hour: distance to go (nm)} when the option's track is
     # sailed in that member's wind (see TrackFollower).
     outlook: list[dict[str, dict[float, float]]] = field(default_factory=list)
+    # The player's current route sailed the same way, when the request gave one: {member: {hour: distance to go}}.
+    current_outlook: dict[str, dict[float, float]] | None = None

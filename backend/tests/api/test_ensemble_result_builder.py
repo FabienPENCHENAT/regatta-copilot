@@ -48,6 +48,23 @@ def test_ensemble_result_has_options_with_probabilities_members_and_the_game_rou
     assert result["next_mark"] == {"id": course().legs[0].mark_id, "auto": True}
 
 
+def test_without_a_current_route_the_options_are_compared_with_the_recommended_one():
+    result = EnsembleResultBuilder().build(ensemble_report(), READY)
+    assert result["outlook_reference"] == "recommended" and result["current_route"] is None
+
+
+def test_with_a_current_route_the_options_are_compared_with_it():
+    report = ensemble_report()
+    per_option = [{"p01": {48.0: 100.0}}, {"p01": {48.0: 120.0}}]
+    report = EnsembleReport(report.game, report.gefs_run, report.member_routes, report.synthesis, {}, per_option,
+                            {"p01": {48.0: 110.0}})
+    result = EnsembleResultBuilder().build(report, READY)
+    assert result["outlook_reference"] == "current_route"
+    assert result["current_route"] == {"outlook": [{"hours": 48, "to_go_nm": 110, "gain_nm": 0.0, "worst_nm": 0.0,
+                                                    "ahead_share": 0.0}]}
+    assert [o["outlook"][0]["gain_nm"] for o in result["options"]] == [10.0, -10.0]
+
+
 class FakeJob:
     def status(self):
         return EnsembleStatus("downloading", GEFS_RUN, 400, 1426, 31)

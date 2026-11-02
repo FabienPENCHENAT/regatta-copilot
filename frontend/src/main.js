@@ -14,6 +14,8 @@ import { MapControls } from "./map/map-controls.js";
 import { WindForecastCache } from "./map/wind-forecast-cache.js";
 import { NowPanel } from "./results/now-panel.js";
 import { OptionList } from "./results/option-list.js";
+import { RouteHistory } from "./results/route-history.js";
+import { FollowedRouteFinder } from "./results/followed-route-finder.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
 import { describeNextRefresh } from "./results/data-refresh.js";
 import { EnsembleStatus } from "./results/ensemble-status.js";
@@ -31,6 +33,7 @@ const DEFAULT_POSITION_TEXT = `48°43'05"N 002°08'38"W`; // the game's start (n
 class App {
   #race = null;
   #result = null;
+  #followed = null; // the route the player has been following, compared with the options of #result
   #latestRequest = 0; // only the answer to the latest request is shown
   #settleTimer = null;
   #windTimer = null;
@@ -41,6 +44,8 @@ class App {
     this.computation = new RouteComputation(this.api);
     this.wind = new WindForecastCache(this.api);
     this.preferences = new PreferencesStore();
+    this.history = new RouteHistory(this.preferences);
+    this.followedFinder = new FollowedRouteFinder();
     this.translator = new Translator();
     this.languagePicker = new LanguagePicker(byId("lang-picker"), (lang) => this.changeLanguage(lang));
     this.map = new RouteMap(byId("map"), this.translator, { onSelectHour: (hour) => this.update({ hour }) });
@@ -111,6 +116,7 @@ class App {
   }
 
   update(changes) {
+    if (changes.optionId) this.history.select(changes.optionId);
     this.#state = { ...this.#state, ...changes };
     this.#render({ fitMap: "view" in changes });
   }
@@ -127,11 +133,16 @@ class App {
     const requestNumber = ++this.#latestRequest;
     this.form.showBusy();
     this.#showComputing(true);
+    // The route followed since the previous computation from another position, to compare the new options with.
+    const previous = this.history.previousFor(request);
+    const followed = previous && this.followedFinder.find(previous, request.position);
     try {
       const { result, wind } = await this.computation.run({
-        ...request, ...this.settings.request, nextMark: this.nextMark.value,
+        ...request, ...this.settings.request, nextMark: this.nextMark.value, currentRoute: followed?.path ?? null,
       });
       if (requestNumber !== this.#latestRequest) return; // a newer request replaced this one
+      this.#followed = followed ? { ...followed, position: request.position } : null;
+      this.history.remember(result, result.recommended_option);
       if (result.next_mark) this.nextMark.showDetected(result.next_mark.id);
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
@@ -200,9 +211,9 @@ class App {
     const option = result.options.find((o) => o.id === optionId);
     const leg = legAt(option.legs, hour);
     this.nowPanel.render(result, option, this.settings.ownedSails());
-    this.optionList.render(result, option.id);
+    this.optionList.render(result, option.id, this.#followed);
     this.routePlan.render(result, option, hour);
-    this.map.showResult(result, option, hour);
+    this.map.showResult(result, option, hour, this.#followed);
     if (fitMap) this.map.fitView(result, view, measureMapInsets());
     this.map.showBoat(option, Math.min(hour, option.path.length - 1), (leg ?? option.now).heading_deg, result.computed_at);
     this.#renderWind(hour, windMode, view, option);

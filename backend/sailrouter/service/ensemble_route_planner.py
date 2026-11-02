@@ -12,6 +12,7 @@ from sailrouter.domain.geo_point import GeoPoint
 from sailrouter.ensemble.ensemble_synthesizer import EnsembleSynthesizer
 from sailrouter.polar.boat_options import BoatOptions
 from sailrouter.polar.winch_timings import ManeuverTiming
+from sailrouter.routing.mark_progress import MarkProgress
 from sailrouter.service import member_routing_worker
 from sailrouter.service.computation_superseded import ComputationSuperseded
 from sailrouter.service.ensemble_report import EnsembleReport
@@ -27,9 +28,10 @@ POLL_S = 0.5  # how often a running ensemble checks whether it was replaced
 
 class EnsembleRoutePlanner:
     """Routes every GEFS member of a run already on disk in parallel worker processes, the deterministic GFS
-    (the game's route) in this process meanwhile, then turns the member routes into options. `stop_if` is
-    polled while the members run: when it turns true, the members not started yet are cancelled and
-    ComputationSuperseded is raised."""
+    (the game's route) in this process meanwhile, then turns the member routes into options and sails every
+    option's track in every member's weather, plus the player's current route when given (the rest of the
+    option followed since the previous computation, from the position). `stop_if` is polled while the members
+    run: when it turns true, the members not started yet are cancelled and ComputationSuperseded is raised."""
 
     def __init__(self, paths: ProjectPaths, workers: int | None = None, prefer_cached: bool = False) -> None:
         self._paths = paths
@@ -40,7 +42,7 @@ class EnsembleRoutePlanner:
         self, race_id: str, boat_id: str | None, position: GeoPoint, hours: float, gefs_run: ModelRun,
         start: datetime | None = None, options: BoatOptions | None = None,
         maneuvers: dict[str, ManeuverTiming] | None = None, next_mark: str | None = None,
-        stop_if: Callable[[], bool] = lambda: False,
+        stop_if: Callable[[], bool] = lambda: False, current_route: list[tuple[float, float]] | None = None,
     ) -> EnsembleReport:
         began = perf_counter()
         race = RaceCatalog(self._paths.races_dir).load(race_id)
@@ -65,16 +67,21 @@ class EnsembleRoutePlanner:
             routed = perf_counter()
             synthesis = EnsembleSynthesizer().synthesize(member_routes, game.route, game.progress)
             synthesized = perf_counter()
-            outlook = self._cross_evaluate(pool, synthesis, list(member_routes), stop_if)
+            tracks = [[(p.lat_deg, p.lon_deg, p.marks_passed) for p in option.route.points]
+                      for option in synthesis.options]
+            if current_route:
+                tracks.append(_current_track(position, current_route, game.progress))
+            outlook = self._cross_evaluate(pool, tracks, list(member_routes), stop_if)
         timings = {"members": routed - began, "synthesis": synthesized - routed,
                    "cross": perf_counter() - synthesized, "total": perf_counter() - began}
-        return EnsembleReport(game, gefs_run, member_routes, synthesis, timings, outlook)
+        options_outlook = outlook[:len(synthesis.options)]
+        current_outlook = outlook[len(synthesis.options)] if current_route else None
+        return EnsembleReport(game, gefs_run, member_routes, synthesis, timings, options_outlook, current_outlook)
 
     @staticmethod
-    def _cross_evaluate(pool: ProcessPoolExecutor, synthesis, members: list[str],
+    def _cross_evaluate(pool: ProcessPoolExecutor, tracks: list[list[tuple[float, float, int]]], members: list[str],
                         stop_if: Callable[[], bool]) -> list[dict[str, dict[float, float]]]:
-        """Every option's track sailed in every member's wind: outlook[option][member] = {hour: distance to go}."""
-        tracks = [[(p.lat_deg, p.lon_deg, p.marks_passed) for p in option.route.points] for option in synthesis.options]
+        """Every track sailed in every member's wind: outlook[track][member] = {hour: distance to go}."""
         pending = [pool.submit(member_routing_worker.follow_tracks, member, tracks) for member in members]
         while wait(pending, timeout=POLL_S).not_done:
             if stop_if():
@@ -85,6 +92,14 @@ class EnsembleRoutePlanner:
             for index, distances in enumerate(per_option):
                 outlook[index][member] = distances
         return outlook
+
+
+def _current_track(position: GeoPoint, route: list[tuple[float, float]],
+                   progress: MarkProgress) -> list[tuple[float, float, int]]:
+    """The player's current route from the position, with the marks passed along it."""
+    lat = [position.lat_deg, *(point[0] for point in route)]
+    lon = [position.lon_deg, *(point[1] for point in route)]
+    return list(zip(lat, lon, progress.legs_along(lat, lon)))
 
 
 def _abandon(pool: ProcessPoolExecutor) -> None:

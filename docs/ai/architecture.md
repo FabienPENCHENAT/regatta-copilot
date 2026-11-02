@@ -117,7 +117,7 @@ Commands (from the repo root):
 | `HeadingFan` | Candidate headings (every 5°) from each front point. |
 | `Isochrone` | One front: positions, parent indices, and the arriving segment's heading, TWA, TWS, sail, speed, leg. |
 | `CourseLeg` | One leg: anchor (start / previous mark), target, gate line + crossing direction or waypoint radius. |
-| `MarkProgress` | Legs of the race from a position; detects passing (gate/line crossed in its direction, so rounding marks on the right side; waypoint within 2 nm); finishing segments end on the finish line; distance to go. |
+| `MarkProgress` | Legs of the race from a position; detects passing (gate/line crossed in its direction, so rounding marks on the right side; waypoint within 2 nm); finishing segments end on the finish line; distance to go; `legs_along` gives the leg index along a given track. |
 | `IsochronePruner` | Keeps the most advanced leg, then the farthest point from the leg anchor per 0.5° sector. |
 | `IsochroneRouter` | Runs the steps: wind → best sail/speed → maneuver penalty → destination → drop obstacles → marks → prune. |
 | `NextMarkFinder` | First mark still ahead of a position (gates/lines crossed by > 2 nm are skipped; rounding marks, with `leave_to`, never are). |
@@ -154,7 +154,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 |---|---|
 | `RoutePlanner` | Routes one boat on the deterministic GFS (the game's weather) → `RouteReport` (with the next mark used and whether it was automatic); also provides the GFS wind for the map. `prefer_cached` (web): newest run on disk. |
 | `RouterBuilder` | Boat models (polar, owned sails, manoeuvre overrides), land + zones obstacles, `IsochroneRouter` for a wind field. |
-| `EnsembleRoutePlanner` | Routes the 31 members in a spawned `ProcessPoolExecutor` (cpu − 1 workers) while the GFS route runs in-process, then `EnsembleSynthesizer` → `EnsembleReport`. |
+| `EnsembleRoutePlanner` | Routes the 31 members in a spawned `ProcessPoolExecutor` (cpu − 1 workers) while the GFS route runs in-process, then `EnsembleSynthesizer`, then sails every option's track (and the player's current route, if sent) in every member's wind → `EnsembleReport`. |
 | `member_routing_worker` (module) | `MemberRoutingSpec`; per-process `initialize` (race, polar, land raster once) and `route_member` (decode one member, route it). |
 | `EnsembleDownloadJob` | One GEFS download at a time in a background thread: `ensure(window)` returns the newest run on disk and starts a newer one; `status()`; `download()` for the CLI; failed runs retried after 10 min. |
 | `EnsembleStatus` | `ready` / `downloading` / `unavailable`, run, done/total files, member count. |
@@ -208,7 +208,9 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `settings/polar-import.js` | Which polar is used (community or the player's import), import a JSON copied from the game, go back. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
-| `results/option-list.js` | Option cards with a probability ring, listed as on the chart. |
+| `results/option-list.js` | Option cards with a probability ring, listed as on the chart; "your current route" card first when the options are compared with it. |
+| `results/route-history.js` | Remembers in the browser the options of the latest computation and of the one from the previous position. |
+| `results/followed-route-finder.js` | Recognises the route followed since then: the previous option passing within 30 nm of the new position (the selected one wins a near tie), and the rest of it. |
 | `results/option-places.js` | Place in the list (north to south, west to east, direct in between) and colour slot (`--route-1..5`) of an option, from its id alone. |
 | `results/plan-legs.js` | The legs shown in both the plan and the map (next 48 h), and the leg at a given hour. |
 | `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, expected speed in kn and km/h, wind, duration) over 48 h; a leg selects its hour on the map. |

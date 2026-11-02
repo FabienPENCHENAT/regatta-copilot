@@ -67,6 +67,15 @@ class MarkProgress:
             new_leg[np.nonzero(on_leg)[0][passed]] = k + 1
         return new_leg
 
+    def legs_along(self, lat: Sequence[float], lon: Sequence[float]) -> list[int]:
+        """Leg index at each point of a track sailed from its first point (the start of these legs)."""
+        legs = [0]
+        for k in range(1, len(lat)):
+            moved = self.advance(np.array([legs[-1]]), np.array([lat[k - 1]]), np.array([lon[k - 1]]),
+                                 np.array([lat[k]]), np.array([lon[k]]))
+            legs.append(int(moved[0]))
+        return legs
+
     def end_at_finish(self, old_leg: NDArray, new_leg: NDArray, lat0: NDArray, lon0: NDArray, lat1: NDArray,
                       lon1: NDArray) -> tuple[NDArray, NDArray]:
         """Segments that cross the finish line stop on it: what lies beyond (harbour, spectator zone) is never

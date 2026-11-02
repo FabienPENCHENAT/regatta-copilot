@@ -198,6 +198,14 @@
   "option.kind_short.consensus": "Consensus",
   "direction.north": "north",
   "direction.east": "east",
+  "direction.north_wide": "wide north",
+  "direction.north_far": "far north",
+  "direction.south_wide": "wide south",
+  "direction.south_far": "far south",
+  "direction.east_wide": "wide east",
+  "direction.east_far": "far east",
+  "direction.west_wide": "wide west",
+  "direction.west_far": "far west",
   "direction.consensus": "this route",
   "advice.consensus": "{count} of {total} scenarios go the same way: follow this route for the next {hours} h.",
   "option.members_short": "{count} of {total} scenarios",
@@ -367,5 +375,11 @@
   "how.plan.cuts": "A sail change, a tack or a gybe always starts a new order. The current order's number pulses on the map.",
   "how.plan.confidence": "An order's confidence is the share of the option's scenarios passing through the target area at that time: it drops with time.",
   "map.boat_at_plain": "{option} at +{h} ({time})",
-  "unit.kmh_value": "{value} km/h"
+  "unit.kmh_value": "{value} km/h",
+  "option.current.name": "Your current route",
+  "option.current.origin": "{option} from the {time} computation",
+  "option.current.tip": "The rest of the option you were following since the previous computation, from your position, sailed in the 31 new weathers. The other options are compared with it: if none clearly beats it, you can keep your route.",
+  "option.outlook.versus_current": "Against your current route:",
+  "option.outlook.tip_other_current": "This option's route sailed in the 31 weather scenarios, compared with your current route on distance to go to the finish (every mark included). Under 10 nm apart = level.",
+  "map.current_route": "Your current route: {option} from the {time} computation"
 }

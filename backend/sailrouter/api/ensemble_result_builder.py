@@ -39,6 +39,9 @@ class EnsembleResultBuilder:
             "advice": synthesis.advice,
             "options": [self._option(option, outlook)
                         for option, outlook in zip(synthesis.options, self._outlooks(report))],
+            # the options' outlook compares them with the player's current route when there is one
+            "outlook_reference": "current_route" if report.current_outlook else "recommended",
+            "current_route": self._current_route(report),
             "members": [
                 {"member": member, "option": synthesis.member_options[member],
                  "path": self._writer.hourly_path(route, MEMBER_PATH_DECIMALS),
@@ -51,8 +54,15 @@ class EnsembleResultBuilder:
 
     @staticmethod
     def _outlooks(report: EnsembleReport) -> list[list[dict]]:
-        summaries = OptionOutlook().summarize(report.outlook)
+        summaries = OptionOutlook().summarize(report.outlook, report.current_outlook)
         return summaries + [[] for _ in range(len(report.synthesis.options) - len(summaries))]
+
+    @staticmethod
+    def _current_route(report: EnsembleReport) -> dict | None:
+        """The player's current route sailed in all 31 weathers (its own reference: distances to go only)."""
+        if not report.current_outlook:
+            return None
+        return {"outlook": OptionOutlook().summarize([report.current_outlook])[0]}
 
     def _option(self, option: RouteOption, outlook: list[dict]) -> dict:
         return {

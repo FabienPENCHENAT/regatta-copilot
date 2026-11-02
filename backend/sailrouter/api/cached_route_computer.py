@@ -28,7 +28,7 @@ from sailrouter.weather.model_run import ModelRun
 
 ROUTE_HOURS = 120.0
 FALLBACK_RESULT_LIFETIME = timedelta(minutes=30)  # result made on an older run than expected: retry soon
-ENGINE_VERSION = 11  # bump when the routing, the result format or a race file changes, so stored results are recomputed (11: option names against the line to the mark)
+ENGINE_VERSION = 12  # bump when the routing, the result format or a race file changes, so stored results are recomputed (12: current route)
 log = logging.getLogger(__name__)
 _COMPUTING = threading.Lock()  # shared by requests and the background pre-computation
 _REQUESTS = RouteRequestLedger()
@@ -94,7 +94,8 @@ class CachedRouteComputer:
                          start=start, next_mark=request.next_mark, options=request.options.to_options(),
                          maneuvers=request.maneuver_timings())
         if gefs_run is not None:
-            ensemble = self._ensemble_or_none(gefs_run, arguments, superseded)
+            current_route = request.current_route.path if request.current_route else None
+            ensemble = self._ensemble_or_none(gefs_run, arguments, superseded, current_route)
             if ensemble is not None:
                 return EnsembleResultBuilder(self._splitter(request.race_id)).build(ensemble, self._job.status())
         report = RoutePlanner(self._paths, prefer_cached=True).plan(**arguments)
@@ -105,12 +106,13 @@ class CachedRouteComputer:
         obstacles = RouterBuilder(self._paths).obstacles(RaceCatalog(self._paths.races_dir).load(race_id))
         return RouteLegSplitter(blocked=lambda *segment: bool(obstacles.blocked(*([value] for value in segment))[0]))
 
-    def _ensemble_or_none(self, gefs_run: ModelRun, arguments: dict, superseded: Callable[[], bool]):
+    def _ensemble_or_none(self, gefs_run: ModelRun, arguments: dict, superseded: Callable[[], bool],
+                          current_route: list[tuple[float, float]] | None):
         """The ensemble report, or None (logged) when the members cannot be routed, so the game's route is still
         served (e.g. a damaged cached GRIB file)."""
         try:
             return EnsembleRoutePlanner(self._paths, prefer_cached=True).plan(
-                gefs_run=gefs_run, stop_if=superseded, **arguments)
+                gefs_run=gefs_run, stop_if=superseded, current_route=current_route, **arguments)
         except (ValueError, KeyError, ComputationSuperseded):
             raise
         except Exception:  # noqa: BLE001 - any failure of the 31 routes must not hide the game's route
@@ -139,4 +141,6 @@ def _cache_inputs(request: RouteRequest, start: datetime, gfs_run: ModelRun, gef
         "maneuvers": {k: v.model_dump() for k, v in request.maneuvers.items()},
         "next_mark": request.next_mark, "polar": polar,
         "start": rounded.isoformat(), "gfs": gfs_run.key, "gefs": gefs_run.key if gefs_run else None,
+        "current_route": [[round(lat, 3), round(lon, 3)] for lat, lon in request.current_route.path]
+        if request.current_route else None,
     }

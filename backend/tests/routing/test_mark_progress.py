@@ -89,6 +89,12 @@ def test_waypoint_reached_within_radius():
     assert progress.advance(np.zeros(2, dtype=np.int16), lat, lon0, lat, lon1).tolist() == [1, 0]
 
 
+def test_legs_along_a_track_count_the_marks_passed_on_the_way():
+    start, buoy, finish = GeoPoint(10.0, -30.0), GeoPoint(10.0, -40.0), GeoPoint(10.0, -50.0)
+    progress = MarkProgress([CourseLeg("buoy", start, buoy, radius_nm=2.0), CourseLeg("finish", buoy, finish, radius_nm=2.0)])
+    assert progress.legs_along([10.0, 10.0, 10.0, 10.0], [-30.0, -35.0, -41.0, -45.0]) == [0, 0, 1, 1]
+
+
 def test_distance_to_go_adds_the_remaining_legs(progress):
     start = GeoPoint(48.718, -2.144)
     to_go = progress.distance_to_go_nm(np.array([0]), np.array([start.lat_deg]), np.array([start.lon_deg]))

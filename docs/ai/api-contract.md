@@ -44,7 +44,10 @@ m/s, rows north to south):
 ## `POST /api/route`
 Request: `{ "race_id", "boat_id", "position": { "lat", "lon" }, "options": { "sails": ["Code0", ...] },
 "maneuvers": { "tack": { "light_min", "strong_min", "speed_percent" }, "gybe": {...}, "sailChange": {...} },
-"next_mark": "<mark id>" | null }`.
+"next_mark": "<mark id>" | null, "current_route": { "path": [[lat, lon], ...] } | null }`.
+`current_route` (optional, 1–200 points): the rest of the route the player has been following (the option of the
+previous computation from another position, recognised by the page), from just after `position`. It is sailed
+in the 31 weathers like the options, which are then compared with it (decision D60).
 `next_mark` (optional, default null = automatic): the next mark to sail to, any id of `marks[]` or `"finish"`;
 the marks before it are considered passed. Unknown id → **400** `{"detail": "unknown mark 'x' (known: ...)"}`.
 Automatic: gates/lines without `leave_to` are skipped once the position is > 2 nm beyond them in their crossing
@@ -74,7 +77,9 @@ lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe
 
 **Ensemble result**: 1 to 4 options, most probable first.
 - `outlook` (ensemble only): `[{ hours: 48|120, to_go_nm, gain_nm, worst_nm, ahead_share }]`: the option's
-  track sailed in each of the 31 weathers (D55); `gain_nm` / `worst_nm` vs the recommended option, positive = ahead.
+  track sailed in each of the 31 weathers (D55); `gain_nm` / `worst_nm` vs the reference, positive = ahead.
+  The reference is given by `outlook_reference`: `"current_route"` when the request had one, else
+  `"recommended"`. `current_route`: `{ outlook: [...] }` (its own distances to go, gains 0) or null.
 - `id`: `consensus` when there is a single option, else unique among `direct` (nearest the line boat → next
   mark), and on each side of that line the compass name of the side (`north`/`south` on a westward course,
   `west`/`east` on a southward one), the next options on that side `<name>_wide` then `<name>_far` (decision

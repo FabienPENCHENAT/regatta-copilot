@@ -1,5 +1,6 @@
-// Routes of a result: the computed track, the scenario routes (thin), the selected option (thick) with a
-// numbered point at each change of orders (same numbers as the route plan), and the boat at the selected hour.
+// Routes of a result: the computed track, the scenario routes (thin), the player's current route (dashed), the
+// selected option (thick) with a numbered point at each change of orders (same numbers as the route plan), and
+// the boat at the selected hour.
 
 import { formatHeading, formatHoursMinutes, formatKnots, formatLocalTime } from "../results/display-format.js";
 import { colourSlot } from "../results/option-places.js";
@@ -20,9 +21,10 @@ export class RouteLayer {
     this.#boat = L.layerGroup().addTo(map);
   }
 
-  render(result, option, hour) {
+  render(result, option, hour, followed) {
     this.#routes.clearLayers();
     this.#idealRoute(result.ideal_route);
+    if (followed) this.#currentRoute(followed);
     for (const member of result.members) {
       L.polyline(member.line ?? member.path, {
         color: this.color(`--route-${colourSlot(member.option)}`), weight: 1.4, opacity: 0.4, interactive: false,
@@ -80,6 +82,18 @@ export class RouteLayer {
       time: formatLocalTime(startIso, hour, this.translator.lang), n: legs.indexOf(current) + 1,
     };
     return current && hour < (legs.at(-1)?.end_hour ?? 0) ? t("map.boat_at", params) : t("map.boat_at_plain", params);
+  }
+
+  // The rest of the route the player has been following, from the boat: dashed, in the ink colour, under the options.
+  #currentRoute(followed) {
+    const label = this.translator.t("map.current_route", {
+      option: this.translator.t(`option.name.${followed.optionId}`),
+      time: formatLocalTime(followed.computedAt, 0, this.translator.lang),
+    });
+    L.polyline([[followed.position.lat, followed.position.lon], ...followed.path],
+      { color: this.color("--ink"), weight: 3.5, opacity: 0.9, dashArray: "1 8", lineCap: "round" })
+      .bindTooltip(label, { sticky: true })
+      .addTo(this.#routes);
   }
 
   // Whole computed track on the game's weather, for the eye only: a thin, faint dashed line under the options.

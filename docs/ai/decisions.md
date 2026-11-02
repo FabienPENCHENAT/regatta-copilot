@@ -9,9 +9,13 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   average, then `north` / `north_wide` / `north_far` (or the compass names of the sides for that heading).
   The page lists options as on the chart (north to south, west to east) with one colour per id
   (`results/option-places.js`); only the "Recommended" badge moves. API order stays most probable first.
-- Step 2 (agreed, to do): a 4th card "your current route": the rest of the option the player was following
-  (recognised from the new position), sailed in the new 31 weathers; the new options are compared to it instead
-  of the recommended one. "The past is the past": the question is "keep my route or switch, from here".
+- Step 2 (done): a 4th card "your current route": the rest of the option the player was following, sailed in
+  the new 31 weathers; the new options are compared to it instead of the recommended one. "The past is the
+  past": the question is "keep my route or switch, from here". The page recognises it (`FollowedRouteFinder`:
+  previous option within 30 nm of the new position, the selected one wins a 5 nm tie) from the computation made
+  at the previous position (`RouteHistory`, browser storage; recomputing at the same position keeps that
+  reference) and sends its remaining points as `current_route`. Not selectable: its orders are the previous
+  ones. Drawn dotted on the map.
 - Rejected: left/right (user dislikes), port/starboard (clashes with the tack shown next to it), proper names
   per option (stars) with tracking of each option across runs (thresholds, births, deaths, merges: too much for
   the need), showing what an old option "became" (looks backwards).

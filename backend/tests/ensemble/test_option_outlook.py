@@ -9,3 +9,11 @@ def test_gains_are_measured_against_the_recommended_option_in_each_weather():
     recommended, other = OptionOutlook().summarize(outlook)
     assert recommended == [{"hours": 48, "to_go_nm": 100, "gain_nm": 0.0, "worst_nm": 0.0, "ahead_share": 0.0}]
     assert other == [{"hours": 48, "to_go_nm": 102, "gain_nm": -1.7, "worst_nm": -20.0, "ahead_share": 0.67}]
+
+
+def test_gains_can_be_measured_against_the_players_current_route():
+    outlook = [{"a": {48.0: 100.0}, "b": {48.0: 110.0}}, {"a": {48.0: 90.0}, "b": {48.0: 140.0}}]
+    current = {"a": {48.0: 95.0}, "b": {48.0: 115.0}}
+    recommended, other = OptionOutlook().summarize(outlook, current)
+    assert recommended == [{"hours": 48, "to_go_nm": 105, "gain_nm": 0.0, "worst_nm": -5.0, "ahead_share": 0.5}]
+    assert other == [{"hours": 48, "to_go_nm": 115, "gain_nm": -10.0, "worst_nm": -25.0, "ahead_share": 0.5}]
