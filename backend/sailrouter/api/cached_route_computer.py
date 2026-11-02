@@ -28,7 +28,7 @@ from sailrouter.weather.model_run import ModelRun
 
 ROUTE_HOURS = 120.0
 FALLBACK_RESULT_LIFETIME = timedelta(minutes=30)  # result made on an older run than expected: retry soon
-ENGINE_VERSION = 10  # bump when the routing, the result format or a race file changes, so stored results are recomputed (10: options outlook)
+ENGINE_VERSION = 11  # bump when the routing, the result format or a race file changes, so stored results are recomputed (11: option names against the line to the mark)
 log = logging.getLogger(__name__)
 _COMPUTING = threading.Lock()  # shared by requests and the background pre-computation
 _REQUESTS = RouteRequestLedger()

@@ -75,9 +75,10 @@ lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe
 **Ensemble result**: 1 to 4 options, most probable first.
 - `outlook` (ensemble only): `[{ hours: 48|120, to_go_nm, gain_nm, worst_nm, ahead_share }]`: the option's
   track sailed in each of the 31 weathers (D55); `gain_nm` / `worst_nm` vs the recommended option, positive = ahead.
-- `id`: `consensus` when there is a single option, else unique among `direct` (the most central option, on
-  the members' consensus track), `north`, `south` (its side of that track on a westward course), then `west`,
-  `east` when two options share a side (decision D33) → i18n `option.name.<id>`.
+- `id`: `consensus` when there is a single option, else unique among `direct` (nearest the line boat → next
+  mark), and on each side of that line the compass name of the side (`north`/`south` on a westward course,
+  `west`/`east` on a southward one), the next options on that side `<name>_wide` then `<name>_far` (decision
+  D60) → i18n `option.name.<id>`. The page lists options by id (north to south), not in this order.
 - `kind`: `consensus` (single option), `shortest` (closest to the great circle to the next mark at +48 h) or
   `positioning`.
 - `probability` = `member_count` / members routed (31); `recommended_option` = the first option.

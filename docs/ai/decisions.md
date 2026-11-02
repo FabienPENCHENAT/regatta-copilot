@@ -2,6 +2,22 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D60 — Options keep their meaning from one computation to the next (user, 2026-11-02)
+- Problem: at each recomputation the options changed place (sorted by probability) and name (named against the
+  members' consensus track, which moves with every run), so the player could not tell an option from before.
+- Step 1 (done): names against a fixed line, boat → next mark: `direct` = nearest option within ≈ 50 nm on
+  average, then `north` / `north_wide` / `north_far` (or the compass names of the sides for that heading).
+  The page lists options as on the chart (north to south, west to east) with one colour per id
+  (`results/option-places.js`); only the "Recommended" badge moves. API order stays most probable first.
+- Step 2 (agreed, to do): a 4th card "your current route": the rest of the option the player was following
+  (recognised from the new position), sailed in the new 31 weathers; the new options are compared to it instead
+  of the recommended one. "The past is the past": the question is "keep my route or switch, from here".
+- Rejected: left/right (user dislikes), port/starboard (clashes with the tack shown next to it), proper names
+  per option (stars) with tracking of each option across runs (thresholds, births, deaths, merges: too much for
+  the need), showing what an old option "became" (looks backwards).
+- Seen while testing: two computations two minutes apart, same request and runs, grouped the 31 routes
+  differently. To investigate separately (step 3).
+
 ## D59 — Old weather runs are deleted (user, 2026-11-02)
 - `var/weather/` grew by ≈ 440 MB a day (888 MB). `weather/StaleRunCleaner`, called by `WeatherRefresher` at
   the end of every cycle (`clean` hook) with the runs in use: per model (gfs, gefs) it keeps the run in use, the

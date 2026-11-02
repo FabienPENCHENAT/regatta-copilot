@@ -60,7 +60,7 @@ class EnsembleSynthesizer:
         origin = GeoPoint(routes[0].points[0].lat_deg, routes[0].points[0].lon_deg)
         return self._labeler.label(
             [tuple(early[r]) for r in representatives], [tuple(late[r]) for r in representatives],
-            _median(early), _median(late), origin, self._course(routes, progress),
+            origin, self._course(routes, progress),
         )
 
     def _confidences(self, representative: Route, members: list[Route]) -> dict[int, float]:
@@ -72,7 +72,3 @@ class EnsembleSynthesizer:
         passed = [route.point_at(self._distances.late_h).marks_passed for route in routes]
         leg = progress.legs[min(int(np.median(passed)), len(progress.legs) - 1)]
         return leg.anchor, leg.target
-
-
-def _median(points: np.ndarray) -> tuple[float, float]:
-    return float(np.median(points[:, 0])), float(np.median(points[:, 1]))

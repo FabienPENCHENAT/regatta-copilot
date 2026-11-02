@@ -142,7 +142,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `RouteDistanceMatrix` | Pairwise gap between routes: max(gap at +48 h, 2 × gap at +24 h), nm. |
 | `RouteOptionClusterer` | Average-linkage groups (≤ 70 nm), lone members merged into the nearest group, at most 4 groups, largest first. |
 | `MedoidPicker` | The member route that represents a group (smallest total distance to the others). |
-| `OptionLabeler` | Option id from its side of the consensus track (+48 h gap + 2 × +24 h gap): most central = `direct` (≤ 60 nm), others outermost first get the compass name of their side (`north`/`south` on a westward course, then `west`/`east`), unique; kind `shortest` (closest to the great circle to the next mark) / `positioning`; one option = `consensus`. |
+| `OptionLabeler` | Option id from its side of the fixed line boat → next mark (+48 h gap + 2 × +24 h gap): nearest = `direct` (≤ 150, about 50 nm on average), then on each side the compass name of that side (`north`/`south` on a westward course, `west`/`east` on a southward one), nearest plain, then `_wide`, `_far`; kind `shortest` (closest to the great circle to the next mark) / `positioning`; one option = `consensus`. |
 | `ConfidenceGrader` | Step confidence: share of the option's members within the zone radius (3 + 0.9 × hour nm) of the representative. |
 | `EtaGapEstimator` | Arrival gap vs the best option: hours sailed + distance to go ÷ the route's mean speed. |
 | `AdviceWriter` | Advice as **i18n key + parameters** (never text): `advice.consensus` or `advice.head_direction`. |
@@ -208,7 +208,8 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `settings/polar-import.js` | Which polar is used (community or the player's import), import a JSON copied from the game, go back. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
-| `results/option-list.js` | Option cards with a probability ring. |
+| `results/option-list.js` | Option cards with a probability ring, listed as on the chart. |
+| `results/option-places.js` | Place in the list (north to south, west to east, direct in between) and colour slot (`--route-1..5`) of an option, from its id alone. |
 | `results/plan-legs.js` | The legs shown in both the plan and the map (next 48 h), and the leg at a given hour. |
 | `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, expected speed in kn and km/h, wind, duration) over 48 h; a leg selects its hour on the map. |
 | `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |

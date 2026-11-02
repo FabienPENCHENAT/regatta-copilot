@@ -2,6 +2,7 @@
 // numbered point at each change of orders (same numbers as the route plan), and the boat at the selected hour.
 
 import { formatHeading, formatHoursMinutes, formatKnots, formatLocalTime } from "../results/display-format.js";
+import { colourSlot } from "../results/option-places.js";
 import { legAt, planLegs } from "../results/plan-legs.js";
 
 const BOAT_SVG = `<svg viewBox="-12 -12 24 24" width="28" height="28" aria-hidden="true">
@@ -22,14 +23,13 @@ export class RouteLayer {
   render(result, option, hour) {
     this.#routes.clearLayers();
     this.#idealRoute(result.ideal_route);
-    const routeIndex = new Map(result.options.map((o, i) => [o.id, i + 1]));
     for (const member of result.members) {
       L.polyline(member.line ?? member.path, {
-        color: this.color(`--route-${routeIndex.get(member.option)}`), weight: 1.4, opacity: 0.4, interactive: false,
+        color: this.color(`--route-${colourSlot(member.option)}`), weight: 1.4, opacity: 0.4, interactive: false,
       }).addTo(this.#routes);
     }
     // Every route point (quarter-hours at first), so the leg markers sit on the line; older results: hourly.
-    L.polyline(option.line ?? option.path, { color: this.color(`--route-${routeIndex.get(option.id)}`), weight: 5, opacity: 0.95 })
+    L.polyline(option.line ?? option.path, { color: this.color(`--route-${colourSlot(option.id)}`), weight: 5, opacity: 0.95 })
       .addTo(this.#routes);
     this.#legMarkers(option, hour);
   }

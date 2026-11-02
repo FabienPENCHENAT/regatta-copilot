@@ -3,6 +3,7 @@
 // 31 weathers, as distance still to go (recommended option) or miles gained or lost against it (others), at
 // +48 h and at the end. Full details in the tooltip.
 
+import { colourSlot, inListOrder } from "./option-places.js";
 import { createTermTip } from "./term-tip.js";
 import { element } from "../dom.js";
 
@@ -22,16 +23,17 @@ export class OptionList {
     const title = element("h2", "dock-title");
     title.append(this.translator.t("options.title"), createTermTip(this.translator, "tip.probability"));
     const list = element("ul", "option-list");
-    result.options.forEach((option, index) => list.append(this.#card(result, option, index, option.id === selectedId)));
+    // Listed as on the chart, not by probability: an option keeps its place when the percentages move.
+    for (const option of inListOrder(result.options)) list.append(this.#card(result, option, option.id === selectedId));
     this.container.replaceChildren(title, list);
   }
 
-  #card(result, option, index, selected) {
+  #card(result, option, selected) {
     const t = (key, params) => this.translator.t(key, params);
     const item = element("li");
     const button = element("button", "glass option-card");
     button.type = "button";
-    button.dataset.route = String(index + 1);
+    button.dataset.route = String(colourSlot(option.id));
     button.setAttribute("aria-pressed", String(selected));
     button.addEventListener("click", () => this.onSelect(option.id));
 

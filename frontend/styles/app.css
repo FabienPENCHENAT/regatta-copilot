@@ -53,6 +53,8 @@
   --route-1: #3d7bfd;
   --route-2: #12b886;
   --route-3: #8b6cf6;
+  --route-4: #0c9fb8;
+  --route-5: #d6336c;
   /* Confidence = intensity of one blue, not a traffic light. Zones on the map glow white over the slate sea. */
   --conf-high: #2f6fed;
   --conf-medium: #7ea8f3;
@@ -83,7 +85,7 @@
     --graticule: rgba(190, 215, 240, 0.16); --graticule-label: rgba(190, 215, 240, 0.6); --sea-label: rgba(190, 215, 240, 0.75);
     --ideal-halo: #ffffff; --ideal-line: #ffffff;
     --conf-high: #6ea8ff; --conf-medium: #3f6db5; --conf-low: #2a3d5c; --conf-high-ink: #8dbbff; --conf-medium-ink: #6f95d6; --conf-low-ink: #7d8ba0;
-    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
+    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --route-4: #66d9e8; --route-5: #f06595; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
     color-scheme: dark;
   }
 }
@@ -97,7 +99,7 @@
   --graticule: rgba(190, 215, 240, 0.16); --graticule-label: rgba(190, 215, 240, 0.6); --sea-label: rgba(190, 215, 240, 0.75);
   --ideal-halo: #ffffff; --ideal-line: #ffffff;
   --conf-high: #6ea8ff; --conf-medium: #3f6db5; --conf-low: #2a3d5c; --conf-high-ink: #8dbbff; --conf-medium-ink: #6f95d6; --conf-low-ink: #7d8ba0;
-    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
+    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --route-4: #66d9e8; --route-5: #f06595; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
   color-scheme: dark;
 }
 
@@ -530,6 +532,8 @@ select, input[type="text"], input[type="number"] {
 }
 .option-card[data-route="2"] { --route: var(--route-2); }
 .option-card[data-route="3"] { --route: var(--route-3); }
+.option-card[data-route="4"] { --route: var(--route-4); }
+.option-card[data-route="5"] { --route: var(--route-5); }
 .option-card:hover { box-shadow: var(--glass-shadow), 0 0 0 1px var(--line); }
 .option-card[aria-pressed="true"] { box-shadow: var(--glass-shadow), inset 0 0 0 2px var(--route); }
 .option-outlook { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
