@@ -33,6 +33,13 @@ export function formatKnots(value, translator) {
   return translator.t("unit.knots", { value: formatNumber(value, translator.lang) });
 }
 
+const KMH_PER_KNOT = 1.852;
+
+// The same speed in km/h: the game shows km/h to French players.
+export function formatKmh(valueKn, translator) {
+  return translator.t("unit.kmh_value", { value: formatNumber(valueKn * KMH_PER_KNOT, translator.lang) });
+}
+
 // null while only one forecast is routed (no ensemble yet).
 export function confidenceLevel(share) {
   if (share === null || share === undefined) return null;

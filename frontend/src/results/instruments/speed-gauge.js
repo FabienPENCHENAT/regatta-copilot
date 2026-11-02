@@ -1,12 +1,11 @@
 // Boat speed on a half-dial, like a log on a chart table: arc from 0 to the scale maximum, needle on the value.
 
-import { formatNumber } from "../display-format.js";
+import { formatKmh, formatNumber } from "../display-format.js";
 import { element } from "../../dom.js";
 
 const SCALE_MAX_KN = 30; // above the Class40 (18.6 kn) and IMOCA speeds; faster boats peg the needle at the end
 const RADIUS = 46;
 const ARC_LENGTH = Math.PI * RADIUS;
-const KMH_PER_KNOT = 1.852;
 const SCALE_GAP = 19; // 0 and max labels sit this far below the arc ends, clear of the thick arc
 
 export function createSpeedGauge(translator, speedKn) {
@@ -25,8 +24,7 @@ export function createSpeedGauge(translator, speedKn) {
   const value = element("span", "gauge-value", formatNumber(speedKn, translator.lang));
   value.append(element("span", "gauge-unit", translator.t("unit.knots_symbol")));
   // The same speed in km/h, smaller: the game shows km/h to French players.
-  const metric = element("span", "gauge-secondary",
-    translator.t("unit.kmh_value", { value: formatNumber(speedKn * KMH_PER_KNOT, translator.lang) }));
+  const metric = element("span", "gauge-secondary", formatKmh(speedKn, translator));
   gauge.append(value, metric, element("span", "gauge-caption", translator.t("now.speed_detail")));
   return gauge;
 }

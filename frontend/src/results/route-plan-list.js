@@ -1,7 +1,7 @@
 // Route plan of the selected option as a list of orders: each leg keeps one heading and one sail until the
 // next change (heading, sail, tack or gybe). Numbered like the points on the map; tapping a leg shows it there.
 
-import { describeTwa, formatCoordinates, formatHeading, formatHoursMinutes, formatKnots, formatLocalTime, formatNumber } from "./display-format.js";
+import { describeTwa, formatCoordinates, formatHeading, formatHoursMinutes, formatKmh, formatKnots, formatLocalTime, formatNumber } from "./display-format.js";
 import { legAt, planLegs } from "./plan-legs.js";
 import { element } from "../dom.js";
 
@@ -51,9 +51,11 @@ export class RoutePlanList {
       element("span", "plan-hours", leg.start_hour === 0 ? t("wind.time_start") : `+${formatHoursMinutes(leg.start_hour)}`),
       element("span", "plan-time", formatLocalTime(result.computed_at, leg.start_hour, lang)),
     );
+    const order = element("span", "plan-order", `${formatHeading(leg.heading_deg)} · ${t(`sail.${leg.sail}`)}`);
+    order.append(this.#speed(leg.speed_kn));
     const main = element("span", "plan-main");
     main.append(
-      element("span", "plan-order", `${formatHeading(leg.heading_deg)} · ${t(`sail.${leg.sail}`)}`),
+      order,
       element("span", "plan-wind", this.#conditions(leg, twa)),
       element("span", "plan-position", formatCoordinates(leg)),
     );
@@ -64,12 +66,19 @@ export class RoutePlanList {
     return item;
   }
 
-  // "Wind 10–12 kn · TWA 146° starboard · 7.9 kn", or "Wind 11 kn · …" when the wind does not change.
+  // Expected boat speed, set apart from the order so it reads at a glance: knots, then km/h smaller.
+  #speed(speedKn) {
+    const speed = element("span", "plan-speed", formatKnots(speedKn, this.translator));
+    speed.append(element("span", "plan-speed-kmh", formatKmh(speedKn, this.translator)));
+    return speed;
+  }
+
+  // "Wind 10–12 kn · TWA 146° starboard", or "Wind 11 kn · …" when the wind does not change.
   #conditions(leg, twa) {
     const lang = this.translator.lang;
     const [min, max] = [formatNumber(leg.tws_min_kn, lang, 0), formatNumber(leg.tws_max_kn, lang, 0)];
     return this.translator.t(min === max ? "plan.wind_steady" : "plan.wind", {
-      min, max, twa: `${twa.angle} ${this.translator.t(twa.tackKey)}`, speed: formatKnots(leg.speed_kn, this.translator),
+      min, max, twa: `${twa.angle} ${this.translator.t(twa.tackKey)}`,
     });
   }
 

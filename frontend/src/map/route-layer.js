@@ -1,7 +1,7 @@
 // Routes of a result: the computed track, the scenario routes (thin), the selected option (thick) with a
 // numbered point at each change of orders (same numbers as the route plan), and the boat at the selected hour.
 
-import { formatHeading, formatHoursMinutes, formatLocalTime } from "../results/display-format.js";
+import { formatHeading, formatHoursMinutes, formatKnots, formatLocalTime } from "../results/display-format.js";
 import { legAt, planLegs } from "../results/plan-legs.js";
 
 const BOAT_SVG = `<svg viewBox="-12 -12 24 24" width="28" height="28" aria-hidden="true">
@@ -39,14 +39,15 @@ export class RouteLayer {
     const current = legAt(legs, hour);
     legs.forEach((leg, index) => {
       const icon = L.divIcon({
-        className: `leg-marker${leg === current ? " current" : ""}`, html: `<span>${index + 1}</span>`, iconSize: [24, 24],
+        className: `leg-marker${leg === current ? " current" : ""}`, html: `<span>${index + 1}</span>`, iconSize: [12, 12],
       });
-      const label = `${index + 1} · ${formatHeading(leg.heading_deg)} · ${this.translator.t(`sail.${leg.sail}`)}`;
+      // The number is already on the point: the label gives the order and the speed to expect.
+      const label = `${formatHeading(leg.heading_deg)} · ${this.translator.t(`sail.${leg.sail}`)} · ${formatKnots(leg.speed_kn, this.translator)}`;
       // The order being sailed at the shown hour pulses and keeps its label open.
       L.marker([leg.lat, leg.lon], { icon, keyboard: false, zIndexOffset: leg === current ? 500 : 0 })
         .bindTooltip(label, leg === current
-          ? { permanent: true, direction: "top", offset: [0, -14], className: "leg-label current" }
-          : { direction: "top", offset: [0, -12], className: "leg-label" })
+          ? { permanent: true, direction: "top", offset: [0, -9], className: "leg-label current" }
+          : { direction: "top", offset: [0, -6], className: "leg-label" })
         .on("click", () => this.onSelectHour(leg.start_hour))
         .addTo(this.#routes);
     });

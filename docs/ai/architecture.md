@@ -210,7 +210,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
 | `results/option-list.js` | Option cards with a probability ring. |
 | `results/plan-legs.js` | The legs shown in both the plan and the map (next 48 h), and the leg at a given hour. |
-| `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, wind, duration) over 48 h; a leg selects its hour on the map. |
+| `results/route-plan-list.js` | Route plan as orders: one row per leg (start, heading, sail, expected speed in kn and km/h, wind, duration) over 48 h; a leg selects its hour on the map. |
 | `results/display-format.js`, `results/term-tip.js`, `dom.js` | Formatting (DMS, headings, decimals per language), jargon tooltips, DOM helper. |
 | `api/api-client.js`, `api/route-computation.js` | Calls the backend; one computation = route then map wind. |
 
