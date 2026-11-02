@@ -19,7 +19,13 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
 - Correction (user): the recommended option no longer counts as "selected" by default (it won the tie for a
   player sailing another one); only a clicked option does, else the nearest. A menu on the current-route row lists
   every option of that computation with its distance from the position; picking one (`RouteHistory.follow`,
-  `followedId`) wins over the distance rule and recomputes. For positions entered before the routes part.
+  `followedId`) wins over the distance rule. For positions entered before the routes part.
+- Then (user, after a result where every new option looked far behind the current route): the options are no
+  longer compared with the current route, only with each other (vs the recommended one, as before). The current
+  route stays as a visual landmark: dotted on the map and a row without figures, with its menu (re-drawn at once,
+  no recomputation). Suspected bias, not investigated: +48 h distance to go favours tracks pointing at the mark,
+  and the current route (hourly points) is smoother than the options' tracks (15 min points). The server still
+  accepts `current_route` (cross-evaluated, `outlook_reference`), unused by the page until the comparison is fair.
 - Display (user: "cleaner, less height"): the option cards became a compact table, one row per option, gaps
   in aligned columns (+48 h, +5 d, green ahead / red behind / "=" under 10 nm), kind and scenario count in the
   tooltip, "shortest" as a badge. About 200 px high instead of 520.

@@ -33,7 +33,7 @@ const DEFAULT_POSITION_TEXT = `48°43'05"N 002°08'38"W`; // the game's start (n
 class App {
   #race = null;
   #result = null;
-  #followed = null; // the route the player has been following, compared with the options of #result
+  #followed = null; // the route the player has been following, shown next to the options of #result
   #latestRequest = 0; // only the answer to the latest request is shown
   #settleTimer = null;
   #windTimer = null;
@@ -136,15 +136,14 @@ class App {
     const requestNumber = ++this.#latestRequest;
     this.form.showBusy();
     this.#showComputing(true);
-    // The route followed since the previous computation from another position, to compare the new options with.
-    const previous = this.history.previousFor(request);
-    const followed = previous && this.followedFinder.find(previous, request.position);
+    // Found before the result is remembered: it compares with the computation made from the previous position.
+    const followed = this.#followedFrom(request);
     try {
       const { result, wind } = await this.computation.run({
-        ...request, ...this.settings.request, nextMark: this.nextMark.value, currentRoute: followed?.path ?? null,
+        ...request, ...this.settings.request, nextMark: this.nextMark.value,
       });
       if (requestNumber !== this.#latestRequest) return; // a newer request replaced this one
-      this.#followed = followed ? { ...followed, position: request.position } : null;
+      this.#followed = followed;
       this.history.remember(result, null); // the recommended option is shown first, not necessarily followed
       if (result.next_mark) this.nextMark.showDetected(result.next_mark.id);
       this.preferences.update({ positionText: this.form.positionText });
@@ -161,11 +160,21 @@ class App {
     }
   }
 
-  // The player corrects which option of the previous computation they have been following: compare again.
+  // The route followed since the previous computation from another position: shown on the map and above the
+  // options for the eye only (the options are compared with each other, not with it).
+  #followedFrom(request) {
+    const previous = this.history.previousFor(request);
+    const followed = previous && this.followedFinder.find(previous, request.position);
+    return followed ? { ...followed, request } : null;
+  }
+
+  // The player corrects which option of the previous computation they have been following.
   #follow(optionId) {
     if (!this.#followed) return;
-    this.history.follow(this.#followed.position, optionId);
-    this.form.submit();
+    const { request } = this.#followed;
+    this.history.follow(request.position, optionId);
+    this.#followed = this.#followedFrom(request);
+    this.#render({ fitMap: false });
   }
 
   #showComputing(visible) {

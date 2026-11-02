@@ -14,13 +14,9 @@ export class ApiClient {
     return this.#get(this.#polarUrl(raceId, boatId));
   }
 
-  // request: { raceId, boatId, position: { lat, lon }, options, maneuvers, nextMark (null = automatic),
-  // currentRoute: rest of the route followed, [[lat, lon], ...] or null }
-  async computeRoute({ raceId, boatId, position, options, maneuvers, nextMark = null, currentRoute = null }) {
-    return this.#send("/api/route", {
-      race_id: raceId, boat_id: boatId, position, options, maneuvers, next_mark: nextMark,
-      current_route: currentRoute ? { path: currentRoute } : null,
-    });
+  // request: { raceId, boatId, position: { lat, lon }, options, maneuvers, nextMark (null = automatic) }
+  async computeRoute({ raceId, boatId, position, options, maneuvers, nextMark = null }) {
+    return this.#send("/api/route", { race_id: raceId, boat_id: boatId, position, options, maneuvers, next_mark: nextMark });
   }
 
   // The player's polar exported from the game replaces the community copy for this race and boat.

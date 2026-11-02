@@ -90,7 +90,8 @@ export class RouteLayer {
       option: this.translator.t(`option.name.${followed.optionId}`),
       time: formatLocalTime(followed.computedAt, 0, this.translator.lang),
     });
-    L.polyline([[followed.position.lat, followed.position.lon], ...followed.path],
+    const { position } = followed.request;
+    L.polyline([[position.lat, position.lon], ...followed.path],
       { color: this.color("--ink"), weight: 3.5, opacity: 0.9, dashArray: "1 8", lineCap: "round" })
       .bindTooltip(label, { sticky: true })
       .addTo(this.#routes);

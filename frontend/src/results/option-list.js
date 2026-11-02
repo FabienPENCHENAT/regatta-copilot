@@ -1,8 +1,8 @@
 // The route options as a compact table, one selectable row per option: a small ring with the chance of being
 // the best, the short name and its badges, then the outlook in aligned columns (+48 h, end): each track sailed
-// in all 31 weathers, as miles gained (green ▲) or lost (red ▼) against the reference. The reference is the
-// player's current route when it was recognised (a row of its own, first, with its distances to go), else the
-// recommended option. Scenarios and worst case in a short tooltip.
+// in all 31 weathers, as miles gained (green ▲) or lost (red ▼) against the recommended option, which shows its
+// distances to go. The player's current route heads the table for the eye only (dotted, like on the map), with a
+// menu to say which previous option it is. Scenarios and worst case in a short tooltip.
 
 import { formatLocalTime } from "./display-format.js";
 import { colourSlot, inListOrder } from "./option-places.js";
@@ -28,32 +28,31 @@ export class OptionList {
     const t = (key, params) => this.translator.t(key, params);
     const title = element("h2", "dock-title");
     title.append(t("options.title"), createTermTip(this.translator, "tip.probability"));
-    const againstCurrent = Boolean(result.current_route && followed);
     const hours = (result.options.find((o) => o.outlook?.length)?.outlook ?? []).map((row) => row.hours);
     const table = element("div", "glass option-table");
     table.style.setProperty("--outlook-columns", String(hours.length));
-    if (hours.length) table.append(this.#head(hours, againstCurrent));
+    if (hours.length) table.append(this.#head(hours));
     const list = element("ul", "option-list");
-    if (againstCurrent) list.append(this.#currentRow(result, followed));
+    if (followed) list.append(this.#currentRow(followed, hours.length));
     for (const option of inListOrder(result.options)) {
-      list.append(this.#row(result, option, option.id === selectedId, againstCurrent, hours.length));
+      list.append(this.#row(result, option, option.id === selectedId, hours.length));
     }
     table.append(list);
     this.container.replaceChildren(title, table);
   }
 
-  #head(hours, againstCurrent) {
+  #head(hours) {
     const t = (key) => this.translator.t(key);
     const head = element("div", "option-head");
     head.title = t("option.table.legend");
-    head.append(element("span"), element("span", "", t(againstCurrent ? "option.table.versus_current" : "option.table.versus_recommended")),
+    head.append(element("span"), element("span", "", t("option.table.versus_recommended")),
       ...hours.map((h) => element("span", "option-cell", this.#when(h))));
     return head;
   }
 
-  // Not selectable: its orders are those of the previous computation, already on the player's screen. A menu
-  // names the previous option it continues, to correct when the routes had not parted yet.
-  #currentRow(result, followed) {
+  // Not selectable and not measured: it is there to see how the new options part from it. A menu names the
+  // previous option it continues, to correct when the routes had not parted yet.
+  #currentRow(followed, columns) {
     const t = (key, params) => this.translator.t(key, params);
     const item = element("li");
     const row = element("div", "option-row current-route");
@@ -62,7 +61,7 @@ export class OptionList {
     origin.append(this.#followPicker(followed));
     const text = element("span", "option-text");
     text.append(element("span", "option-name", t("option.current.name")), origin);
-    row.append(element("span", "current-route-mark"), text, ...this.#distanceCells(result.current_route.outlook));
+    row.append(element("span", "current-route-mark"), text, ...Array.from({ length: columns }, () => element("span", "option-cell")));
     item.append(row);
     return item;
   }
@@ -86,7 +85,7 @@ export class OptionList {
     return picker;
   }
 
-  #row(result, option, selected, againstCurrent, columns) {
+  #row(result, option, selected, columns) {
     const t = (key, params) => this.translator.t(key, params);
     const item = element("li");
     const row = element("button", "option-row");
@@ -102,7 +101,7 @@ export class OptionList {
     if (option.kind === "shortest") name.append(element("span", "badge badge-soft", t("option.kind.shortest")));
     if (option.id === bestOnAverage(result)) name.append(element("span", "badge badge-best", t("option.best_average")));
 
-    const isReference = !againstCurrent && option.id === result.recommended_option;
+    const isReference = option.id === result.recommended_option;
     const cells = !option.outlook?.length ? Array.from({ length: columns }, () => element("span", "option-cell"))
       : isReference ? this.#distanceCells(option.outlook) : this.#gainCells(option.outlook);
     row.title = [this.#summary(result, option), this.#outlookTip(result, option, isReference)].filter(Boolean).join("\n");
@@ -111,7 +110,7 @@ export class OptionList {
     return item;
   }
 
-  // The reference's own distances still to go, on its track in the 31 weathers.
+  // The recommended option's own distances still to go, on its track in the 31 weathers.
   #distanceCells(outlook) {
     return outlook.map((row) => element("span", "option-cell distance", this.translator.t("unit.nm", { value: this.#miles(row.to_go_nm) })));
   }
@@ -166,13 +165,10 @@ export class OptionList {
 }
 
 // The option ahead of the recommended one by at least EVEN_NM on average at the last hour measured (the 31
-// weathers), the furthest ahead if several; null when the recommended option is best or level. Gains may be
-// measured against the current route: the recommended option's own gain is then taken off.
+// weathers), the furthest ahead if several; null when the recommended option is best or level.
 function bestOnAverage(result) {
   const gain = (option) => option.outlook?.at(-1)?.gain_nm ?? 0;
-  const recommended = result.options.find((o) => o.id === result.recommended_option);
-  const base = recommended ? gain(recommended) : 0;
-  const best = result.options.filter((o) => o.id !== result.recommended_option && gain(o) - base >= EVEN_NM)
+  const best = result.options.filter((o) => o.id !== result.recommended_option && gain(o) >= EVEN_NM)
     .sort((a, b) => gain(b) - gain(a))[0];
   return best?.id ?? null;
 }
