@@ -25,6 +25,6 @@ export function createSpeedGauge(translator, speedKn) {
   value.append(element("span", "gauge-unit", translator.t("unit.knots_symbol")));
   // The same speed in km/h, smaller: the game shows km/h to French players.
   const metric = element("span", "gauge-secondary", formatKmh(speedKn, translator));
-  gauge.append(value, metric, element("span", "gauge-caption", translator.t("now.speed_detail")));
+  gauge.append(value, metric);
   return gauge;
 }

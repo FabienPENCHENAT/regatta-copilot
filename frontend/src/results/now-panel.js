@@ -1,5 +1,5 @@
-// "Set this now" for the selected option, as boat instruments: a compass (heading and wind direction),
-// the sail wardrobe with the sail to hoist, a true-wind gauge and a speed dial, then the advice sentence.
+// "Set this now" for the selected option, as boat instruments side by side: a compass (heading and wind
+// direction), the sail wardrobe with the sail to hoist, a true-wind gauge, a speed dial, then the advice sentence.
 
 import { describeTwa, formatHeading } from "./display-format.js";
 import { createTermTip } from "./term-tip.js";
@@ -7,6 +7,7 @@ import { createCompassDial } from "./instruments/compass-dial.js";
 import { createSailWardrobe } from "./instruments/sail-wardrobe.js";
 import { createWindGauge } from "./instruments/wind-gauge.js";
 import { createSpeedGauge } from "./instruments/speed-gauge.js";
+import { colourSlot } from "./option-places.js";
 import { element } from "../dom.js";
 
 const CARDINAL_KEYS = ["compass.n", "compass.e", "compass.s", "compass.w"];
@@ -20,15 +21,16 @@ export class NowPanel {
   render(result, option, ownedSails) {
     const t = (key, params) => this.translator.t(key, params);
     const now = option.now;
-    const head = element("div", "panel-head");
-    head.append(element("h2", "panel-title", t("now.title")),
-      element("span", "panel-subtitle", t("now.for_option", { option: t(`option.name.${option.id}`) })));
+    const title = element("h2", "panel-title now-title", t("now.title"));
+    const optionName = element("span", "now-option", t(`option.name.${option.id}`));
+    optionName.style.setProperty("--route", `var(--route-${colourSlot(option.id)})`);
+    title.append(optionName);
 
     const instruments = element("div", "instruments");
-    instruments.append(this.#headingCell(now), this.#sailCell(now, ownedSails), this.#windAndSpeedCell(now));
+    instruments.append(this.#headingCell(now), this.#sailCell(now, ownedSails), this.#windCell(now), this.#speedCell(now));
     const advice = element("p", "advice", t(result.advice.key,
       { ...result.advice.params, direction: { key: `direction.${result.advice.params.option}` } }));
-    this.container.replaceChildren(head, instruments, advice);
+    this.container.replaceChildren(title, instruments, advice);
   }
 
   #headingCell(now) {
@@ -54,13 +56,15 @@ export class NowPanel {
     return cell;
   }
 
-  #windAndSpeedCell(now) {
-    const cell = element("div", "instrument instrument-gauges");
-    const wind = this.#cell("", "label.tws", "tip.tws");
-    wind.append(createWindGauge(this.translator, now.tws_kn));
-    const speed = this.#cell("", "label.speed");
-    speed.append(createSpeedGauge(this.translator, now.speed_kn));
-    cell.append(wind, speed);
+  #windCell(now) {
+    const cell = this.#cell("instrument-wind", "label.tws", "tip.tws");
+    cell.append(createWindGauge(this.translator, now.tws_kn));
+    return cell;
+  }
+
+  #speedCell(now) {
+    const cell = this.#cell("instrument-speed", "label.speed");
+    cell.append(createSpeedGauge(this.translator, now.speed_kn));
     return cell;
   }
 

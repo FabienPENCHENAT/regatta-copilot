@@ -1,8 +1,8 @@
 // The route options as a compact table, one selectable row per option: a small ring with the chance of being
-// the best, the name and its badges, then the outlook in aligned columns (+48 h, end): each track sailed in all
-// 31 weathers, as miles gained or lost against the reference. The reference is the player's current route when
-// it was recognised (a row of its own, first, with its distances to go), else the recommended option. Details
-// (kind, scenarios, worst case) in the row's tooltip.
+// the best, the short name and its badges, then the outlook in aligned columns (+48 h, end): each track sailed
+// in all 31 weathers, as miles gained (green ▲) or lost (red ▼) against the reference. The reference is the
+// player's current route when it was recognised (a row of its own, first, with its distances to go), else the
+// recommended option. Scenarios and worst case in a short tooltip.
 
 import { formatLocalTime } from "./display-format.js";
 import { colourSlot, inListOrder } from "./option-places.js";
@@ -41,9 +41,11 @@ export class OptionList {
   }
 
   #head(hours, againstCurrent) {
+    const t = (key) => this.translator.t(key);
     const head = element("div", "option-head");
-    head.title = this.translator.t(againstCurrent ? "option.table.versus_current" : "option.table.versus_recommended");
-    head.append(element("span"), element("span"), ...hours.map((h) => element("span", "option-cell", this.#when(h))));
+    head.title = t("option.table.legend");
+    head.append(element("span"), element("span", "", t(againstCurrent ? "option.table.versus_current" : "option.table.versus_recommended")),
+      ...hours.map((h) => element("span", "option-cell", this.#when(h))));
     return head;
   }
 
@@ -57,7 +59,7 @@ export class OptionList {
     text.append(
       element("span", "option-name", t("option.current.name")),
       element("span", "option-facts", t("option.current.origin", {
-        option: t(`option.name.${followed.optionId}`), time: formatLocalTime(followed.computedAt, 0, this.translator.lang),
+        option: t(`option.short.${followed.optionId}`), time: formatLocalTime(followed.computedAt, 0, this.translator.lang),
       })),
     );
     row.append(element("span", "current-route-mark"), text, ...this.#distanceCells(result.current_route.outlook));
@@ -75,7 +77,7 @@ export class OptionList {
     row.addEventListener("click", () => this.onSelect(option.id));
 
     const name = element("span", "option-name-row");
-    name.append(element("span", "option-name", t(`option.name.${option.id}`)));
+    name.append(element("span", "option-name", t(`option.short.${option.id}`)));
     if (option.id === result.recommended_option) name.append(element("span", "badge", t("option.recommended")));
     if (option.game_route) name.append(element("span", "badge badge-soft", t("option.game_badge")));
     if (option.kind === "shortest") name.append(element("span", "badge badge-soft", t("option.kind.shortest")));
@@ -84,8 +86,7 @@ export class OptionList {
     const isReference = !againstCurrent && option.id === result.recommended_option;
     const cells = !option.outlook?.length ? Array.from({ length: columns }, () => element("span", "option-cell"))
       : isReference ? this.#distanceCells(option.outlook) : this.#gainCells(option.outlook);
-    row.title = [this.#summary(result, option), this.#outlookTip(result, option, isReference, againstCurrent)]
-      .filter(Boolean).join("\n");
+    row.title = [this.#summary(result, option), this.#outlookTip(result, option, isReference)].filter(Boolean).join("\n");
     row.append(this.#ring(option.probability === null ? null : Math.round(option.probability * 100)), name, ...cells);
     item.append(row);
     return item;
@@ -96,32 +97,31 @@ export class OptionList {
     return outlook.map((row) => element("span", "option-cell distance", this.translator.t("unit.nm", { value: this.#miles(row.to_go_nm) })));
   }
 
-  // Miles ahead (+) or behind (−) the reference; gaps under EVEN_NM are within the method's error: "=".
+  // Miles gained (▲, green) or lost (▼, red) against the reference; gaps under EVEN_NM are within the method's
+  // error: "≈".
   #gainCells(outlook) {
     return outlook.map((row) => {
-      if (Math.abs(row.gain_nm) < EVEN_NM) return element("span", "option-cell level", "=");
-      const sign = row.gain_nm > 0 ? "+" : "−";
-      return element("span", `option-cell ${row.gain_nm > 0 ? "gain" : "loss"}`, `${sign}${this.#miles(row.gain_nm)}`);
+      if (Math.abs(row.gain_nm) < EVEN_NM) return element("span", "option-cell level", "≈");
+      const gained = row.gain_nm > 0;
+      return element("span", `option-cell ${gained ? "gain" : "loss"}`, `${gained ? "▲" : "▼"} ${this.#miles(row.gain_nm)}`);
     });
   }
 
-  // "Weather positioning — 11 of 31 scenarios" (or the pending / single-forecast wording).
+  // "Best in 11 of 31 scenarios" (or the pending wording).
   #summary(result, option) {
     const t = (key, params) => this.translator.t(key, params);
-    return option.probability === null
-      ? `${t(`option.kind.${option.kind}`)} — ${t("option.ring_pending")}`
-      : `${t(`option.kind.${option.kind}`)} — ${t("option.members", { count: option.member_count, total: result.weather.member_count })}`;
+    return option.probability === null ? t("option.ring_pending")
+      : t("option.members", { count: option.member_count, total: result.weather.member_count });
   }
 
-  #outlookTip(result, option, isReference, againstCurrent) {
+  #outlookTip(result, option, isReference) {
     if (!option.outlook?.length) return "";
     const t = (key, params) => this.translator.t(key, params);
     if (isReference) return t("option.outlook.tip_recommended");
     const total = result.weather.member_count;
-    return [t(againstCurrent ? "option.outlook.tip_other_current" : "option.outlook.tip_other"),
-      ...option.outlook.map((row) => t("option.outlook.tip_row", {
-        when: this.#when(row.hours), ahead: Math.round(row.ahead_share * total), total, worst: this.#miles(row.worst_nm),
-      }))].join("\n");
+    return option.outlook.map((row) => t("option.outlook.tip_row", {
+      when: this.#when(row.hours), ahead: Math.round(row.ahead_share * total), total, worst: this.#miles(Math.min(row.worst_nm, 0)),
+    })).join("\n");
   }
 
   #when(hours) {

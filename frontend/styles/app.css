@@ -55,6 +55,8 @@
   --route-3: #8b6cf6;
   --route-4: #0c9fb8;
   --route-5: #d6336c;
+  --gain: #2b8a3e;
+  --loss: #e03131;
   /* Confidence = intensity of one blue, not a traffic light. Zones on the map glow white over the slate sea. */
   --conf-high: #2f6fed;
   --conf-medium: #7ea8f3;
@@ -85,7 +87,7 @@
     --graticule: rgba(190, 215, 240, 0.16); --graticule-label: rgba(190, 215, 240, 0.6); --sea-label: rgba(190, 215, 240, 0.75);
     --ideal-halo: #ffffff; --ideal-line: #ffffff;
     --conf-high: #6ea8ff; --conf-medium: #3f6db5; --conf-low: #2a3d5c; --conf-high-ink: #8dbbff; --conf-medium-ink: #6f95d6; --conf-low-ink: #7d8ba0;
-    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --route-4: #66d9e8; --route-5: #f06595; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
+    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --route-4: #66d9e8; --route-5: #f06595; --gain: #51cf66; --loss: #ff6b6b; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
     color-scheme: dark;
   }
 }
@@ -99,7 +101,7 @@
   --graticule: rgba(190, 215, 240, 0.16); --graticule-label: rgba(190, 215, 240, 0.6); --sea-label: rgba(190, 215, 240, 0.75);
   --ideal-halo: #ffffff; --ideal-line: #ffffff;
   --conf-high: #6ea8ff; --conf-medium: #3f6db5; --conf-low: #2a3d5c; --conf-high-ink: #8dbbff; --conf-medium-ink: #6f95d6; --conf-low-ink: #7d8ba0;
-    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --route-4: #66d9e8; --route-5: #f06595; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
+    --route-1: #6ea8ff; --route-2: #38d9a9; --route-3: #a991fa; --route-4: #66d9e8; --route-5: #f06595; --gain: #51cf66; --loss: #ff6b6b; --tile-speed: #edf2f7; --tile-speed-ink: #111a24;
   color-scheme: dark;
 }
 
@@ -444,15 +446,18 @@ select, input[type="text"], input[type="number"] {
 
 /* Bottom dock: "set this now" tiles + option cards */
 .dock { display: flex; gap: 16px; align-items: stretch; }
-.now-panel { flex: 0 0 auto; width: min(660px, 100%); box-sizing: border-box; display: grid; align-content: start; }
+.now-panel { flex: 1 1 520px; min-width: 0; max-width: 640px; box-sizing: border-box; display: grid; align-content: start; gap: 10px; padding: 14px 16px; }
+.now-title { flex-wrap: wrap; font-size: 1rem; }
+.now-option { color: var(--route); }
+.now-option::before { content: "·"; margin-right: 6px; color: var(--muted); }
 
 /* Boat instruments: compass | sail wardrobe | wind gauge + speed dial */
-.instruments { display: grid; grid-template-columns: 168px minmax(0, 1fr) 160px; gap: 16px; align-items: start; }
+.instruments { display: grid; grid-template-columns: 104px minmax(0, 1fr) 112px 100px; gap: 12px; align-items: start; }
 .instrument { display: grid; gap: 6px; justify-items: start; min-width: 0; }
 .instrument-label { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .instrument-heading { justify-items: center; }
 .instrument-heading .instrument-label { justify-self: start; }
-.compass-dial { width: 168px; height: 168px; margin-block: -8px; }
+.compass-dial { width: 104px; height: 104px; margin-block: -4px; }
 .compass-dial svg { width: 100%; height: 100%; overflow: visible; }
 .dial-face { fill: color-mix(in srgb, var(--tile-heading) 8%, var(--glass-strong)); stroke: var(--line); stroke-width: 1.5; }
 .dial-tick { stroke: var(--muted); stroke-width: 1; opacity: 0.6; }
@@ -462,30 +467,29 @@ select, input[type="text"], input[type="number"] {
 .dial-boat { fill: var(--tile-heading); stroke: var(--glass-strong); stroke-width: 2; }
 .dial-sail { fill: none; stroke: var(--tile-sail); stroke-width: 3.2; stroke-linecap: round; }
 .dial-wind { fill: var(--tile-sail); stroke: color-mix(in srgb, var(--tile-sail-ink) 40%, transparent); stroke-width: 1; }
-.heading-value { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: var(--tile-heading); }
+.heading-value { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: var(--tile-heading); }
 .gauge-caption { font-size: 0.75rem; color: var(--muted); }
 
-.sail-wardrobe { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.sail-wardrobe { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
 .sail-chip {
-  display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 10px; font-size: 0.75rem;
+  display: flex; align-items: center; gap: 5px; padding: 3px 6px; border-radius: 8px; font-size: 0.6875rem; white-space: nowrap; overflow: hidden;
   color: var(--ink); background: var(--field);
 }
-.sail-chip svg { width: 22px; height: 22px; flex-shrink: 0; }
+.sail-chip svg { width: 16px; height: 16px; flex-shrink: 0; }
 .sail-mast { stroke: currentColor; stroke-width: 1.4; }
 .sail-shape { fill: currentColor; opacity: 0.45; }
 .sail-chip.light .sail-shape { opacity: 0.25; }
 .sail-chip.not-owned { opacity: 0.35; background: transparent; border: 1px dashed var(--line); }
 .sail-chip.not-owned .sail-name { text-decoration: line-through; }
+.sail-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .sail-chip.selected {
-  grid-column: 1 / -1; order: -1; opacity: 1; padding: 10px 12px; font-size: 1rem; font-weight: 600;
+  grid-column: 1 / -1; order: -1; opacity: 1; padding: 6px 10px; font-size: 0.9375rem; font-weight: 600;
   background: var(--tile-sail); color: var(--tile-sail-ink);
 }
-.sail-chip.selected svg { width: 34px; height: 34px; }
+.sail-chip.selected svg { width: 26px; height: 26px; }
 .sail-chip.selected .sail-shape { opacity: 0.9; }
 
-.instrument-gauges { gap: 14px; }
-.instrument-gauges > .instrument { width: 100%; }
-.gauge-value { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.gauge-value { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .gauge-unit { margin-left: 3px; font-size: 0.8125rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
 .wind-gauge, .speed-gauge { display: grid; gap: 5px; width: 100%; }
 .wind-bar {
@@ -498,7 +502,7 @@ select, input[type="text"], input[type="number"] {
 }
 .wind-bar-scale { display: flex; justify-content: space-between; font: 500 0.625rem/1 var(--font-mono); color: var(--muted); }
 .speed-gauge { justify-items: center; }
-.speed-gauge svg { width: 130px; height: auto; }
+.speed-gauge svg { width: 96px; height: auto; }
 .speed-track { fill: none; stroke: var(--line); stroke-width: 9; stroke-linecap: round; }
 .speed-value { fill: none; stroke: var(--ink); stroke-width: 9; stroke-linecap: round; }
 .speed-needle { stroke: var(--tile-heading); stroke-width: 3; stroke-linecap: round; }
@@ -507,10 +511,10 @@ select, input[type="text"], input[type="number"] {
 .gauge-secondary { margin-top: -2px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .speed-gauge .gauge-value { margin-top: -6px; }
 @media (max-width: 720px) {
-  .instruments { grid-template-columns: 1fr 1fr; }
+  .instruments { grid-template-columns: 1fr 1fr 1fr; }
   .instrument-sail { grid-column: 1 / -1; grid-row: 2; }
 }
-.advice { margin: 12px 0 0; font-size: 0.875rem; font-weight: 600; }
+.advice { margin: 0; font-size: 0.8125rem; font-weight: 600; }
 
 .options { flex: 1 1 0; min-width: 0; display: grid; gap: 8px; align-content: end; }
 .options-list { display: grid; gap: 8px; align-content: start; min-width: 0; }
@@ -526,9 +530,10 @@ select, input[type="text"], input[type="number"] {
   gap: 4px 10px; align-items: center;
 }
 .option-head { padding: 2px 10px 4px; font-size: 0.6875rem; font-weight: 600; color: var(--muted); cursor: help; }
+.option-head > span:nth-child(2) { font-weight: 500; }
 .option-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 @media (min-width: 1000px) {
-  .options { flex: 0 1 400px; }
+  .options { flex: 0 0 380px; }
 }
 .option-row {
   --route: var(--route-1);
@@ -548,8 +553,8 @@ select, input[type="text"], input[type="number"] {
 .option-cell { justify-self: end; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .option-cell.distance { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
 .option-cell.level { color: var(--muted); }
-.option-cell.gain { color: var(--conf-high-ink); }
-.option-cell.loss { color: #c2410c; }
+.option-cell.gain { color: var(--gain); }
+.option-cell.loss { color: var(--loss); }
 .ring { position: relative; width: 40px; height: 40px; display: grid; place-items: center; }
 .ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ring-track { fill: none; stroke: var(--line); stroke-width: 5; }

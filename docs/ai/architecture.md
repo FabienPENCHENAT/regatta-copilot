@@ -207,7 +207,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `settings/settings-panel.js`, `settings/boat-options-form.js`, `settings/maneuver-times.js` | Settings dialog: owned sails one by one, editable manoeuvre times pre-filled from the VR polar (saved per boat); any change recomputes. |
 | `settings/polar-import.js` | Which polar is used (community or the player's import), import a JSON copied from the game, go back. |
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
-| `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial. |
+| `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial, side by side under a one-line title naming the option. |
 | `results/option-list.js` | Options as a compact table, one selectable row each (probability ring, name, badges) and the outlook in aligned columns (+48 h, +5 d): gap in nm with the reference; the "your current route" row first, with its distances to go, when it is the reference. Details in the row tooltip. |
 | `results/route-history.js` | Remembers in the browser the options of the latest computation and of the one from the previous position. |
 | `results/followed-route-finder.js` | Recognises the route followed since then: the previous option passing within 30 nm of the new position (the selected one wins a near tie), and the rest of it. |

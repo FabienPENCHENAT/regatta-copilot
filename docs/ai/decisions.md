@@ -19,6 +19,9 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
 - Display (user: "cleaner, less height"): the option cards became a compact table, one row per option, gaps
   in aligned columns (+48 h, +5 d, green ahead / red behind / "=" under 10 nm), kind and scenario count in the
   tooltip, "shortest" as a badge. About 200 px high instead of 520.
+- Then (user: gains unreadable, too much text): gaps as green ▲ (miles gained) / red ▼ (miles lost) / ≈, a
+  column caption "vs your route", short names in the table (Nord large, Directe), two-line tooltips. "Set this
+  now" is compacted to the table's height: option name in the title, four instrument columns side by side.
 - Rejected: left/right (user dislikes), port/starboard (clashes with the tack shown next to it), proper names
   per option (stars) with tracking of each option across runs (thresholds, births, deaths, merges: too much for
   the need), showing what an old option "became" (looks backwards).
