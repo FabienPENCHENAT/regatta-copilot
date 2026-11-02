@@ -16,6 +16,9 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   at the previous position (`RouteHistory`, browser storage; recomputing at the same position keeps that
   reference) and sends its remaining points as `current_route`. Not selectable: its orders are the previous
   ones. Drawn dotted on the map.
+- Display (user: "cleaner, less height"): the option cards became a compact table, one row per option, gaps
+  in aligned columns (+48 h, +5 d, green ahead / red behind / "=" under 10 nm), kind and scenario count in the
+  tooltip, "shortest" as a badge. About 200 px high instead of 520.
 - Rejected: left/right (user dislikes), port/starboard (clashes with the tack shown next to it), proper names
   per option (stars) with tracking of each option across runs (thresholds, births, deaths, merges: too much for
   the need), showing what an old option "became" (looks backwards).

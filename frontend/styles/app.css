@@ -520,42 +520,47 @@ select, input[type="text"], input[type="number"] {
   margin: 0; justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
   font-size: 0.8125rem; font-weight: 600; border-radius: 999px; background: var(--glass-strong); box-shadow: var(--glass-shadow);
 }
-.option-list { list-style: none; margin: 0; padding: 0 0 4px; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(240px, 1fr); gap: 12px; overflow-x: auto; }
+.option-table { border-radius: 18px; padding: 6px; display: grid; }
+.option-head, .option-row {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) repeat(var(--outlook-columns, 2), 64px);
+  gap: 4px 10px; align-items: center;
+}
+.option-head { padding: 2px 10px 4px; font-size: 0.6875rem; font-weight: 600; color: var(--muted); cursor: help; }
+.option-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 @media (min-width: 1000px) {
-  .options { flex: 0 1 320px; }
-  .option-list { grid-auto-flow: row; overflow: visible; }
+  .options { flex: 0 1 400px; }
 }
-.option-card {
+.option-row {
   --route: var(--route-1);
-  width: 100%; height: 100%; border-radius: 18px; padding: 12px 14px; text-align: left; cursor: pointer;
-  display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; align-items: center;
+  width: 100%; box-sizing: border-box; padding: 6px 10px; border: 0; border-radius: 12px; background: transparent; color: inherit;
+  font: inherit; text-align: left; cursor: pointer;
 }
-.option-card[data-route="2"] { --route: var(--route-2); }
-.option-card[data-route="3"] { --route: var(--route-3); }
-.option-card[data-route="4"] { --route: var(--route-4); }
-.option-card[data-route="5"] { --route: var(--route-5); }
-.option-card:hover { box-shadow: var(--glass-shadow), 0 0 0 1px var(--line); }
-.option-card[aria-pressed="true"] { box-shadow: var(--glass-shadow), inset 0 0 0 2px var(--route); }
-/* The player's current route: the reference the options are compared with, drawn dashed on the map. */
-.option-card.current-route { cursor: default; box-shadow: var(--glass-shadow), inset 0 0 0 1.5px var(--line); }
-.option-card.current-route:hover { box-shadow: var(--glass-shadow), inset 0 0 0 1.5px var(--line); }
-.current-route-mark {
-  justify-self: center; width: 40px; height: 0; border-top: 3px dotted var(--ink); opacity: 0.7;
-}
-.option-outlook { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.option-outlook .gain { color: var(--conf-high-ink); font-weight: 600; }
-.option-outlook .loss { color: #c2410c; font-weight: 600; }
-.ring { position: relative; width: 52px; height: 52px; display: grid; place-items: center; }
+.option-row[data-route="2"] { --route: var(--route-2); }
+.option-row[data-route="3"] { --route: var(--route-3); }
+.option-row[data-route="4"] { --route: var(--route-4); }
+.option-row[data-route="5"] { --route: var(--route-5); }
+.option-row:hover { background: var(--field); }
+.option-row[aria-pressed="true"] { background: color-mix(in srgb, var(--route) 12%, transparent); box-shadow: inset 0 0 0 1.5px var(--route); }
+/* The player's current route: the reference the options are compared with, dotted like on the map. */
+.option-row.current-route { cursor: default; border-bottom: 1px solid var(--line); border-radius: 12px 12px 0 0; }
+.option-row.current-route:hover { background: transparent; }
+.current-route-mark { justify-self: center; width: 26px; border-top: 3px dotted var(--ink); opacity: 0.75; }
+.option-cell { justify-self: end; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.option-cell.distance { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+.option-cell.level { color: var(--muted); }
+.option-cell.gain { color: var(--conf-high-ink); }
+.option-cell.loss { color: #c2410c; }
+.ring { position: relative; width: 40px; height: 40px; display: grid; place-items: center; }
 .ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ring-track { fill: none; stroke: var(--line); stroke-width: 5; }
 .ring-value { fill: none; stroke: var(--route); stroke-width: 5; stroke-linecap: round; }
 .ring.pending .ring-track { stroke-dasharray: 3 4; }
 .confidence-value.pending { color: var(--muted); font-weight: 500; }
-.ring-percent { position: relative; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ring-percent { position: relative; font-size: 0.6875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .option-text { display: grid; gap: 2px; min-width: 0; }
-.option-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.option-name { font-weight: 600; font-size: 0.9375rem; }
-.badge { font-size: 0.6875rem; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--ink); color: var(--glass-strong); }
+.option-name-row { display: flex; align-items: center; gap: 4px 6px; flex-wrap: wrap; min-width: 0; }
+.option-name { font-weight: 600; font-size: 0.875rem; }
+.badge { font-size: 0.625rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--ink); color: var(--glass-strong); }
 .badge-soft { background: var(--field); color: var(--muted); }
 .badge-best { background: color-mix(in srgb, var(--tile-sail) 25%, transparent); color: inherit; }
 .option-facts { font-size: 0.75rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
