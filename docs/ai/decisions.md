@@ -3,10 +3,11 @@
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
 ## D58 — The sail on the compass, seen from above (user, 2026-11-02)
-- `instruments/sailTopViewPath`: the sail to hoist drawn as one curved stroke on the compass boat, on the
-  leeward side (positive TWA = wind on starboard → sail to port), eased by about half the TWA (8–80°).
-  Headsails (Jib, LightJib, Staysail, Code0 deeper) curve back from the bow; Spi (tacked on a windward pole)
-  and gennakers (bowsprit) balloon ahead of the bow. A hint of shape and trim, not a drawing of the sail.
+- `instruments/sailTopViewPath`: the sail drawn on the compass boat the way the game draws it (user: "inspire
+  toi de Virtual Regatta", one shape for every sail): a curved stroke from the mast (y = -8) towards the stern,
+  on the leeward side (positive TWA = wind on starboard → sail to port), eased by about half the TWA (6–85°),
+  bellied the way the wind blows. A first version with one shape per sail (headsails from the bow, balloons
+  ahead) was rejected as unreadable.
 - Also: the expected speed shows km/h under the knots (the game shows km/h to French players); the speed gauge
   goes to 30 kn with its scale labels clear of the arc; the Spi icon is hoisted at the masthead.
 

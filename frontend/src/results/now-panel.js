@@ -40,7 +40,6 @@ export class NowPanel {
         headingDeg: now.heading_deg,
         windFromDeg: (now.heading_deg + now.twa_deg + 360) % 360,
         cardinals: CARDINAL_KEYS.map((key) => t(key)),
-        sail: now.sail,
         twaDeg: now.twa_deg,
       }),
       element("span", "heading-value", formatHeading(now.heading_deg)),
