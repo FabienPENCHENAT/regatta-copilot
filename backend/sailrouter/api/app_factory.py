@@ -19,6 +19,7 @@ from sailrouter.service.ensemble_job_factory import build_ensemble_job
 from sailrouter.service.gfs_source_factory import build_gfs_source
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.weather_refresher import WeatherRefresher
+from sailrouter.weather.stale_run_cleaner import StaleRunCleaner
 
 
 def create_app(paths: ProjectPaths | None = None, ensemble_job: EnsembleDownloadJob | None = None,
@@ -33,7 +34,8 @@ def create_app(paths: ProjectPaths | None = None, ensemble_job: EnsembleDownload
     computer = CachedRouteComputer(paths, ensemble_job)
     last_requests = LastRouteRequestStore(paths.last_request_file)
     precomputer = LastRoutePrecomputer(last_requests, computer, RaceCatalog(paths.races_dir))
-    refresher = WeatherRefresher(build_gfs_source(paths), ensemble_job, precomputer.window, precomputer.precompute)
+    refresher = WeatherRefresher(build_gfs_source(paths), ensemble_job, precomputer.window, precomputer.precompute,
+                                 clean=StaleRunCleaner(paths.weather_dir).clean)
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):

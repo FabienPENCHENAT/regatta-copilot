@@ -2,6 +2,14 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D59 — Old weather runs are deleted (user, 2026-11-02)
+- `var/weather/` grew by ≈ 440 MB a day (888 MB). `weather/StaleRunCleaner`, called by `WeatherRefresher` at
+  the end of every cycle (`clean` hook) with the runs in use: per model (gfs, gefs) it keeps the run in use, the
+  previous one (fallback if the newest proves damaged, and for computations started on it) and every newer run
+  (one being downloaded); older run folders and their stale `.downloading` locks are removed, never a run
+  another process is downloading. First run: 13 items removed, 888 MB → 214 MB. Ceiling ≈ 230 MB.
+- Route results already prune themselves (`RouteResultCache`, 2 days, ≈ 8 MB).
+
 ## D58 — The sail on the compass, seen from above (user, 2026-11-02)
 - `instruments/sailTopViewPath`: the sail drawn on the compass boat the way the game draws it (user: "inspire
   toi de Virtual Regatta", one shape for every sail): a curved stroke from the mast (y = -8) towards the stern,

@@ -37,7 +37,7 @@ A single "optimal" route changes every 6 hours with the forecast. Regatta Copilo
 ### 1. Requirements
 
 - **Python 3.12+** on macOS or Linux (tested on macOS).
-- **An internet connection** for the NOAA weather downloads: about 15 to 30 MB per game forecast and 100 MB per set of 31 scenarios, every 6 hours.
+- **An internet connection** for the NOAA weather downloads: about 15 to 30 MB per game forecast and 100 MB per set of 31 scenarios, every 6 hours. Old forecasts are deleted automatically: about 230 MB of disk at most.
 - A multi-core machine helps: the 31 scenarios are routed in parallel (about 40 s on a 10-core laptop).
 
 ### 2. Run it
@@ -106,7 +106,6 @@ The full explanation, with diagrams, is on the site's **How it works** page.
 - **Not modelled**: skipper energy (the game makes tired skippers manoeuvre up to twice as slowly), the game's exact coastline (hence the 1 nm margin) and the auto-sail "boost".
 - **No finish time**: beyond 2 to 3 days the weather is too uncertain; the tool does not pretend otherwise.
 - **The scenarios are a little overconfident**, like most ensemble forecasts: 55 % is really less clear-cut.
-- **Old forecasts are not cleaned up yet**: `var/weather/` grows by about 440 MB a day. Delete old folders by hand for now.
 
 ## FAQ
 

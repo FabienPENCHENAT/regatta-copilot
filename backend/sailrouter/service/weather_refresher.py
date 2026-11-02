@@ -41,14 +41,16 @@ class WeatherRefresher:
     Every `interval` (in a daemon thread, until `stop`): puts the latest complete GFS run for the route window
     (+ `margin`, as the window slides) on disk, lets the GEFS job start its background download when a newer run
     is due, then calls `precompute(weather_changed)` (weather changed = a GFS or GEFS run different from the
-    previous cycle, always true on the first cycle).
+    previous cycle, always true on the first cycle), then `clean(runs in use)` to delete the runs no longer needed.
     """
 
     def __init__(
         self, gfs: GfsRunSource, ensemble: EnsembleRunSource, window: Callable[[datetime], Window | None],
         precompute: Callable[[bool], bool], interval: timedelta = timedelta(minutes=10),
         margin: timedelta = timedelta(hours=12), now: Callable[[], datetime] = lambda: datetime.now(UTC),
+        clean: Callable[[list[ModelRun]], object] = lambda runs: None,
     ) -> None:
+        self._clean = clean
         self._gfs = gfs
         self._ensemble = ensemble
         self._window = window
@@ -79,6 +81,7 @@ class WeatherRefresher:
             log.info("weather for routing: GFS %s, GEFS %s", *weather)
         precomputed = self._precompute(changed)
         self._weather = weather  # only once pre-computed: a failure is retried at the next cycle
+        self._clean([run for run in (gfs_run, gefs_run) if run is not None])
         return RefreshOutcome(gfs_run, gefs_run, downloaded, changed, precomputed)
 
     def start(self) -> None:
