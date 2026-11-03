@@ -145,8 +145,8 @@ button, input, select { font: inherit; color: inherit; }
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--route-1) 70%, transparent), 0 1px 2px rgba(0, 0, 0, 0.35); }
   100% { box-shadow: 0 0 0 8px transparent, 0 1px 2px rgba(0, 0, 0, 0.35); }
 }
-.leaflet-tooltip.leg-label.current { font-size: 0.8125rem; border: 2px solid var(--route-1); }
-.leaflet-tooltip.boat-label { font-size: 0.75rem; font-weight: 600; }
+.leaflet-tooltip.boat-label { font-size: 0.75rem; font-weight: 600; border: 2px solid var(--route-1); }
+.boat-label-title { font-weight: 400; opacity: 0.8; }
 .zone-glow span {
   display: block; width: 44px; height: 44px; border-radius: 50%;
   background: radial-gradient(circle, var(--glow) 0 5px, color-mix(in srgb, var(--glow) 55%, transparent) 6px, transparent 70%);

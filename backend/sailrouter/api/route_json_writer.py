@@ -18,12 +18,14 @@ class RouteJsonWriter:
         self._splitter = splitter or RouteLegSplitter()
 
     def option_body(self, route: Route, confidence_by_hour: dict[int, float] | None = None) -> dict:
-        """`now`, `steps`, `path` (hourly), `line` (every route point), `legs`; step confidence null when not given."""
+        """`now`, `steps`, `path` (hourly), `hourly` (settings at each path hour), `line` (every route point), `legs`;
+        step confidence null when not given."""
         confidence_by_hour = confidence_by_hour or {}
         return {
             "now": self.settings(route.points[0]),
             "steps": [self.step(route, hour, confidence_by_hour.get(hour)) for hour in PLAN_HOURS if route.covers(hour)],
             "path": self.hourly_path(route),
+            "hourly": self.hourly_settings(route),
             "line": [[round(p.lat_deg, 4), round(p.lon_deg, 4)] for p in route.points],  # drawn: legs lie on it
             "legs": [self.leg(route, leg) for leg in self._splitter.split(route)],
         }
@@ -66,6 +68,19 @@ class RouteJsonWriter:
         """One position per hour from the start (the map places the boat at path[hour])."""
         hours = int(route.duration_h + 1e-6)
         return [[round(value, decimals) for value in route.position_at(hour)] for hour in range(hours + 1)]
+
+    @classmethod
+    def hourly_settings(cls, route: Route) -> list[dict]:
+        """What the boat sails at each hour of `path` (the map's boat label): the settings of the last route point
+        reached; the final hour keeps the last leg's (the end point has none)."""
+        sailed = [point for point in route.points if point.heading_deg is not None] or [route.points[0]]
+        hourly, index = [], 0
+        for hour in range(int(route.duration_h + 1e-6) + 1):
+            moment = route.start + timedelta(hours=hour, seconds=1)
+            while index + 1 < len(sailed) and sailed[index + 1].time <= moment:
+                index += 1
+            hourly.append(cls.settings(sailed[index]))
+        return hourly
 
     @staticmethod
     def track(route: Route) -> dict:

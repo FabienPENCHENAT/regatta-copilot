@@ -67,7 +67,9 @@ One synchronous call. The route window is [max(race start, now), +120 h].
   a GFS download, except when no run at all is on disk (first start, ~2 min). A result made on an older run than
   the expected one expires after 30 min.
 
-Each option has `path` (one [lat, lon] per hour, for placing the boat at an hour), `line` (every route point,
+Each option has `path` (one [lat, lon] per hour, for placing the boat at an hour), `hourly` (aligned with `path`:
+what is sailed at each hour, `{ heading_deg, twa_deg, tws_kn, sail, speed_kn }` like `now`, shown in the boat's map
+label at any hour; the last hour repeats the last leg's), `line` (every route point,
 quarter-hours at first: what the map draws, so leg starts lie on it) and `legs`: `[{ start_hour, end_hour, heading_deg, sail, twa_deg, tws_min_kn, tws_max_kn, speed_kn,
 lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe or heading change ≥ 10°).
 
@@ -132,6 +134,7 @@ Response (ensemble):
     "steps": [{ "hour": 4, "lat": 47.21, "lon": -7.808, "heading_deg": 248, "twa_deg": 87,
                 "tws_kn": 19, "sail": "Jib", "speed_kn": 11.6, "confidence": 0.94, "zone_radius_nm": 7 }],
     "path": [[48.73, -1.9], [48.8, -2.1]],
+    "hourly": [{ "heading_deg": 265, "twa_deg": 146, "tws_kn": 10.2, "sail": "Spi", "speed_kn": 7.5 }, ...],
     "legs": [{ "start_hour": 0, "end_hour": 2.0, "heading_deg": 290, "sail": "Jib", ... }]
   }],
   "members": [{ "member": "c00", "option": "west", "path": [[48.73, -1.9]] }],

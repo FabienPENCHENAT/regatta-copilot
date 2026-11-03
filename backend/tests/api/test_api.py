@@ -60,6 +60,8 @@ def test_result_has_an_hourly_path_and_the_plan_hours_the_route_covers():
     assert len(option["path"]) == 11  # one point per hour, 0 to 10 h
     assert option["path"][5] == [round(48.7 - 0.1 * 5, 4), round(-2.0 - 0.2 * 5, 4)]  # interpolated between 4 h and 7 h
     assert [s["hour"] for s in option["steps"]] == [4, 8]
+    assert len(option["hourly"]) == 11 and option["hourly"][10] == option["hourly"][9]  # end point: last leg's
+    assert option["hourly"][5] == {"heading_deg": 250, "twa_deg": 140, "tws_kn": 12.0, "sail": "Spi", "speed_kn": 10.0}
     assert option["probability"] is None and option["steps"][0]["confidence"] is None
     assert [(leg["start_hour"], leg["end_hour"]) for leg in option["legs"]] == [(0, 10)]
 

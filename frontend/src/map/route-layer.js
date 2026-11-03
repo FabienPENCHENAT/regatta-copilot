@@ -1,8 +1,10 @@
 // Routes of a result: the computed track, the scenario routes (thin), the player's current route (dashed), the
 // selected option (thick) with a numbered point at each change of orders (same numbers as the route plan), and
-// the boat at the selected hour.
+// the boat at the selected hour, whose label gives what it sails there.
 
-import { formatHeading, formatHoursMinutes, formatKnots, formatLocalTime } from "../results/display-format.js";
+import {
+  describeTwa, formatHeading, formatHoursMinutes, formatKnots, formatLocalTime, formatNumber,
+} from "../results/display-format.js";
 import { colourSlot } from "../results/option-places.js";
 import { legAt, planLegs } from "../results/plan-legs.js";
 
@@ -43,20 +45,18 @@ export class RouteLayer {
       const icon = L.divIcon({
         className: `leg-marker${leg === current ? " current" : ""}`, html: `<span>${index + 1}</span>`, iconSize: [12, 12],
       });
-      // The number is already on the point: the label gives the order and the speed to expect.
+      // The number is already on the point: the label gives the order and the speed to expect. Clicking it puts
+      // the boat there (the boat's own label then gives the details); the order being sailed pulses.
       const label = `${formatHeading(leg.heading_deg)} · ${this.translator.t(`sail.${leg.sail}`)} · ${formatKnots(leg.speed_kn, this.translator)}`;
-      // The order being sailed at the shown hour pulses and keeps its label open.
       L.marker([leg.lat, leg.lon], { icon, keyboard: false, zIndexOffset: leg === current ? 500 : 0 })
-        .bindTooltip(label, leg === current
-          ? { permanent: true, direction: "top", offset: [0, -9], className: "leg-label current" }
-          : { direction: "top", offset: [0, -6], className: "leg-label" })
+        .bindTooltip(label, { direction: "top", offset: [0, -6], className: "leg-label" })
         .on("click", () => this.onSelectHour(leg.start_hour))
         .addTo(this.#routes);
     });
   }
 
-  // At the start of an order the boat sits on its numbered point (whose label says it all); otherwise it sits
-  // between the hourly path points and keeps its own label open: option, time, order being sailed.
+  // The boat on its numbered point at the start of an order, else between the hourly path points. Its label stays
+  // open at every hour (beyond the 48 h plan too): option, time, then heading, sail, speed and wind right there.
   showBoat(option, hour, heading, startIso) {
     this.#boat.clearLayers();
     const leg = option.legs.find((l) => l.start_hour === hour);
@@ -66,14 +66,14 @@ export class RouteLayer {
       html: `<span style="transform: rotate(${heading}deg)">${BOAT_SVG}</span>`,
       iconSize: [28, 28],
     });
-    const between = hour > 0 && !leg;
-    L.marker(point, { icon, keyboard: false })
-      .bindTooltip(hour === 0 ? this.translator.t("map.you") : this.#boatLabel(option, hour, startIso), between
-        ? { permanent: true, direction: "bottom", offset: [0, 14], className: "boat-label" } : {})
+    const title = hour === 0 ? this.translator.t("map.you") : this.#boatTitle(option, hour, startIso);
+    L.marker(point, { icon, keyboard: false, zIndexOffset: 1000 })
+      .bindTooltip(`<span class="boat-label-title">${title}</span><br>${this.#boatSettings(option, hour)}`,
+        { permanent: true, direction: "bottom", offset: [0, 14], className: "boat-label" })
       .addTo(this.#boat);
   }
 
-  #boatLabel(option, hour, startIso) {
+  #boatTitle(option, hour, startIso) {
     const t = (key, params) => this.translator.t(key, params);
     const legs = planLegs(option);
     const current = legAt(legs, hour);
@@ -82,6 +82,17 @@ export class RouteLayer {
       time: formatLocalTime(startIso, hour, this.translator.lang), n: legs.indexOf(current) + 1,
     };
     return current && hour < (legs.at(-1)?.end_hour ?? 0) ? t("map.boat_at", params) : t("map.boat_at_plain", params);
+  }
+
+  // "234° · Spi léger · 13,3 nd · Vent 12 nd · TWA 140° bâbord".
+  #boatSettings(option, hour) {
+    const t = (key, params) => this.translator.t(key, params);
+    const now = settingsAt(option, hour);
+    const twa = describeTwa(now.twa_deg);
+    const wind = t("plan.wind_steady", {
+      min: formatNumber(now.tws_kn, this.translator.lang, 0), twa: `${twa.angle} ${t(twa.tackKey)}`,
+    });
+    return `${formatHeading(now.heading_deg)} · ${t(`sail.${now.sail}`)} · ${formatKnots(now.speed_kn, this.translator)} · ${wind}`;
   }
 
   // The rest of the route the player has been following, from the boat: dashed, in the ink colour, under the options.
@@ -109,6 +120,16 @@ export class RouteLayer {
       .addTo(this.#routes);
   }
 
+}
+
+// What the boat sails at `hour`: the hourly settings, or the order's own when it started since the last whole
+// hour (a numbered point clicked) or on results saved before `hourly` existed (wind: middle of the order's range).
+function settingsAt(option, hour) {
+  const leg = legAt(option.legs, hour) ?? option.legs[0];
+  const hourly = option.hourly?.[Math.min(Math.floor(hour), option.hourly.length - 1)];
+  if (hourly && !(leg && leg.start_hour > Math.floor(hour))) return hourly;
+  if (!leg) return option.now;
+  return { ...leg, tws_kn: (leg.tws_min_kn + leg.tws_max_kn) / 2 };
 }
 
 // Position at a (possibly fractional) hour on a path holding one point per hour.
