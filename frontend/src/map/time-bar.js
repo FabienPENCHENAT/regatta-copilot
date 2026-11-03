@@ -1,7 +1,7 @@
 // Time bar of the chart: a slider over the whole route with stops every hour for the first day, then every 3 h
 // (the GFS steps, and the route points beyond +48 h); a mark at the exact time of each numbered order of the
 // selected option (the current one highlighted); two buttons jumping to the previous / next order, at its exact
-// time. The slider moves stop by stop, the first day taking as much room as its 24 stops. Built once and
+// time; a "Now" button putting back the boat where it should be at this minute. The slider moves stop by stop, the first day taking as much room as its 24 stops. Built once and
 // updated in place, so a drag is never cut.
 
 import { element } from "../dom.js";
@@ -21,21 +21,25 @@ export function timeStops(maxHour) {
 
 export class TimeBar {
   #hour = 0;
+  #live = false;
   #marks = [];
   #stops = [0];
   #startIso = null;
 
-  constructor(translator, onSelectHour) {
+  constructor(translator, onSelectHour, onSelectNow) {
     this.translator = translator;
     this.onSelectHour = onSelectHour;
+    this.onSelectNow = onSelectNow;
     this.element = element("div", "time-bar");
     this.markElements = [];
     this.#build();
   }
 
-  // hour: shown hour; maxHour: end of the route; marks: hours where the orders change; startIso: route start.
-  update({ hour, maxHour, marks, startIso }) {
+  // hour: shown hour; live: it follows the clock; maxHour: end of the route; marks: hours where the orders change;
+  // startIso: route start.
+  update({ hour, live, maxHour, marks, startIso }) {
     this.#hour = hour;
+    this.#live = live;
     this.#startIso = startIso;
     if (this.#stops.at(-1) !== maxHour || String(marks) !== String(this.#marks)) {
       this.#stops = timeStops(maxHour);
@@ -52,6 +56,8 @@ export class TimeBar {
 
   retranslate() {
     this.title.textContent = this.translator.t("wind.time_label");
+    this.now.textContent = this.translator.t("timebar.now");
+    this.now.title = this.translator.t("timebar.now_tip");
     this.previous.setAttribute("aria-label", this.translator.t("timebar.previous"));
     this.next.setAttribute("aria-label", this.translator.t("timebar.next"));
     this.slider.setAttribute("aria-label", this.translator.t("wind.time_label"));
@@ -63,7 +69,10 @@ export class TimeBar {
     const head = element("div", "time-bar-head");
     this.title = element("span", "time-bar-title");
     this.value = element("span", "time-bar-value");
-    head.append(this.title, this.value);
+    this.now = element("button", "chip time-bar-now");
+    this.now.type = "button";
+    this.now.addEventListener("click", () => this.onSelectNow());
+    head.append(this.title, this.now, this.value);
     this.previous = this.#arrow("M15 6l-6 6 6 6", () => this.#jump(-1));
     this.next = this.#arrow("M9 6l6 6-6 6", () => this.#jump(1));
     this.slider = element("input", "time-bar-slider");
@@ -113,6 +122,7 @@ export class TimeBar {
     const offset = this.#hour === 0 ? this.translator.t("wind.time_start") : `+${formatHoursMinutes(this.#hour)}`;
     this.value.textContent = this.#startIso
       ? `${offset} · ${formatLocalTime(this.#startIso, this.#hour, this.translator.lang)}` : offset;
+    this.now.setAttribute("aria-pressed", String(this.#live));
     this.previous.disabled = this.#hour <= 0;
     this.next.disabled = this.#hour >= this.#stops.at(-1);
   }

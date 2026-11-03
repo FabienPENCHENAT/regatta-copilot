@@ -1,9 +1,12 @@
 // Entry point: creates the components, connects them, and keeps the page state
-// (race, result, selected option, selected hour, wind display mode, map view).
+// (race, result, selected option, selected hour, wind display mode, map view). The shown hour follows the clock
+// (the boat moves along its route) until the player picks another hour. Reloading the page shows the latest
+// computation again, as it was; newer weather asks the player for the boat's current position instead.
 
 import { Translator } from "./i18n/translator.js";
 import { LanguagePicker } from "./i18n/language-picker.js";
 import { PreferencesStore } from "./storage/preferences-store.js";
+import { LastResultStore } from "./storage/last-result-store.js";
 import { legAt, planLegs } from "./results/plan-legs.js";
 import { PositionParser } from "./form/position-parser.js";
 import { RouteForm } from "./form/route-form.js";
@@ -19,10 +22,13 @@ import { FollowedRouteFinder } from "./results/followed-route-finder.js";
 import { RoutePlanList } from "./results/route-plan-list.js";
 import { describeNextRefresh } from "./results/data-refresh.js";
 import { EnsembleStatus } from "./results/ensemble-status.js";
+import { WeatherUpdateCheck } from "./results/weather-update-check.js";
+import { WeatherUpdateNotice } from "./results/weather-update-notice.js";
 import { SettingsPanel } from "./settings/settings-panel.js";
 import { PanelCollapser } from "./layout/panel-collapser.js";
 import { ThemeToggle } from "./layout/theme-toggle.js";
 import { measureMapInsets } from "./layout/map-insets.js";
+import { BoatClock } from "./results/boat-clock.js";
 import { ApiClient } from "./api/api-client.js";
 import { RouteComputation } from "./api/route-computation.js";
 
@@ -37,14 +43,16 @@ class App {
   #latestRequest = 0; // only the answer to the latest request is shown
   #settleTimer = null;
   #windTimer = null;
-  #state = { optionId: null, hour: 0, windMode: "particles", view: "near" };
+  #state = { optionId: null, hour: 0, live: true, windMode: "particles", view: "near" };
 
   constructor() {
     this.api = new ApiClient();
     this.computation = new RouteComputation(this.api);
     this.wind = new WindForecastCache(this.api);
     this.preferences = new PreferencesStore();
+    this.lastResult = new LastResultStore();
     this.history = new RouteHistory(this.preferences);
+    this.clock = new BoatClock(() => this.#followClock());
     this.followedFinder = new FollowedRouteFinder();
     this.translator = new Translator();
     this.languagePicker = new LanguagePicker(byId("lang-picker"), (lang) => this.changeLanguage(lang));
@@ -53,6 +61,7 @@ class App {
     this.mapControls = new MapControls(byId("map-controls"), this.translator, {
       onSelectView: (view) => this.update({ view }),
       onSelectHour: (hour) => this.update({ hour }),
+      onSelectNow: () => this.#followClock(false),
       onSelectMode: (windMode) => this.update({ windMode }),
     });
     this.nowPanel = new NowPanel(byId("now-panel"), this.translator);
@@ -80,8 +89,10 @@ class App {
     this.form = this.#createForm();
     this.raceHeader = new RaceHeader(byId("race-header"), this.translator);
     this.ensembleStatus = new EnsembleStatus(byId("ensemble-status"), {
-      api: this.api, translator: this.translator, onReady: () => this.form.submit(),
+      api: this.api, translator: this.translator, onReady: () => this.weatherCheck.check(),
     });
+    this.weatherCheck = new WeatherUpdateCheck(this.api, () => this.weatherNotice.show());
+    this.weatherNotice = new WeatherUpdateNotice(byId("weather-update"), this.translator, () => this.#askPosition());
   }
 
   async start() {
@@ -99,7 +110,31 @@ class App {
     this.raceHeader.render(race);
     this.nextMark.render(race);
     await this.#loadBoat(this.form.boatId);
-    this.form.submit();
+    this.clock.start();
+    if (!(await this.#restoreLastResult())) this.form.submit();
+  }
+
+  // The latest computation for this race and boat, shown again with its own start time (the boat has moved on
+  // since). False when there is none, or its map wind can no longer be loaded: the page then computes.
+  async #restoreLastResult() {
+    const saved = this.lastResult.read();
+    const result = saved?.result;
+    if (!result || result.race_id !== this.form.raceId || result.boat_id !== this.form.boatId) return false;
+    try {
+      this.wind.reset(await this.api.getWindForecast(result.computed_at));
+    } catch {
+      return false;
+    }
+    this.#followed = saved.followed ?? null;
+    this.formPanel.collapse();
+    this.#showResult(result);
+    return true;
+  }
+
+  // From the newer-weather message: the position fields, to type the boat's position from the game.
+  #askPosition() {
+    this.formPanel.expand();
+    this.form.position.focus();
   }
 
   async changeLanguage(lang) {
@@ -110,6 +145,7 @@ class App {
     this.map.retranslate();
     this.settings.retranslate();
     this.nextMark.retranslate();
+    this.weatherNotice.render();
     if (this.#race) {
       this.map.showCourse(this.#race, this.form.boatId);
       this.raceHeader.render(this.#race);
@@ -120,8 +156,20 @@ class App {
 
   update(changes) {
     if (changes.optionId) this.history.select(changes.optionId);
-    this.#state = { ...this.#state, ...changes };
+    this.#state = { ...this.#state, ...("hour" in changes && { live: false }), ...changes };
     this.#render({ fitMap: "view" in changes });
+  }
+
+  // Puts the boat where it should be now on the selected option. Every minute (clock tick) it only moves the boat,
+  // unless the order being sailed changes; picking "Now" on the time bar redraws everything.
+  #followClock(tick = true) {
+    if (!this.#result || (tick && !this.#state.live)) return;
+    const option = this.#selectedOption();
+    const hour = this.clock.hoursSince(this.#result.computed_at, option.path.length - 1);
+    const sameLeg = legAt(option.legs, hour) === legAt(option.legs, this.#state.hour);
+    this.#state = { ...this.#state, hour, live: true };
+    if (tick && sameLeg) this.#renderBoat(option);
+    else this.#render({ fitMap: false });
   }
 
   // Recomputes the shown result once the settings stop changing for a moment.
@@ -145,6 +193,7 @@ class App {
       if (requestNumber !== this.#latestRequest) return; // a newer request replaced this one
       this.#followed = followed;
       this.history.remember(result, null); // the recommended option is shown first, not necessarily followed
+      this.lastResult.save(result, followed);
       if (result.next_mark) this.nextMark.showDetected(result.next_mark.id);
       this.preferences.update({ positionText: this.form.positionText });
       this.form.showIdle();
@@ -174,6 +223,7 @@ class App {
     const { request } = this.#followed;
     this.history.follow(request.position, optionId);
     this.#followed = this.#followedFrom(request);
+    this.lastResult.save(this.#result, this.#followed);
     this.#render({ fitMap: false });
   }
 
@@ -213,9 +263,13 @@ class App {
 
   #showResult(result) {
     this.#result = result;
-    this.#state = { ...this.#state, optionId: result.recommended_option, hour: 0, view: "near" };
+    const option = result.options.find((o) => o.id === result.recommended_option);
+    const hour = this.clock.hoursSince(result.computed_at, option.path.length - 1);
+    this.#state = { ...this.#state, optionId: option.id, hour, live: true, view: "near" };
     this.#showResultPanels(true);
     this.ensembleStatus.show(result.ensemble);
+    this.weatherNotice.hide();
+    this.weatherCheck.watch(result);
     this.#render({ fitMap: true });
   }
 
@@ -226,17 +280,27 @@ class App {
 
   #render({ fitMap }) {
     const result = this.#result;
-    const { optionId, hour, windMode, view } = this.#state;
-    const option = result.options.find((o) => o.id === optionId);
-    const leg = legAt(option.legs, hour);
+    const { hour, view } = this.#state;
+    const option = this.#selectedOption();
     this.nowPanel.render(result, option, this.settings.ownedSails());
     this.optionList.render(result, option.id, this.#followed);
     this.routePlan.render(result, option, hour);
     this.map.showResult(result, option, hour, this.#followed);
     if (fitMap) this.map.fitView(result, view, measureMapInsets());
-    this.map.showBoat(option, Math.min(hour, option.path.length - 1), (leg ?? option.now).heading_deg, result.computed_at);
-    this.#renderWind(hour, windMode, view, option);
+    this.#renderBoat(option);
     byId("refresh-text").textContent = describeNextRefresh(this.translator, result.weather.run);
+  }
+
+  #selectedOption() {
+    return this.#result.options.find((o) => o.id === this.#state.optionId);
+  }
+
+  // The boat at the shown hour, the time bar and the wind of that hour.
+  #renderBoat(option) {
+    const { hour, live, windMode, view } = this.#state;
+    const leg = legAt(option.legs, hour);
+    this.map.showBoat(option, Math.min(hour, option.path.length - 1), (leg ?? option.now).heading_deg, this.#result.computed_at);
+    this.#renderWind(hour, live, windMode, view, option);
   }
 
   #redrawForTheme() {
@@ -247,19 +311,19 @@ class App {
 
   // Shows the closest loaded wind at once, then the exact hour as soon as it arrives.
   // While the time bar is dragged, only the hour the slider rests on is fetched (WIND_SETTLE_MS).
-  #renderWind(hour, windMode, view, option) {
+  #renderWind(hour, live, windMode, view, option) {
     const windHour = Math.floor(hour); // the map wind is fetched by whole hour
     const shown = this.wind.nearest(windHour);
     this.map.showWind(shown.grid, windMode);
     const marks = planLegs(option).map((leg) => leg.start_hour).filter((h) => h > 0); // the numbered orders
     this.mapControls.render({
-      view, hour, windMode,
+      view, hour, live, windMode,
       timeline: { maxHour: option.path.length - 1, marks, startIso: this.#result.computed_at },
     });
     clearTimeout(this.#windTimer);
     if (shown.exact) return;
     this.#windTimer = setTimeout(() => this.wind.load(windHour).then((loaded) => {
-      if (loaded && this.#state.hour === hour) this.map.showWind(this.wind.nearest(windHour).grid, this.#state.windMode);
+      if (loaded && Math.floor(this.#state.hour) === windHour) this.map.showWind(this.wind.nearest(windHour).grid, this.#state.windMode);
     }), WIND_SETTLE_MS);
   }
 

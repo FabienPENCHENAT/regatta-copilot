@@ -62,7 +62,8 @@ One synchronous call. The route window is [max(race start, now), +120 h].
   background pre-computation of the last request (D40) → the stored result at once.
 - **GEFS run on disk** → ensemble result (31 member routes + the GFS route, ≈ 25–40 s on the dev Mac).
 - **Otherwise** → GFS-only result (~5 s), and the GEFS download starts in the background (≈ 15 min,
-  `ensemble.state = "downloading"`). Poll `GET /api/ensemble/status` and recompute when it says `ready`.
+  `ensemble.state = "downloading"`). Poll `GET /api/ensemble/status`; when it says `ready`, the page tells the
+  player newer weather is available (it does not recompute from a position the boat has left, D62).
 - The GFS run is the newest one **on disk** (the background refresher downloads new runs): no request waits for
   a GFS download, except when no run at all is on disk (first start, ~2 min). A result made on an older run than
   the expected one expires after 30 min.
@@ -152,6 +153,13 @@ horizons are 4, 8, 12, 16, 24, 48 h.
 ```
 `total` counts member × lead-time files (the download covers the window + 12 h); `run` is null when
 `unavailable` (no run on disk and no download running, e.g. NOMADS unreachable: retried after 10 min).
+
+## `GET /api/weather/latest`
+```json
+{ "game_run": "2026-11-02T12:00:00Z", "ensemble": { "state": "ready", "run": "2026-11-02T06:00:00Z", "done": 1426, "total": 1426, "member_count": 31 } }
+```
+Newest GFS run on disk covering the next 120 h (`null` if none) and the scenarios' status. The page compares them
+with the shown result's `weather` to tell newer weather has arrived (D62).
 
 ## `GET /api/races/{id}/boats/{boat}/polar`
 The raw VR polar the boat sails with (the frontend reads its `winch` block to show manoeuvre times), plus two

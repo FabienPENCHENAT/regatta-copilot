@@ -2,6 +2,21 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D62 — Reloading shows the same computation; newer weather asks for the position (user, 2026-11-02)
+- Reloading the page (even Ctrl+Shift+R) no longer computes: the latest result for the race and boat is kept in
+  localStorage and shown as it was, with its `computed_at`, so only the boat moves on (D61).
+- When newer weather is on the server (a newer GFS run, or GEFS scenarios newer than the result's, or ready when
+  the result was GFS-only), a message asks for the boat's current position from the game; the player then computes.
+  Replaces the automatic recomputation when the scenarios became ready, which restarted from a position left behind.
+- Still computing at once: an explicit "Compute", a change of boat, polar, settings or next mark.
+
+## D61 — The boat moves along the route with the clock (user, 2026-11-02)
+- The route starts at `computed_at`; the boat is drawn on the selected option at the hours elapsed since then
+  (`results/boat-clock.js`) and moves every minute, so at 18:50 a route computed at 17:30 shows the boat
+  1 h 20 down its line. The entered position stays where it is until the player types another one.
+- Picking an hour (slider, order, plan) stops following the clock; "Now" on the time bar resumes it.
+- Reload and new forecast: see D62. A change of settings still recomputes from the entered position at the new time.
+
 ## D60 — Options keep their meaning from one computation to the next (user, 2026-11-02)
 - Problem: at each recomputation the options changed place (sorted by probability) and name (named against the
   members' consensus track, which moves with every run), so the player could not tell an option from before.

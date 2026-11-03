@@ -50,6 +50,11 @@ export class ApiClient {
     return this.#get("/api/ensemble/status");
   }
 
+  // Newest weather on the server: { game_run: ISO | null, ensemble: { state, run, ... } }.
+  async getLatestWeather() {
+    return this.#get("/api/weather/latest");
+  }
+
   // Map wind (the game's GFS) from the route start: the default hours, or the given ones (e.g. [11]).
   async getWindForecast(startIso, hours = null) {
     const query = hours ? `&hours=${hours.join(",")}` : "";

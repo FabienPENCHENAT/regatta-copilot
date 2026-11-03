@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, Query
 
 from sailrouter.api.cached_route_computer import ROUTE_HOURS, CachedRouteComputer
 from sailrouter.api.ensemble_status_json import ensemble_status_json
 from sailrouter.api.last_route_request_store import LastRouteRequestStore
+from sailrouter.api.route_json_writer import iso
 from sailrouter.api.schemas import RouteRequest
 from sailrouter.api.wind_grid_exporter import WindGridExporter
 from sailrouter.service.computation_superseded import ComputationSuperseded
@@ -22,7 +23,7 @@ log = logging.getLogger(__name__)
 
 def routing_router(paths: ProjectPaths, ensemble_job: EnsembleDownloadJob, computer: CachedRouteComputer,
                    last_requests: LastRouteRequestStore) -> APIRouter:
-    """Route computation, ensemble download status and the map wind. Endpoints are plain `def`: FastAPI runs
+    """Route computation, ensemble download status, the latest weather runs and the map wind. Endpoints are plain `def`: FastAPI runs
     them in a worker thread, so a computation does not block the server.
 
     `POST /api/route` routes the 31 GEFS members when their run is on disk, otherwise the game's GFS only;
@@ -47,6 +48,12 @@ def routing_router(paths: ProjectPaths, ensemble_job: EnsembleDownloadJob, compu
     @router.get("/ensemble/status")
     def ensemble_status() -> dict:
         return ensemble_status_json(ensemble_job.status())
+
+    @router.get("/weather/latest")
+    def latest_weather() -> dict:
+        """The newest runs on disk, so the page can tell its shown result was made on older weather."""
+        game_run = RoutePlanner(paths, prefer_cached=True).cached_game_run(datetime.now(UTC), ROUTE_HOURS)
+        return {"game_run": iso(game_run.cycle) if game_run else None, "ensemble": ensemble_status_json(ensemble_job.status())}
 
     @router.get("/wind")
     def wind(

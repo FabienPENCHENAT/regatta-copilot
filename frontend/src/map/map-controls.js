@@ -11,24 +11,24 @@ export const MAP_VIEWS = ["day", "near", "five", "race"];
 const LEGEND_KNOTS = [0, 5, 10, 15, 20, 25, "30+"];
 
 export class MapControls {
-  constructor(container, translator, { onSelectView, onSelectHour, onSelectMode }) {
+  constructor(container, translator, { onSelectView, onSelectHour, onSelectNow, onSelectMode }) {
     this.container = container;
     this.translator = translator;
     this.onSelectView = onSelectView;
     this.onSelectMode = onSelectMode;
-    this.timeBar = new TimeBar(translator, onSelectHour);
+    this.timeBar = new TimeBar(translator, onSelectHour, onSelectNow);
     this.viewSlot = element("div", "controls-block");
     this.modeSlot = element("div");
     this.legendSlot = element("div");
     container.replaceChildren(this.viewSlot, this.timeBar.element, this.modeSlot, this.legendSlot);
   }
 
-  // timeline: { maxHour, marks, startIso } of the selected option.
-  render({ view, hour, windMode, timeline }) {
+  // timeline: { maxHour, marks, startIso } of the selected option; live: the hour shown follows the clock.
+  render({ view, hour, live, windMode, timeline }) {
     const t = (key, params) => this.translator.t(key, params);
     this.viewSlot.replaceChildren(element("span", "controls-title", t("view.label")), this.#group(t("view.label"),
       MAP_VIEWS.map((v) => this.#toggle(t(`view.${v}`), v === view, () => this.onSelectView(v)))));
-    this.timeBar.update({ hour, ...timeline });
+    this.timeBar.update({ hour, live, ...timeline });
     const modeGroup = this.#group(t("wind.mode_label"),
       WIND_MODES.map((m) => this.#toggle(t(`wind.mode_${m}`), m === windMode, () => this.onSelectMode(m))));
     modeGroup.append(createTermTip(this.translator, "tip.barbs"));

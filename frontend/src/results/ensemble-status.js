@@ -1,6 +1,6 @@
 // Shows where the 31 weather scenarios stand (downloading, ready, unavailable) and, while they download,
-// asks the server every few seconds; when they become ready, it calls `onReady` so the route is recomputed
-// with real options and probabilities.
+// asks the server every few seconds; when they become ready, it calls `onReady` (the page then says newer
+// weather is available).
 
 const POLL_EVERY_MS = 15000;
 

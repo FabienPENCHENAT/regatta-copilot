@@ -13,6 +13,7 @@
   --glass-strong: rgba(255, 255, 255, 0.94);
   --glass-edge: rgba(255, 255, 255, 0.95);
   --glass-shadow: 0 12px 32px rgba(18, 38, 66, 0.18), 0 2px 6px rgba(18, 38, 66, 0.08);
+  --map-tip: rgba(255, 255, 255, 0.72); /* labels on the chart: see-through, so the routes and wind show behind */
   --accent: #2f7cf6;
   --accent-ink: #ffffff;
   --tile-heading: #3d8bfd;
@@ -81,6 +82,7 @@
     --page: #0b141e; --ink: #edf2f7; --muted: #9aaabb; --line: rgba(255, 255, 255, 0.09); --field: rgba(255, 255, 255, 0.07);
     --glass: rgba(16, 26, 38, 0.95); --glass-strong: rgba(16, 26, 38, 0.94); --glass-edge: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --map-tip: rgba(16, 26, 38, 0.7);
     --accent: #5b9dff; --accent-ink: #06121f; --tile-heading: #3d8bfd; --tile-heading-ink: #ffffff; --tile-sail: #2fe0a0; --tile-sail-ink: #05331f;
     --sea: #1b2d40; --depth-200: #182a3c; --depth-1000: #162637; --depth-2000: #142333; --depth-3000: #12202f;
     --depth-4000: #101d2b; --depth-5000: #0e1a27; --depth-line: rgba(160, 200, 235, 0.14); --land: #2a3542; --coast: #3f4c5b;
@@ -95,6 +97,7 @@
   --page: #0b141e; --ink: #edf2f7; --muted: #9aaabb; --line: rgba(255, 255, 255, 0.09); --field: rgba(255, 255, 255, 0.07);
   --glass: rgba(16, 26, 38, 0.95); --glass-strong: rgba(16, 26, 38, 0.94); --glass-edge: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --map-tip: rgba(16, 26, 38, 0.7);
   --accent: #5b9dff; --accent-ink: #06121f; --tile-heading: #3d8bfd; --tile-heading-ink: #ffffff; --tile-sail: #2fe0a0; --tile-sail-ink: #05331f;
   --sea: #1b2d40; --depth-200: #182a3c; --depth-1000: #162637; --depth-2000: #142333; --depth-3000: #12202f;
   --depth-4000: #101d2b; --depth-5000: #0e1a27; --depth-line: rgba(160, 200, 235, 0.14); --land: #2a3542; --coast: #3f4c5b;
@@ -123,7 +126,14 @@ button, input, select { font: inherit; color: inherit; }
 .leaflet-bar a { background: var(--glass-strong); color: var(--ink); border-color: var(--line); }
 .leaflet-control-attribution { background: var(--glass) !important; color: var(--muted); border-radius: 8px 0 0 0; }
 .leaflet-control-attribution a { color: var(--ink); }
-.leaflet-tooltip { border: 0; border-radius: 10px; box-shadow: var(--glass-shadow); font-weight: 600; }
+.leaflet-tooltip {
+  border: 0; border-radius: 10px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); font-weight: 600;
+  background: var(--map-tip); color: var(--ink); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.leaflet-tooltip-top::before { border-top-color: var(--map-tip); }
+.leaflet-tooltip-bottom::before { border-bottom-color: var(--map-tip); }
+.leaflet-tooltip-left::before { border-left-color: var(--map-tip); }
+.leaflet-tooltip-right::before { border-right-color: var(--map-tip); }
 .graticule-label span { display: inline-block; font: 500 0.6875rem/1 var(--font-mono); color: var(--graticule-label); white-space: nowrap; }
 .graticule-label.lat span { transform: translate(0, -120%); }
 .graticule-label.lon span { transform: translate(4px, -120%); }
@@ -168,6 +178,12 @@ button, input, select { font: inherit; color: inherit; }
   border: 2px solid currentColor; border-right-color: transparent; vertical-align: -1px; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+.weather-update {
+  position: fixed; z-index: 25; top: max(44px, env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
+  width: max-content; max-width: calc(100vw - 32px); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  padding: 8px 8px 8px 16px; border-radius: 16px; font-size: 0.875rem; font-weight: 600;
+}
+.weather-update[hidden] { display: none; }
 
 /* Position under the mouse, top centre (compare with the game's cursor coordinates) */
 .cursor-coords {
@@ -426,6 +442,7 @@ select, input[type="text"], input[type="number"] {
   font-variant-numeric: tabular-nums;
 }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--glass-strong); border-color: var(--ink); }
+.time-bar-now { min-height: 24px; padding: 2px 10px; font-size: 0.75rem; }
 .wind-legend { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); }
 .wind-legend-scale { display: flex; }
 .wind-legend-step {

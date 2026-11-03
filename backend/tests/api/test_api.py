@@ -86,3 +86,10 @@ def test_polar_curves_follow_the_options(client):
     assert full["curves"][0]["sail"][at_90] == "Code0"
     assert full["curves"][0]["speed"][at_90] > bare["curves"][0]["speed"][at_90]
     assert client.get(url, params={"tws": "abc"}).status_code == 400
+
+
+def test_latest_weather_gives_the_game_run_and_the_scenarios_state(client):
+    latest = client.get("/api/weather/latest").json()
+    assert set(latest) == {"game_run", "ensemble"}
+    assert latest["game_run"] is None or latest["game_run"].endswith("Z")
+    assert latest["ensemble"]["state"] in {"ready", "downloading", "unavailable"}

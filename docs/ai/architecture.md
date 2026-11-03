@@ -171,7 +171,7 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `app_factory.py` | Builds the app: routers under `/api`, frontend files at `/`, one shared `EnsembleDownloadJob`, the `WeatherRefresher` started/stopped with the app (lifespan; `refresh_in_background=False` in tests). |
 | `routes_races.py` | Race list, race file. |
 | `routes_polars.py` | `GET`/`POST`/`DELETE /api/races/{race}/boats/{boat}/polar`: polar in use (+ `_source`, `_imported_at`), player import, back to community. |
-| `routes_routing.py` | `POST /api/route` (through `CachedRouteComputer`, remembers the request), `GET /api/ensemble/status`, `GET /api/wind`. |
+| `routes_routing.py` | `POST /api/route` (through `CachedRouteComputer`, remembers the request), `GET /api/ensemble/status`, `GET /api/weather/latest`, `GET /api/wind`. |
 | `cached_route_computer.py` (`CachedRouteComputer`) | One route request → stored result or fresh computation (ensemble when the GEFS run is on disk, else GFS only, on the newest GFS run on disk), stored with its key; shared by the endpoint and the refresher. |
 | `last_route_request_store.py` (`LastRouteRequestStore`) | Last request received, in memory and in `var/last_request.json`. |
 | `last_route_precomputer.py` (`LastRoutePrecomputer`) | Refresher callbacks: route window of the last request's race; recompute the last request when the weather changed (or while it is < 6 h old). |
@@ -186,9 +186,10 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 ### `frontend` — no build step, native ES modules
 | Module | Responsibility |
 |---|---|
-| `src/main.js` (`App`) | Creates and connects the components; holds the current result and selected option. |
+| `src/main.js` (`App`) | Creates and connects the components; holds the current result, selected option and shown hour (following the clock until the player picks one). |
 | `i18n/translator.js`, `i18n/language-picker.js` | Loads `i18n/<lang>.json`, translates keys; FR/EN toggle. |
 | `storage/preferences-store.js` | Last race, boat, language in localStorage. |
+| `storage/last-result-store.js` | The latest computation (result + route followed) in localStorage, shown again on reload. |
 | `form/position-parser.js`, `form/route-form.js` | Parses pasted positions; race/boat/position inputs, submit, one-line summary when collapsed. |
 | `form/next-mark-picker.js` | "Next mark": automatic (server-detected) or picked by the player; shows the mark the automatic choice used. |
 | `form/race-header.js`, `form/boat-picker.js` | From–to line with distance and live race status; boat class pills. |
@@ -209,6 +210,9 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 | `layout/panel-collapser.js` | Collapses a floating panel out of the chart's way (form → summary line after computing, "now" panel → slides down, right column → slides right leaving a strip); click brings it back. |
 | `results/now-panel.js` | "Set this now" as boat instruments, built from `results/instruments/`: compass dial (heading + wind direction), sail wardrobe, true-wind gauge with Beaufort force, speed dial, side by side under a one-line title naming the option. |
 | `results/option-list.js` | Options as a compact table, one selectable row each (probability ring, short name, badges) and the outlook in aligned columns (+48 h, +5 d): green ▲ / red ▼ nm vs the recommended option, which shows its distances to go. The "your current route" row heads it for the eye only, with the menu to pick which previous option it is. |
+| `results/weather-update-check.js` | Asks `GET /api/weather/latest` every 5 min and tells when it is newer than the shown result's weather. |
+| `results/weather-update-notice.js` | Newer-weather message with an "Enter my position" button. |
+| `results/boat-clock.js` | Hours elapsed since the route's start (where the boat should be now on its line); ticks every minute. |
 | `results/route-history.js` | Remembers in the browser the options of the latest computation and of the one from the previous position. |
 | `results/followed-route-finder.js` | Recognises the route followed since then: the previous option passing within 30 nm of the new position (the clicked one wins a near tie, the one picked in the menu always wins), the rest of it, and every option with its distance for the menu. |
 | `results/option-places.js` | Place in the list (north to south, west to east, direct in between) and colour slot (`--route-1..5`) of an option, from its id alone. |
