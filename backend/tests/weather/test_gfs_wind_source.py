@@ -72,3 +72,15 @@ def test_download_latest_only_downloads(tmp_path):
     client = FakeNomads()
     run = make_source(tmp_path, client).download_latest(start, start + timedelta(hours=3), NOW)
     assert run.key == "gfs-2026103106" and len(client.requests) == 1 + 5  # 12z probe, then 06z f030..f034
+
+
+def test_the_first_hours_come_from_the_previous_run_as_in_the_game(tmp_path):
+    start = datetime(2026, 10, 31, 13, 0, tzinfo=UTC)  # 06z +7 h: before its +9 h, the game still has 00z
+    client = FakeNomads()
+    source = make_source(tmp_path, client)
+    field, run = source.wind_field(start, start + timedelta(hours=3), now=start)
+    assert run.key == "gfs-2026103106"
+    assert sorted(client.requests[-2:]) == ["gfs.t00z.pgrb2.0p25.f013", "gfs.t00z.pgrb2.0p25.f014"]
+    assert "gfs.t06z.pgrb2.0p25.f007" not in client.requests
+    assert field.first_time == start and field.last_time == start + timedelta(hours=3)
+    assert source.cached_run(start, start + timedelta(hours=3), start) == run

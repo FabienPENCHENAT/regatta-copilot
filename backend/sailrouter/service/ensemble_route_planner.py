@@ -4,32 +4,39 @@ import multiprocessing
 import os
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, wait
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from time import perf_counter
 
 from sailrouter.course.race_catalog import RaceCatalog
 from sailrouter.domain.geo_point import GeoPoint
 from sailrouter.ensemble.ensemble_synthesizer import EnsembleSynthesizer
+from sailrouter.ensemble.route_option import EnsembleSynthesis
 from sailrouter.polar.boat_options import BoatOptions
 from sailrouter.polar.winch_timings import ManeuverTiming
 from sailrouter.routing.mark_progress import MarkProgress
+from sailrouter.routing.route import Route
 from sailrouter.service import member_routing_worker
 from sailrouter.service.computation_superseded import ComputationSuperseded
 from sailrouter.service.ensemble_report import EnsembleReport
 from sailrouter.service.member_routing_worker import MemberRoutingSpec
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.route_planner import RoutePlanner
+from sailrouter.service.route_report import RouteReport
 from sailrouter.weather.gefs_query_builder import GEFS_MEMBERS
 from sailrouter.weather.lead_time_plan import LeadTimePlan
 from sailrouter.weather.model_run import ModelRun
 
 POLL_S = 0.5  # how often a running ensemble checks whether it was replaced
+GAME_ROUTE = "gfs"  # representative of the option the game's route falls in: that route itself
 
 
 class EnsembleRoutePlanner:
     """Routes every GEFS member of a run already on disk in parallel worker processes, the deterministic GFS
-    (the game's route) in this process meanwhile, then turns the member routes into options and sails every
-    option's track in every member's weather, plus the player's current route when given (the rest of the
+    (the game's route) in this process meanwhile, then turns the member routes into options, shows each option
+    in the game's weather (the GFS route for the option it falls in, the other tracks sailed in the GFS wind:
+    what the player is told to set is what the game will give), and sails every option's track in every
+    member's weather, plus the player's current route when given (the rest of the
     option followed since the previous computation, from the position). `stop_if` is polled while the members
     run: when it turns true, the members not started yet are cancelled and ComputationSuperseded is raised."""
 
@@ -66,9 +73,9 @@ class EnsembleRoutePlanner:
             member_routes = {member: route for member, route in (f.result() for f in pending) if route is not None}
             routed = perf_counter()
             synthesis = EnsembleSynthesizer().synthesize(member_routes, game.route, game.progress)
+            synthesis = self._in_game_weather(pool, synthesis, game, stop_if)
             synthesized = perf_counter()
-            tracks = [[(p.lat_deg, p.lon_deg, p.marks_passed) for p in option.route.points]
-                      for option in synthesis.options]
+            tracks = [_track(option.route) for option in synthesis.options]
             if current_route:
                 tracks.append(_current_track(position, current_route, game.progress))
             outlook = self._cross_evaluate(pool, tracks, list(member_routes), stop_if)
@@ -77,6 +84,26 @@ class EnsembleRoutePlanner:
         options_outlook = outlook[:len(synthesis.options)]
         current_outlook = outlook[len(synthesis.options)] if current_route else None
         return EnsembleReport(game, gefs_run, member_routes, synthesis, timings, options_outlook, current_outlook)
+
+    @staticmethod
+    def _in_game_weather(pool: ProcessPoolExecutor, synthesis: EnsembleSynthesis, game: RouteReport,
+                         stop_if: Callable[[], bool]) -> EnsembleSynthesis:
+        """The options with the routes shown to the player in the game's GFS weather; the members still give
+        the options, their probabilities and confidence."""
+        others = [option for option in synthesis.options if not option.game_route]
+        pending = pool.submit(member_routing_worker.sail_in_game_weather, game.weather_run,
+                              [_track(option.route) for option in others])
+        while wait([pending], timeout=POLL_S).not_done:
+            if stop_if():
+                _abandon(pool)
+                raise ComputationSuperseded("a newer route request replaced this one")
+        sailed = dict(zip((option.id for option in others), pending.result()))
+        options = tuple(
+            replace(option, representative=GAME_ROUTE, route=game.route) if option.game_route
+            else replace(option, route=sailed[option.id])
+            for option in synthesis.options
+        )
+        return replace(synthesis, options=options)
 
     @staticmethod
     def _cross_evaluate(pool: ProcessPoolExecutor, tracks: list[list[tuple[float, float, int]]], members: list[str],
@@ -92,6 +119,10 @@ class EnsembleRoutePlanner:
             for index, distances in enumerate(per_option):
                 outlook[index][member] = distances
         return outlook
+
+
+def _track(route: Route) -> list[tuple[float, float, int]]:
+    return [(point.lat_deg, point.lon_deg, point.marks_passed) for point in route.points]
 
 
 def _current_track(position: GeoPoint, route: list[tuple[float, float]],

@@ -90,7 +90,9 @@ lat, lon, end_lat, end_lon }]` (one per order: new leg on sail change, tack/gybe
 - `kind`: `consensus` (single option), `shortest` (closest to the great circle to the next mark at +48 h) or
   `positioning`.
 - `probability` = `member_count` / members routed (31); `recommended_option` = the first option.
-- `representative_member`: the GEFS member (`c00`, `p01`..`p30`) whose route is shown for the option (medoid).
+- `representative_member`: `gfs` for the option holding the game's route (that GFS route is shown), else the GEFS
+  member (`c00`, `p01`..`p30`, medoid) whose track is shown, sailed in the game's GFS wind (decision D63): `now`,
+  `steps`, `hourly`, `legs` always give the game's weather.
 - `steps[].confidence`: share (0–1, 2 decimals) of the option's members within `zone_radius_nm` of the step
   position.
 - `eta_delta_h`: approximate arrival gap vs the best option (hours sailed + distance to go ÷ mean speed).

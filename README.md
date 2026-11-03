@@ -24,7 +24,7 @@ A single "optimal" route changes every 6 hours with the forecast. Regatta Copilo
 
 ## Features
 
-- **The game's weather, read like the game**: NOAA GFS 0.25°, every 3 hours, interpolated in between, picked up 3 h 40 after each run as the game does.
+- **The game's weather, read like the game**: NOAA GFS 0.25°, every 3 hours, interpolated in between, and two runs blended for the first hours after a new one, as the game does.
 - **31 scenarios**: the NOAA GEFS ensemble, routed one by one with your boat's polar, then grouped into at most 3 options with their probability ("14 of 31 scenarios").
 - **Options compared fairly**: each option's route is sailed again in all 31 weathers and compared on distance to go to the finish through every mark, so a fast detour only counts if it gains ground. A **Best on average** badge flags the option that wins more often than the recommended one.
 - **Keep your route or switch?** Recompute from your new position: the site recognises the option you were following and draws the rest of it next to the new options, to see where they part from it. Options keep their name (north, direct, south, against the line to the next mark), their place and their colour from one computation to the next.
@@ -68,7 +68,7 @@ Wondering whether an option is worth buying? The **Polar and options** page (sai
 
 1. **Weather**: the game's forecast (NOAA GFS) and its 31 scenarios (NOAA GEFS) are downloaded and refreshed in the background every 10 minutes. Nothing is invented: the scenarios are computed by NOAA, Regatta Copilot only reads them.
 2. **Routing**: for each scenario, an isochrone router tries a heading every 1° over 220° around the next mark, every 15 minutes at first, with your polar and options, and drops any track within 1 nm of land or an exclusion zone.
-3. **Options**: routes passing the same place at +24 h and +48 h are grouped (at most 3 options). The probability of an option is its share of scenarios.
+3. **Options**: routes passing the same place at +24 h and +48 h are grouped (at most 3 options). The probability of an option is its share of scenarios. Each option is then shown in the game's weather: heading, sail and speed are those the game will give.
 4. **Comparison**: each option's route is sailed again in all 31 weathers and compared on distance to go through every mark (the tour of an island included).
 5. **Route plan**: the recommended route is cut into orders, each a straight line at a constant heading that stays close to the route and clear of hazards.
 
@@ -78,7 +78,7 @@ What you see on each option card:
 |---|---|
 | **45 %** ring | Share of the 31 scenarios whose best route goes this way |
 | **Recommended** | The most frequent option: the safe choice |
-| **Game weather** | The route computed on the game's exact forecast falls in this option |
+| **Game weather** | The route computed on the game's exact forecast falls in this option, and is the one shown |
 | **Best on average** | At least 10 nm ahead of the recommended one on average at +5 days, in all 31 weathers: a bet |
 | *"32 nm behind at +48 h, level at +5 d"* | Mean lead or lag on the recommended option; under 10 nm reads "level" |
 

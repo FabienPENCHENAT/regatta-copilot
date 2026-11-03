@@ -71,7 +71,7 @@ Commands (from the repo root):
 |---|---|
 | `ModelRun` | One run: model (`gfs`, later `gefs`) + cycle time; `key` names the cache folder. |
 | `GfsRunClock` | Which run (00/06/12/18 UTC) should be complete (cycle + 5 h); previous run; when the next is expected. |
-| `LeadTimePlan` | Which lead times exist (GFS: hourly to f120, 3-hourly to f384; GEFS: 3-hourly) and which cover a window. |
+| `LeadTimePlan` | Which lead times exist (GFS: hourly to f120, 3-hourly to f384, `game()` 3-hourly as the game reads it; GEFS: 3-hourly) and which cover a window. |
 | `WeatherArea` | Download box (0–60°N, 80°W–10°E). |
 | `GfsQueryBuilder` | NOMADS grib-filter query (script + params) for one GFS 0.25° lead time, 10 m U/V only. |
 | `NomadsClient` | Downloads one grib-filter file over HTTP/1.1, ≤ 1 request/s (GEFS: 2/s), retries with backoff; 404/HTML → `DataNotAvailable`. |
@@ -80,7 +80,8 @@ Commands (from the repo root):
 | `GribDecoder` | GRIB2 file → `WindGrid` (ecCodes). |
 | `WindGrid` | U/V (m/s) on a regular lat/lon grid at one valid time. |
 | `WindField` | Wind of ONE forecast: bilinear in space, linear in time on U/V → TWS (kn), TWD (deg). Vectorised. |
-| `GfsWindSource` | The `WindField` of the latest complete GFS run covering a window (falls back to older runs); `cached_run` = newest run already on disk, `download_latest` = download only, `prefer_cached` = no download when a run is on disk. |
+| `GameRunMix` | Which run supplies each 3-hourly forecast time of the game's weather: the newest run from 9 h after its cycle, the previous run before (D64). |
+| `GfsWindSource` | The game's `WindField` covering a window: the latest complete GFS run, its first hours from the previous run (`GameRunMix`); falls back to older runs; `cached_run` = newest run already on disk, `download_latest` = download only, `prefer_cached` = no download when a run is on disk, `wind_field_of(run)` = the mix for a given newest run. |
 | `GefsQueryBuilder` | NOMADS grib-filter query for one GEFS 0.5° member (`c00`, `p01`..`p30`, `GEFS_MEMBERS`) and lead time. |
 | `GefsRunDownloader` | Puts every member × lead time of a run in the store; last lead of every member first (completeness probe); progress counts cached files. |
 | `GefsRunCatalog` | Candidate GEFS runs (latest due, then 2 older), lead times covering a window (3-hourly to f240), files on disk, newest complete run. |
@@ -154,8 +155,8 @@ plan**. Pure computation on `Route` objects (decisions D30–D33).
 |---|---|
 | `RoutePlanner` | Routes one boat on the deterministic GFS (the game's weather) → `RouteReport` (with the next mark used and whether it was automatic); also provides the GFS wind for the map. `prefer_cached` (web): newest run on disk. |
 | `RouterBuilder` | Boat models (polar, owned sails, manoeuvre overrides), land + zones obstacles, `IsochroneRouter` for a wind field. |
-| `EnsembleRoutePlanner` | Routes the 31 members in a spawned `ProcessPoolExecutor` (cpu − 1 workers) while the GFS route runs in-process, then `EnsembleSynthesizer`, then sails every option's track (and the player's current route, if sent) in every member's wind → `EnsembleReport`. |
-| `member_routing_worker` (module) | `MemberRoutingSpec`; per-process `initialize` (race, polar, land raster once) and `route_member` (decode one member, route it). |
+| `EnsembleRoutePlanner` | Routes the 31 members in a spawned `ProcessPoolExecutor` (cpu − 1 workers) while the GFS route runs in-process, then `EnsembleSynthesizer`, then shows each option in the game's weather (GFS route for its option, the other tracks sailed in the GFS wind), then sails every option's track (and the player's current route, if sent) in every member's wind → `EnsembleReport`. |
+| `member_routing_worker` (module) | `MemberRoutingSpec`; per-process `initialize` (race, polar, land raster once) and `route_member` (decode one member, route it), `follow_tracks` (cross-evaluation), `sail_in_game_weather` (options' tracks in the GFS wind). |
 | `EnsembleDownloadJob` | One GEFS download at a time in a background thread: `ensure(window)` returns the newest run on disk and starts a newer one; `status()`; `download()` for the CLI; failed runs retried after 10 min. |
 | `EnsembleStatus` | `ready` / `downloading` / `unavailable`, run, done/total files, member count. |
 | `build_ensemble_job` (`ensemble_job_factory.py`) | Wires the job (NOMADS client at ≤ 2 requests/s). |
@@ -234,6 +235,7 @@ user: race + boat + position + owned sails + manoeuvre times
                           + RoutePlanner on the deterministic GFS (the game's route) in-process
   → EnsembleSynthesizer: RouteDistanceMatrix → RouteOptionClusterer → MedoidPicker → OptionLabeler
                          → probabilities, ConfidenceGrader, EtaGapEstimator, AdviceWriter
+  → options shown in the game's weather: GFS route, or TrackFollower.route in the GFS wind (worker)
   → EnsembleResultBuilder → JSON → frontend (text translated client-side)
 ```
 

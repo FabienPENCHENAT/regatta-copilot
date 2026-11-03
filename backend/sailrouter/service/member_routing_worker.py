@@ -2,8 +2,8 @@
 
 `initialize` builds, once per process, everything that does not depend on the member (race, polar, land
 raster); `route_member` then decodes one member's wind from the cache and routes it; `follow_tracks` sails the
-options' tracks in one member's wind (cross-evaluation). Module-level functions because process pools can only
-call picklable, importable functions.
+options' tracks in one member's wind (cross-evaluation); `sail_in_game_weather` sails them in the game's GFS.
+Module-level functions because process pools can only call picklable, importable functions.
 """
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ from sailrouter.routing.route_tracer import RouteTracer
 from sailrouter.routing.time_schedule import TimeSchedule
 from sailrouter.routing.track_follower import TrackFollower
 from sailrouter.service.boat_polar_locator import BoatPolarLocator
+from sailrouter.service.gfs_source_factory import build_gfs_source
 from sailrouter.service.project_paths import ProjectPaths
 from sailrouter.service.router_builder import RouterBuilder
 from sailrouter.weather.forecast_store import ForecastStore
@@ -86,3 +87,13 @@ def follow_tracks(member: str, tracks: list[list[tuple[float, float, int]]]) -> 
     follower = TrackFollower(_state["speed_model"], _state["progress"])
     hours = sorted({min(hour, spec.hours) for hour in OUTLOOK_HOURS})
     return member, [follower.distances_to_go(track, wind, spec.start, hours) for track in tracks]
+
+
+def sail_in_game_weather(run: ModelRun, tracks: list[list[tuple[float, float, int]]]) -> list[Route]:
+    """Each track sailed in the game's GFS wind (newest run `run`, on disk): what the game will give along it
+    (sail, speed, wind), rather than what the GEFS member that drew it had."""
+    spec: MemberRoutingSpec = _state["spec"]
+    schedule = TimeSchedule(spec.start, spec.hours)
+    wind = build_gfs_source(ProjectPaths(spec.root)).wind_field_of(run, schedule.start, schedule.end)
+    follower = TrackFollower(_state["speed_model"], _state["progress"])
+    return [follower.route(track, wind, schedule) for track in tracks]

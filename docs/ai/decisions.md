@@ -2,6 +2,33 @@
 
 Newest first. Format: decision, why, rejected alternatives. Mark decisions waiting for the user as **PENDING**.
 
+## D64 — The game's weather blends two GFS runs; the site does the same (user, 2026-11-03)
+- Source: eSail4VR guide, "How the wind is computed" (esail4vr.fr/en/guide/weather/how-the-wind-is-computed/):
+  the game's weather file assembles the 3-hourly forecast times of several runs. At 13:52 UTC, 12:00 comes from
+  the 00Z run (f012) and 15:00 from the 06Z run (f009), weighted 38 % / 62 %; the logbook's left gauge shows
+  that weight (blue = old run, green = new run). When NOAA is late the game's weather does not move.
+- Checked on the user's screenshots (47°13'N 23°38'W, 12:16 UTC): game 8.6 kn from 97°; 00Z f012 + 06Z f009
+  blended 8.4 kn from 96°; 06Z alone (the site before) 9.4 kn from 106°. Blue gauge ≈ 94 % at 12:11 and ≈ 86 %
+  at 12:24, as the blend gives (1 − minutes since 12:00 / 180).
+- `weather/GameRunMix`: a run supplies the forecast times from 9 h after its cycle (`NEW_RUN_FROM_H`), earlier
+  times come from the previous run. `GfsWindSource` assembles, caches and downloads that mix (the previous run's
+  one or two files too), `wind_field_of(run, …)` gives it for a known newest run (GEFS worker replay, D63). Used
+  by routing, the options in the game's weather and the map wind. `ENGINE_VERSION` 14. The site still picks a
+  new run up once on disk (`GfsRunClock` 3 h 40, probing NOMADS): with the blend, picking it up early or late
+  gives the game's wind either way. `StaleRunCleaner` keeps the previous run (`keep_previous=1`).
+- Hypothesis, not documented: the 9 h rule when a run arrives late (after +6 h). The guide's example and the
+  user's screenshots are both runs on time. Supersedes the "rejected: mixing runs" item of D45.
+
+## D63 — Every option is shown in the game's weather (user, 2026-11-03)
+- Game screenshot at 47°12'N 23°38'W: the game gave Spi léger 11.3 kn with 8.6 kn of wind; the site's "Directe ·
+  Météo du jeu" option said Code 0 20.5 kn with 14 kn. Each option showed its medoid GEFS member's route
+  (p28, 14 kn there), even the one tagged with the game's route; the GFS route had 9.4 kn.
+- `EnsembleRoutePlanner._in_game_weather`: the option the GFS route falls in now shows that route
+  (`representative_member` = `gfs`); the other options' medoid tracks are sailed in the GFS wind
+  (`TrackFollower.route`, worker `sail_in_game_weather`) and shown as such: settings now, plan, hourly, line.
+  The members still give the options, probabilities, confidence and arrival gaps. `ENGINE_VERSION` 13.
+- The remaining gap (the game's logbook still showing 00Z at 12:24 UTC) was the runs blend, see D64.
+
 ## D62 — Reloading shows the same computation; newer weather asks for the position (user, 2026-11-02)
 - Reloading the page (even Ctrl+Shift+R) no longer computes: the latest result for the race and boat is kept in
   localStorage and shown as it was, with its `computed_at`, so only the boat moves on (D61).
@@ -200,7 +227,7 @@ Newest first. Format: decision, why, rejected alternatives. Mark decisions waiti
   `GfsRunClock` GFS delay 3 h 40 (GEFS keeps 5 h). An incomplete newest run still falls back to the previous one.
 - `ENGINE_VERSION` in the result cache key: stored results made with the old weather are recomputed.
 - Rejected for now: mixing runs like the game does (the past step bracketing "now" kept from the previous run):
-  the exact switch rule is not documented (user: too risky). Not modelled, by user choice: auto-sail 1.4 %
+  the exact switch rule is not documented (user: too risky). **Superseded by D64** (rule found and checked). Not modelled, by user choice: auto-sail 1.4 %
   overlap / boost, skipper energy (stated on the How it works page).
 
 ## D44 — Position typed in boxes, as shown in the game (user, 2026-10-31)

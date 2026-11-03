@@ -11,4 +11,5 @@ manipulations côté jeu. La documentation technique, pour l'IA et les développ
 | [etape-4-scenarios.md](etape-4-scenarios.md) | Les 31 prévisions : plusieurs routes, leurs probabilités, le premier téléchargement |
 | [etape-5-site-branche.md](etape-5-site-branche.md) | Le site calcule pour de vrai, avec tes voiles |
 | [etape-6-marques-et-mises-a-jour.md](etape-6-marques-et-mises-a-jour.md) | Tour de la Guadeloupe et choix de la prochaine marque, mises à jour automatiques, import de ta polaire |
+| [meteo-identique-au-jeu.md](meteo-identique-au-jeu.md) | Pourquoi le site affichait 20 nœuds quand le jeu en donnait 11, et ce qui a été corrigé |
 | [extraire-polaire-vr.md](extraire-polaire-vr.md) | Récupérer toi-même la polaire du jeu, pas à pas |

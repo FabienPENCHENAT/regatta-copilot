@@ -16,7 +16,9 @@ https://nomads.ncep.noaa.gov/cgi-bin/filter_gefs_atmos_0p50a.pl
 - Response: GRIB2, two messages (`10u`, `10v`, m/s), grid 101 × 171, first point 5°N / 280°E, step 0.5°.
 - Use HTTP/1.1 (`curl --http1.1`): HTTP/2 requests to the NOMADS directory listing hung in tests.
 - NOMADS bans clients that send too many requests per minute: throttle (≈ 1 request/s) and retry with backoff.
-- Runs 00/06/12/18 UTC. GFS usable ≈ 3 h 40 later (the game switches about then), GEFS ≈ 5 h later.
+- Runs 00/06/12/18 UTC. GFS usable ≈ 3 h 40 later, GEFS ≈ 5 h later. The game blends runs: a run supplies the
+  3-hourly forecast times from 9 h after its cycle, earlier ones keep the previous run (decision D64, source
+  eSail4VR guide "How the wind is computed").
 
 **AWS fallback**: `https://noaa-gefs-pds.s3.amazonaws.com/gefs.YYYYMMDD/HH/atmos/pgrb2sp25/gep01.tHHz.pgrb2s.0p25.f024`
 (+ `.idx`; fetch `UGRD:10 m above ground` and `VGRD:...` with HTTP Range). Global, no subregion, no rate limit.
