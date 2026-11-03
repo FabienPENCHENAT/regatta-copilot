@@ -14,7 +14,7 @@
 
 [Getting started](#getting-started) · [How it works](#how-it-works) · [Using it in the game](#using-it-in-the-game) · [FAQ](#faq) · [Technical docs](docs/ai/index.md)
 
-<img src="docs/images/app.png" alt="The chart in mid-Atlantic: the recommended route with small numbered orders, the current one labelled with heading, sail and speed, thin lines for the 31 scenarios, wind particles, and panels showing the settings to apply now, the three options and the route plan with the expected speed of each order" width="800">
+<img src="docs/images/app.png" alt="The chart in mid-Atlantic: the recommended route with small numbered orders, the boat labelled with heading, sail, speed and wind, thin lines for the 31 scenarios, wind particles, and panels showing the settings to apply now in the game's weather, the three options compared at +48 h and +5 days, and the route plan with the expected speed of each order" width="800">
 
 </div>
 
